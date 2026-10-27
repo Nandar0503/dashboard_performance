@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profitability Segmen 3 · SAP vs Realisasi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:root{
+  --bg:#0A101C;--bg2:#0E1626;--panel:#111B2E;--panel2:#16223A;--line:#1F2C45;--line2:#2A3956;
+  --text:#E8ECF4;--muted:#8D99B0;--dim:#5E6B84;
+  --gold:#C9A962;--gold2:#E3CB8F;--teal:#2FB3A5;--plan:#7F8EAD;
+  --fav:#34B37C;--ok:#2FB3A5;--warn:#E2A94B;--unf:#E25D5D;--na:#5E6B84;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Aptos,"Segoe UI",system-ui,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(1200px 600px at 85% -10%,rgba(201,169,98,.07),transparent 60%),var(--bg);min-height:100vh}
+button,select,input{font:inherit;color:inherit}
+a{color:var(--gold2)}
+.wrap{max-width:1680px;margin:0 auto;padding:0 24px 40px}
+header.top{display:flex;align-items:center;gap:16px;padding:18px 0 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#8E7438);display:grid;place-items:center;color:#0A101C;font-weight:700;font-size:15px;flex:none}
+.brand h1{font-size:17px;margin:0;font-weight:600;letter-spacing:.2px}
+.brand .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.spacer{flex:1}
+.live{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--line2);background:var(--panel);font-size:12px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.dot.live{background:var(--fav);box-shadow:0 0 0 0 rgba(52,179,124,.6);animation:pulse 2s infinite}
+.dot.load{background:var(--warn)}.dot.ok{background:var(--gold)}.dot.err{background:var(--unf)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,179,124,.5)}70%{box-shadow:0 0 0 8px rgba(52,179,124,0)}100%{box-shadow:0 0 0 0 rgba(52,179,124,0)}}
+.btn{border:1px solid var(--line2);background:var(--panel);padding:7px 12px;border-radius:9px;cursor:pointer;font-size:12.5px;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--gold);color:var(--gold2)}
+.btn.gold{background:linear-gradient(135deg,#C9A962,#A98A45);color:#0A101C;border-color:transparent;font-weight:600}
+.btn.gold:hover{filter:brightness(1.08);color:#0A101C}
+select,input[type=search],input[type=number]{background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:7px 10px;font-size:12.5px;outline:none;min-width:0}
+select:focus,input:focus{border-color:var(--gold)}
+select:disabled{opacity:.45}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:14px 0}
+.f{display:flex;flex-direction:column;gap:5px;min-width:130px}
+.f label{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);font-weight:600}
+.f select{max-width:260px}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--panel);padding:7px 11px;font-size:12px;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--panel2);color:var(--gold2);box-shadow:inset 0 -2px 0 var(--gold)}
+nav.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+nav.tabs button{background:none;border:0;padding:12px 16px;color:var(--muted);cursor:pointer;font-size:13px;font-weight:500;border-bottom:2px solid transparent;white-space:nowrap}
+nav.tabs button.on{color:var(--text);border-bottom-color:var(--gold)}
+nav.tabs button:hover{color:var(--text)}
+.notice{margin:14px 0 0;padding:10px 14px;border-radius:10px;border:1px solid var(--line2);background:var(--bg2);font-size:12.5px;color:var(--muted);display:flex;gap:10px;align-items:flex-start}
+.notice b{color:var(--text)}
+.notice.err{border-color:rgba(226,93,93,.45);background:rgba(226,93,93,.07);color:#F1B3B3}
+.notice.warn{border-color:rgba(226,169,75,.4);background:rgba(226,169,75,.06)}
+.page{display:none;animation:fade .25s ease}
+.page.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:16px;margin-top:16px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g21{grid-template-columns:2fr 1fr}
+.g12{grid-template-columns:1fr 2fr}
+@media(max-width:1100px){.g2,.g3,.g21,.g12{grid-template-columns:1fr}}
+.card{background:linear-gradient(180deg,var(--panel),#0F1828);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0;position:relative}
+.card h3{margin:0 0 4px;font-size:13.5px;font-weight:600;letter-spacing:.2px}
+.card .hint{font-size:11.5px;color:var(--dim);margin-bottom:10px}
+.card .hd{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.kpi{cursor:pointer;transition:border-color .2s,transform .2s}
+.kpi:hover{border-color:var(--line2);transform:translateY(-1px)}
+.kpi .lab{font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.kpi .val{font-size:27px;font-weight:600;margin:10px 0 4px;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.kpi .cmp{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.kpi .cmp b{color:var(--text);font-weight:500}
+.kpi .bar{height:4px;border-radius:4px;background:var(--line);margin-top:12px;overflow:hidden}
+.kpi .bar i{display:block;height:100%;border-radius:4px;background:var(--gold);transition:width .6s ease}
+.kpi.muted .val{color:var(--dim);font-size:18px}
+.st{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:999px;letter-spacing:.3px;text-transform:none;white-space:nowrap}
+.st:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.st.fav{color:var(--fav);background:rgba(52,179,124,.12)}
+.st.ok{color:var(--ok);background:rgba(47,179,165,.12)}
+.st.warn{color:var(--warn);background:rgba(226,169,75,.12)}
+.st.unf{color:var(--unf);background:rgba(226,93,93,.12)}
+.st.na{color:var(--muted);background:rgba(141,153,176,.1)}
+.up{color:var(--fav)}.dn{color:var(--unf)}
+.chart{width:100%;height:320px}
+.chart.tall{height:420px}.chart.sm{height:260px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);font-weight:600;background:var(--panel);position:sticky;top:0;z-index:1}
+th.s{cursor:pointer;user-select:none}th.s:hover{color:var(--gold2)}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.click{cursor:pointer}tr.click:hover td{background:rgba(201,169,98,.05)}
+tfoot td{font-weight:600;border-top:1px solid var(--line2);background:var(--bg2)}
+.tbl{overflow:auto;max-height:520px;border:1px solid var(--line);border-radius:10px}
+.tbl.short{max-height:360px}
+.flag{display:inline-block;font-size:10px;padding:2px 6px;border-radius:5px;margin:1px 2px 1px 0;background:rgba(226,169,75,.13);color:var(--warn);white-space:nowrap}
+.flag.r{background:rgba(226,93,93,.13);color:var(--unf)}
+.flag.b{background:rgba(127,142,173,.16);color:#AAB6CF}
+.ins{display:flex;flex-direction:column;gap:10px}
+.ins .it{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:var(--bg2);border:1px solid var(--line);font-size:12.8px;line-height:1.5}
+.ins .tag{flex:none;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:3px 7px;border-radius:6px;height:fit-content;margin-top:1px}
+.tag.fakta{background:rgba(47,179,165,.14);color:var(--teal)}
+.tag.indikasi{background:rgba(226,169,75,.14);color:var(--warn)}
+.tag.hipotesis{background:rgba(127,142,173,.18);color:#AAB6CF}
+.tag.risiko{background:rgba(226,93,93,.14);color:var(--unf)}
+.tag.aksi{background:rgba(201,169,98,.16);color:var(--gold2)}
+.ins .meta{font-size:11px;color:var(--dim);margin-top:3px}
+.pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input[type=search]{flex:1;min-width:200px}
+.kv{display:grid;grid-template-columns:180px 1fr;gap:6px 14px;font-size:12.5px}
+.kv div:nth-child(odd){color:var(--muted)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:var(--bg2);padding:1px 5px;border-radius:4px;border:1px solid var(--line)}
+.overlay{position:fixed;inset:0;background:rgba(5,8,15,.86);backdrop-filter:blur(4px);display:none;place-items:center;z-index:50;padding:20px}
+.overlay.on{display:grid}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:16px;width:min(1100px,100%);max-height:88vh;overflow:auto;padding:22px}
+.modal .hd{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+.loader{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:60;transition:opacity .4s}
+.loader.hide{opacity:0;pointer-events:none}
+.spin{width:42px;height:42px;border:3px solid var(--line2);border-top-color:var(--gold);border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 14px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.toast{position:fixed;right:20px;bottom:20px;background:var(--panel2);border:1px solid var(--gold);color:var(--text);padding:11px 16px;border-radius:10px;font-size:12.5px;z-index:70;opacity:0;transform:translateY(10px);transition:.3s;pointer-events:none}
+.toast.on{opacity:1;transform:none}
+.empty{padding:40px 10px;text-align:center;color:var(--dim);font-size:13px}
+.mini{font-size:11.5px;color:var(--dim)}
+footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--dim);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:700px){.wrap{padding:0 14px 30px}.kpi .val{font-size:23px}.f{min-width:46%}.kv{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><div style="text-align:center"><div class="spin"></div><div style="color:var(--muted);font-size:13px">Mengambil data dari Google Sheets…</div></div></div>
+<div class="toast" id="toast"></div>
+
+<div class="wrap">
+<header class="top">
+  <div class="brand">
+    <div class="logo">S3</div>
+    <div>
+      <h1 id="ttl">Executive Profitability Dashboard</h1>
+      <div class="sub" id="subttl">SAP vs Realisasi (OPS) · Segmen 3 · YTD 2026</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="live">
+    <span class="pill"><span class="dot" id="liveDot"></span><span id="liveTxt">Menghubungkan…</span></span>
+    <span class="pill" title="Waktu data terakhir berhasil diambil dari Google Sheets">Diambil: <b id="lastFetch" style="color:var(--text);font-weight:500">–</b></span>
+    <span class="pill" title="Waktu terakhir isi sheet terdeteksi berubah">Perubahan terakhir: <b id="lastChange" style="color:var(--text);font-weight:500">–</b></span>
+    <select id="srcSel" title="Sumber data dashboard"><option value="excel">Sumber: Excel (tertanam)</option><option value="live">Sumber: Google Sheets (live)</option></select>
+    <select id="refreshSel" title="Interval auto-refresh">
+      <option value="1">Refresh 1 mnt</option>
+      <option value="5" selected>Refresh 5 mnt</option>
+      <option value="15">Refresh 15 mnt</option>
+      <option value="0">Auto-refresh off</option>
+    </select>
+    <span class="mini" id="countdown"></span>
+    <button class="btn gold" id="btnRefresh">↻ Refresh</button>
+    <label class="btn" title="Cadangan bila link tidak bisa diakses: unggah file Excel (.xlsx) atau CSV per sheet">⇪ Upload<input type="file" id="fileIn" accept=".xlsx,.xls,.csv" multiple hidden></label>
+  </div>
+</header>
+
+<div class="filters">
+  <div class="f"><label>Klien / Unit</label><select id="fKlien"></select></div>
+  <div class="f"><label>Layanan</label><select id="fLayanan"></select></div>
+  <div class="f"><label>Kategori Pareto</label><select id="fPareto"></select></div>
+  <div class="f"><label>Bulan dari</label><select id="fM0"></select></div>
+  <div class="f"><label>Bulan s.d.</label><select id="fM1"></select></div>
+  <div class="f" style="min-width:auto"><label>Basis angka KPI</label>
+    <div class="seg" id="basisSeg"><button data-b="summary" class="on" title="Angka hasil rekonsiliasi pada sheet Summary">Summary</button><button data-b="rekap" title="Dihitung dari baris detail sheet Rekap SAP S3">Rekap SAP S3</button></div>
+  </div>
+  <div class="f" style="min-width:auto"><label>Materialitas</label><input type="number" id="fMat" value="50" min="0" step="10" style="width:110px" title="Ambang materialitas (Rp juta)"></div>
+  <button class="btn" id="btnReset">Reset Filter</button>
+</div>
+
+<nav class="tabs" id="tabs">
+  <button data-p="p1" class="on">Executive Overview</button>
+  <button data-p="p2">Profitability Analysis</button>
+  <button data-p="p3">SAP vs Realisasi</button>
+  <button data-p="p4">Cost &amp; Budget Control</button>
+  <button data-p="p5">Detail &amp; Audit</button>
+  <button data-p="p6">Data Dictionary</button>
+</nav>
+<div id="notices"></div>
+
+<!-- PAGE 1 -->
+<section class="page on" id="p1">
+  <div class="grid kpis" id="kpiGrid"></div>
+  <div class="grid g21">
+    <div class="card"><div class="hd"><div><h3>Tren Bulanan SAP vs Realisasi</h3><div class="hint">Revenue &amp; Gross Profit per bulan · sumber: Rekap SAP S3</div></div></div><div class="chart" id="cTrend"></div></div>
+    <div class="card"><h3>Variance Waterfall Gross Profit</h3><div class="hint">Dari GP SAP ke GP Realisasi</div><div class="chart" id="cWaterfall"></div></div>
+  </div>
+  <div class="grid g12">
+    <div class="card"><h3>Ringkasan Pencapaian Target</h3><div class="hint">Status per indikator</div><div id="achieveTbl"></div></div>
+    <div class="card"><h3>Financial Insights</h3><div class="hint">Narasi otomatis dari perhitungan data · dibedakan Fakta / Indikasi / Hipotesis</div><div class="grid g2" style="margin-top:4px"><div><div class="mini" style="margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">Temuan utama</div><div class="ins" id="insFind"></div></div><div><div class="mini" style="margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">Risiko terbesar</div><div class="ins" id="insRisk"></div></div></div></div>
+  </div>
+</section>
+
+<!-- PAGE 2 -->
+<section class="page" id="p2">
+  <div class="grid g2">
+    <div class="card"><h3>Gross Profit &amp; Margin per Klien</h3><div class="hint">Realisasi (OPS) · klik batang untuk drill-down</div><div class="chart tall" id="cGpClient"></div></div>
+    <div class="card"><h3>Profitability Matrix</h3><div class="hint">X: Revenue realisasi (skala log) · Y: GPM realisasi · ukuran: Gross Profit · garis putus: GPM agregat</div><div class="chart tall" id="cMatrix"></div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Revenue vs Direct Cost</h3><div class="hint">Realisasi per klien (top 15 revenue)</div><div class="chart" id="cRevCost"></div></div>
+    <div class="card"><h3>Revenue Tinggi, Margin Rendah</h3><div class="hint">Revenue ≥ median &amp; GPM di bawah GPM agregat</div><div id="hiLoTbl"></div></div>
+  </div>
+  <div class="grid"><div class="card"><div class="hd"><div><h3>Ranking Profitabilitas</h3><div class="hint">Klik baris untuk drill-down ke Layanan / IO</div></div></div><div class="tbl" id="rankTbl"></div></div></div>
+</section>
+
+<!-- PAGE 3 -->
+<section class="page" id="p3">
+  <div class="grid g2">
+    <div class="card"><h3>Revenue: SAP vs Realisasi per Bulan</h3><div class="hint">Batang: nilai · garis: variance %</div><div class="chart" id="cMonRev"></div></div>
+    <div class="card"><h3>Direct Cost: SAP vs Realisasi per Bulan</h3><div class="hint">Batang: nilai · garis: utilization %</div><div class="chart" id="cMonCost"></div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Kumulatif YTD</h3><div class="hint">Akumulasi dari bulan awal filter, cakupan bulan sama untuk SAP &amp; Realisasi</div><div class="chart" id="cYtd"></div></div>
+    <div class="card"><h3>Ranking Variance Gross Profit per Klien</h3><div class="hint">Realisasi − SAP · hijau favorable, merah unfavorable</div><div class="chart" id="cVarRank"></div></div>
+  </div>
+  <div class="grid"><div class="card"><h3>Achievement &amp; Budget Utilization per Klien</h3><div class="hint">Penanda: overbudget, underspend (&lt;80%), data belum lengkap</div><div class="tbl" id="utilTbl"></div></div></div>
+</section>
+
+<!-- PAGE 4 -->
+<section class="page" id="p4">
+  <div class="grid kpis" id="costKpi"></div>
+  <div class="grid g2">
+    <div class="card"><h3>Anggaran (SAP) vs Biaya Aktual per Kategori</h3><div class="hint">Kategori Pareto biaya direct + depresiasi · sumber: Rekap SAP S3</div><div class="chart" id="cCostCat"></div></div>
+    <div class="card"><h3>Komposisi Biaya Realisasi</h3><div class="hint">Porsi per kategori</div><div class="chart" id="cCostMix"></div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Tren Pengeluaran Bulanan</h3><div class="hint">Biaya realisasi per kategori (stacked)</div><div class="chart" id="cCostTrend"></div></div>
+    <div class="card"><h3>Top 10 Variance Biaya</h3><div class="hint">Klien × kategori · |Realisasi − SAP| terbesar</div><div class="chart" id="cTopCost"></div></div>
+  </div>
+  <div class="grid"><div class="card"><h3>Pos Biaya Melewati Materialitas</h3><div class="hint" id="matHint"></div><div class="tbl short" id="matTbl"></div></div></div>
+</section>
+
+<!-- PAGE 5 -->
+<section class="page" id="p5">
+  <div class="grid"><div class="card">
+    <div class="hd"><div><h3>Detail Transaksi (pasangan SAP ↔ OPS)</h3><div class="hint">Grain: Klien × Nomor IO × Kategori Pareto · nilai mengikuti filter bulan</div></div></div>
+    <div class="toolbar">
+      <input type="search" id="dSearch" placeholder="Cari klien, IO, nama IO, layanan, kategori…">
+      <select id="dType"><option value="*">Semua jenis</option><option value="REV">Pendapatan</option><option value="DIR">Direct Cost</option><option value="DEP">Depresiasi</option></select>
+      <select id="dFlag"><option value="*">Semua status data</option><option value="flag">Hanya yang ditandai</option><option value="nomap">Missing mapping</option><option value="gt">Grand Total ≠ jumlah bulan</option><option value="dup">Duplikat</option><option value="txt">Angka tersimpan sebagai teks</option><option value="pl">PL kosong</option></select>
+      <button class="btn" id="dExport">⇩ Export CSV</button>
+    </div>
+    <div class="tbl" id="detailTbl"></div>
+    <div class="pager" id="pager"></div>
+  </div></div>
+  <div class="grid g2">
+    <div class="card"><h3>Rekonsiliasi Total</h3><div class="hint">Total dashboard vs total sumber</div><div id="reconTot"></div></div>
+    <div class="card"><h3>Catatan dari Sheet</h3><div class="hint">Isi sheet “Catatan”</div><div id="notesBox"></div></div>
+  </div>
+  <div class="grid"><div class="card"><h3>Rekonsiliasi per Klien: Summary vs Rekap SAP S3</h3><div class="hint">Selisih &gt; 1% atau &gt; Rp 1 jt ditandai · indikasi label tertukar dideteksi otomatis</div><div class="tbl" id="reconTbl"></div></div></div>
+</section>
+
+<!-- PAGE 6 -->
+<section class="page" id="p6">
+  <div class="grid g2">
+    <div class="card"><h3>Struktur Sumber Data</h3><div class="hint">Hasil audit otomatis setiap kali data dimuat</div><div id="dictSheets"></div></div>
+    <div class="card"><h3>Mapping SAP vs Realisasi</h3><div class="hint">Konfigurasi kolom &amp; asumsi</div><div id="dictMap"></div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Definisi KPI &amp; Rumus</h3><div id="dictKpi"></div></div>
+    <div class="card"><h3>Aturan Status &amp; Satuan</h3><div id="dictRule"></div></div>
+  </div>
+</section>
+
+<footer><span>Sumber: “Rekap Profitability Segment 3 Ytd 2026” — data Excel tertanam atau Google Sheets (link publish) · diproses di browser, tanpa kredensial.</span><span id="footInfo"></span></footer>
+</div>
+
+<div class="overlay" id="ov"><div class="modal"><div class="hd"><div><h3 id="mTitle" style="margin:0;font-size:16px"></h3><div class="mini" id="mSub"></div></div><div style="display:flex;gap:8px"><button class="btn" id="mToDetail">Lihat transaksi</button><button class="btn" id="mClose">Tutup ✕</button></div></div><div class="grid kpis" id="mKpi" style="margin-top:0"></div><div class="chart sm" id="mChart" style="margin-top:12px"></div><div class="tbl short" id="mTbl" style="margin-top:12px"></div></div></div>
+
+<!-- ===================== DATA EXCEL TERTANAM (dihasilkan dari file Excel) ===================== -->
+<script id="embedded" type="application/json">{"file": "Rekap_Profitability_Segment_3_Ytd_2026_1.xlsx", "date": "27 Okt 2026", "summary": "\n\n\nRow Labels,SAP,OPS\nPENDAPATAN Total,19546395565,20341501665,795106100\nDIRECT Total,11559490498,11119135462,-440355036\nGross Profit,7986905067,9222366203,1235461136\nGPM,0.4086126795,0.4533768625\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLayanan,1.PENDAPATAN Total,,,2.DIRECT Total,,,Gross Profit,,,GPM\n,SAP,OPS,GAP,SAP,OPS,GAP,SAP,OPS,GAP,SAP,OPS,GAP\nLKPP,3805790598,3864240380,-58449782,3114347568,3135141498,-20793930,691443030,729098882,-37655852,0.1816818378,0.188678449,-0.006996611255\nBKPM,3162710286,3162710286,0,1969697513,1953019671,16677842,1193012773,1209690615,-16677842,0.3772121583,0.3824854335,-0.005273275199\nKemendikti,2463927919,2875716892,-411788973,1409273123,1550041151,-140768028,1054654796,1325675741,-271020945,0.4280380071,0.4609896561,-0.03295164901\nDewan Perwakilan Rakyat,1254000000,1463000000,-209000000,695888958,557832129,138056829,558111042,905167871,-347056829,0.4450646268,0.6187066785,-0.1736420517\nBadan Meteorologi dan Geofisika,1340090048,1340090089,-41,727611847,677914281,49697566,612478201,662175808,-49697607,0.4570425711,0.49412783,-0.03708525893\nDirjen Pajak,1103462500,1103462500,0,393331091,288132682,105198409,710131409,815329818,-105198409,0.6435482937,0.7388831227,-0.09533482905\nKementerian HAM,1147455917,954682231,192773686,665554467,532502924,133051543,481901450,422179307,59722143,0.4199738246,0.4422197179,-0.02224589329,,782502924,0.8196475212,0.1803524788\nKementerian Luar Negeri,1076250000,922500000,153750000,861295036,716768849,144526188,214954964,205731152,9223813,0.1997258667,0.2230147984,-0.02328893169\nKemenhub,624425000,894345045,-269920045,283749885,271972181,11777704,340675115,622372864,-281697749,0.5455821195,0.6958979287,-0.1503158092\nKejagung,823334257,861261261,-37927004,266855899,243246338,23609561,556478358,618014923,-61536565,0.6758838871,0.7175696279,-0.04168574085\nDirektorat Jenderal Mineral & Batubara,694862000,694862000,0,412431306,390953858,21477448,282430694,303908142,-21477448,0.4064558056,0.437364746,-0.03090894034\nKementerian Koperasi,587786667,668122972,-80336306,201009059,213756406,-12747347,386777608,454366566,-67588958,0.658023786,0.6800642773,-0.02204049125\nDirekorat Bea & Cukai,175549347,175175000,374347,70426582,78114007,-7687425,105122765,97060993,8061772,0.5988217376,0.5540801638,0.04474157373\nIDP Education,120911600,125740367,-4828767,75576037,74344339,1231698,45335563,51396028,-6060465,0.3749480033,0.4087472436,-0.03379924026\nKemendesa,123304053,121396394,1907659,10560796,10500000,60796,112743257,110896394,1846863,0.9143515907,0.9135064918,0.0008450988984\nUniversitas Terbuka,131349731,115727640,15622091,94541379,103370295,-8828916,36808352,12357345,24451007,0.2802316512,0.1067795441,0.173452107\nBP Tapera,121907084,112541685,9365399,86633020,70409887,16223133,35274064,42131798,-6857734,0.2893520445,0.3743661568,-0.08501411226\nLPSK,31500000,104708333,-73208333,8089713,8089713,0,23410287,96618620,-73208333,0.7431837143,0.9227405046,-0.1795567903\nKemnaker,103130000,103880000,-750000,51824796,54797054,-2972258,51305204,49082946,2222258,0.4974808882,0.4724965895,0.02498429866\nBSSN,102243750,100450000,1793750,30540000,30540000,0,71703750,69910000,1793750,0.7013020356,0.6959681434,0.005333892222\nBPOM RI,86187696,86478799,-291103,20479302,18769562,1709740,65708394,67709237,-2000843,0.7623871742,0.7829576432,-0.02057046905\nKementerian Perdagangan,83580000,83580000,0,25678385,24662059,1016326,57901615,58917941,-1016326,0.6927687844,0.7049287024,-0.01215991802\nPT Inggris Prima Indonesia,73850000,73850000,0,10904797,10832171,72626,62945203,63017829,-72626,0.8523385647,0.8533219905,-0.0009834258632\nAl Azhar Al-Muhajirin,50000000,70000000,-20000000,18858673,18911701,-53028,31141327,51088299,-19946972,0.62282654,0.7298328429,-0.1070063029\nKementerian Komunikasi & Digital,57000000,66500000,-9500000,9874152,26804293,-16930141,47125848,39695707,7430141,,0.5969279316,-0.5969279316\nUniversitas Indonesia,59850000,59850000,0,2074882,2074882,0,57775118,57775118,0,0.9653319632,0.9653319632,0\nUniversitas Gunadarma,49000000,49000000,0,28112985,26662364,1450621,20887015,22337636,-1450621,0.4262656122,0.4558701247,-0.02960451247\nBappenda NTB,35000000,35000000,0,1970,10535104,-10533134,34998030,24464896,10533134,0.9999437143,0.6989970286,0.3009466857\nUniversitas Dipenogero,18225000,24300000,-6075000,,4362240,-4362240,18225000,19937760,-1712760,1,0.8204839506,0.1795160494\nARS University,39712112,19400060,20312052,3767277,3573821,193456,35944835,15826239,20118596,0.9051353149,0.8157829765,0.0893523384\nKUMKM,,8929730,-8929730,10500000,10500000,0,-10500000,-1570270,-8929730,,-0.175847422,0.175847422\nGrand Total,19546395565,20341501665,-795106100,11559490498,11119135462,440355036,7986905067,9222366203,-1235461136,0.4086126795,0.4533768625,-0.04476418296\n", "rekap": "No,Klien,Nomor IO,Nama IO,Layanan,Source,PL,PARETO,Jan-26,Feb-26,Mar-26,Apr-26,May-26,Jun-26,Jul-26,Aug-26,Sep-26,Grand Total\n1,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,SAP,1.PENDAPATAN,REVENUE,,-931683046,20287627,-444142255,-444142255,-548285850,-634879507,-507769507,-507769507,-3998384300\n2,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,SAP,1.PENDAPATAN Total,,,-931683046,20287627,-444142255,-444142255,-548285850,-634879507,-507769507,-507769507,-3998384300\n3,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,SAP,2.DIRECT,BEBAN JARKOM,,25424000,25424000,28809558,145248091,-76727091,57558001,139579073,16354321,361669953\n4,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,SAP,2.DIRECT,BEBAN JASNAKER,,181383759,332358306,295155992,455204995,74984885,274481034,292969748,321082333,2227621052\n5,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,2852581,,,,,,700000,,3552581\n6,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,SAP,2.DIRECT,BEBAN LAIN - LAIN,,1210354,1105193,303000,1952607,501892,6537534,1156284,2709792,15476656\n7,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,9790326,8721380,112047485,-109883845,3823640,68470658,1119000,94088644\n8,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,SAP,2.DIRECT,BEBAN MARKETING,,3333890,,,2083915,-208510,1738098,738000,689300,8374693\n9,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,SAP,2.DIRECT Total,,,214204584,368677825,332989930,716537093,-111332669,344138307,503613763,341954746,2710783579\n10,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,SAP,1.PENDAPATAN,REVENUE,,-122635228,-57229772,-,,,,,,-179865000\n11,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,SAP,1.PENDAPATAN Total,,,-122635228,-57229772,-,,,,,,-179865000\n12,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,-,26490494,16306884,22758812,26054961,10869260,,,102480411\n13,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,2002032,,,,,,,,2002032\n14,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,SAP,2.DIRECT Total,,,2002032,26490494,16306884,22758812,26054961,10869260,,,104482443\n15,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,SAP,1.PENDAPATAN,REVENUE,-839429096,143055096,-348187000,-595788973,-411788973,-411788973,-411788973,-417750702,-417750702,-3711218296\n16,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,SAP,1.PENDAPATAN Total,,-839429096,143055096,-348187000,-595788973,-411788973,-411788973,-411788973,-417750702,-417750702,-3711218296\n17,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,SAP,2.DIRECT,BEBAN JARKOM,,,,,36196397,-36196397,,18084666,9042333,27126999\n18,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,SAP,2.DIRECT,BEBAN JASNAKER,165842937,160342257,204353875,191114746,301520518,163118006,185013968,207584471,198564047,1777454825\n19,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,15790000,,,,,,,15790000\n20,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,,20000000,,28500000,1754500,,664000,50918500\n21,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,4500000,,17235000,-6000000,24000000,,,39735000\n22,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,SAP,2.DIRECT Total,,165842937,160342257,224643875,211114746,354951915,149421609,210768468,225669137,208270380,1911025324\n26,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,1.PENDAPATAN,REVENUE,-99266000,-196891240,820380,-98445620,-102547520,-99266000,-99266000,-99266000,-63442400,-857570400\n27,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,1.PENDAPATAN Total,,-99266000,-196891240,820380,-98445620,-102547520,-99266000,-99266000,-99266000,-63442400,-857570400\n28,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,2.DIRECT,BEBAN JARKOM,7787873,-,5050547,2501421,2504840,20034078,2511854,8953851,19861576,69206040\n29,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,2.DIRECT,BEBAN JASNAKER,34486661,34121102,68909321,51273772,50847412,43160939,35955236,39983342,58838922,417576707\n30,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,2844,-,80303,6382575,223978,113748,124302,124888,127234,7179872\n31,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,154500,,20000,,,61650000,,61824500\n32,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,43650000,1632000,,,,,45282000\n33,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,2.DIRECT,BEBAN MARKETING,,,,,902000,,,,,902000\n34,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,2.DIRECT Total,,42277378,34121102,74194671,103807768,56130230,63308765,38591392,110712081,78827732,601971119\n35,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,4.DEPRESIASI,DEPRESIASI,9070834,9070832,9070834,9070834,9070833,9070829,1041666,,,55466662\n36,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,SAP,4.DEPRESIASI Total,,9070834,9070832,9070834,9070834,9070833,9070829,1041666,,,55466662\n37,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,SAP,1.PENDAPATAN,REVENUE,,-102889157,-310843,-51600000,-51600000,-51600000,-51600000,-51600000,-51600000,-412800000\n38,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,SAP,1.PENDAPATAN Total,,,-102889157,-310843,-51600000,-51600000,-51600000,-51600000,-51600000,-51600000,-412800000\n39,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,SAP,2.DIRECT,BEBAN JASNAKER,29278810,33347424,40072736,39662363,46565459,30996904,32345426,35744480,37686797,325700399,Ada nilai seragam dan BPJS TK dan Kes nyasar ke IO\n40,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,,,679554,-679554,,,,-\n41,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,938000,1742000,938000,-938000,,,,2680000\n42,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,SAP,2.DIRECT Total,,29278810,33347424,41010736,41404363,48183013,29379350,32345426,35744480,37686797,328380399\n48,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 151,SAP,1.PENDAPATAN,REVENUE,,,-134925000,-449750000,44975000,269850000,-44975000,-44975000,-44975000,-404775000\n49,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 151,SAP,1.PENDAPATAN Total,,,,-134925000,-449750000,44975000,269850000,-44975000,-44975000,-44975000,-404775000\n50,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 151,SAP,2.DIRECT,BEBAN JARKOM,2145000,-2145000,3561000,9267000,3561000,3561000,3561000,5100148,3561000,32172148\n51,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 152,SAP,2.DIRECT,BEBAN JASNAKER,,,,,300878,304390,1789238,797425,882643,4074574\n52,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 153,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,398704,280850,-679554,679554,,,,679554\n53,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 154,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,,,,35000,,,,35000\n54,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 155,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,340000,,,,,,,340000\n55,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 151,SAP,2.DIRECT,BEBAN MARKETING,,,,,,1840703,,,,1840703\n56,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 151,SAP,2.DIRECT Total,,2145000,-2145000,4299704,9547850,3182324,6420647,5350238,5897573,4443643,39141979\n57,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 151,SAP,4.DEPRESIASI,DEPRESIASI,,,,3733333,1866667,1866667,1866666,1866667,1866667,13066667\n58,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,System CC 151,SAP,4.DEPRESIASI Total,,,,,3733333,1866667,1866667,1866666,1866667,1866667,13066667\n59,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,SAP,1.PENDAPATAN,REVENUE,,-378675378,-195648945,-191441442,-191441441,-191441441,-191441401,-191441483,-191441442,-1722972973\n60,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,SAP,1.PENDAPATAN Total,,,-378675378,-195648945,-191441442,-191441441,-191441441,-191441401,-191441483,-191441442,-1722972973\n61,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,SAP,2.DIRECT,BEBAN JARKOM,-,4200042,6801079,6488671,4183420,4325789,10956097,4515586,4325870,45796554,Masih terdapat cost di IO 2025 nya\n62,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,SAP,2.DIRECT,BEBAN JASNAKER,38958414,97512919,164246117,86393594,90845660,98957103,73989092,80356198,89904402,821163499\n63,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,1275000,,1465859,,,,,2740859\n64,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,,,,716553,1614667,,313262,2644482\n65,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,1500000,,,,1450000,29713500,,,32663500\n66,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,SAP,2.DIRECT,BEBAN MARKETING,,,,,500000,884971,633300,,173000,2191271\n67,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,SAP,2.DIRECT Total,,38958414,103212961,172322196,92882265,96994939,106334416,116906656,84871784,94716534,907200165\n70,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,SAP,1.PENDAPATAN,REVENUE,,-108806560,-54403280,-51985355,-108873874,-53798799,-53798799,-53798799,-108873873,-594339339\n71,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,SAP,1.PENDAPATAN Total,,,-108806560,-54403280,-51985355,-108873874,-53798799,-53798799,-53798799,-108873873,-594339339\n72,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,SAP,2.DIRECT,BEBAN JARKOM,,,34241,,4820436,5036788,4694217,24340897,4981698,43908277\n73,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,SAP,2.DIRECT,BEBAN JASNAKER,-,22252380,43233592,21608639,22330127,23633785,19913751,22179735,23412935,198564944\n74,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,SAP,2.DIRECT,BEBAN LAIN - LAIN,,480600,,,,902500,,,,1383100\n75,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,132000,,3000000,2500000,,,,,5632000\n76,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,SAP,2.DIRECT,BEBAN MARKETING,,850000,,,,,,,,850000\n77,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,SAP,2.DIRECT Total,,-,23714980,43267833,24608639,29650563,29573073,24607968,46520632,28394633,250338321\n78,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,SAP,1.PENDAPATAN,REVENUE,,,-38771523,,-77543046,-775431,-39030000,-78060000,-39030000,-273210000\n79,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,SAP,1.PENDAPATAN Total,,,,-38771523,,-77543046,-775431,-39030000,-78060000,-39030000,-273210000\n80,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,SAP,2.DIRECT,BEBAN JASNAKER,,,,5925065,5925065,6648260,5267813,5984624,6385276,36136103\n81,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,,227000,,,,1746000,,1973000\n82,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,92800,,1500000,,430000,,2022800\n83,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,SAP,2.DIRECT Total,,,,,6244865,5925065,8148260,5267813,8160624,6385276,40131903\n84,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,SAP,4.DEPRESIASI,DEPRESIASI,,,,,,904167,904166,904167,904167,3616667\n85,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,SAP,4.DEPRESIASI Total,,,,,,,904167,904166,904167,904167,3616667\n86,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,1.PENDAPATAN,REVENUE,-157637500,-155905220,-159369780,-157637500,-157637500,-157637500,-157637500,-157637500,-157637500,-1418737500\n87,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,1.PENDAPATAN Total,,-157637500,-155905220,-159369780,-157637500,-157637500,-157637500,-157637500,-157637500,-157637500,-1418737500\n88,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,2.DIRECT,BEBAN JARKOM,3947749,4062964,4019212,3967915,3995140,3995140,3989721,6705240,4229155,38912236\n89,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,2.DIRECT,BEBAN JASNAKER,26866504,31376512,37190402,34699244,35473666,30327726,91197912,42443474,44339526,373914966\n90,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,2959960,,,,,,,2959960\n91,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,2.DIRECT,BEBAN LAIN - LAIN,,100000,,,538000,,1533700,1833400,1202391,5207491\n92,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,1482092,8135451,6243930,7207645,42580013,1418581,4959879,15972912,43995752,131996255,masih ada catatan Gedung di IO di 2025 Block\n93,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,2.DIRECT,BEBAN MARKETING,,,,,260500,,801533,113190,,1175223\n94,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,2.DIRECT Total,,32296345,43674927,50413504,45874804,82847319,35741447,102482745,67068216,93766824,554166131\n95,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,4.DEPRESIASI,DEPRESIASI,,,,1858333,1858334,1858333,1858333,1858334,1858333,11150000\n96,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,SAP,4.DEPRESIASI Total,,,,,1858333,1858334,1858333,1858333,1858334,1858333,11150000\n97,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,SAP,1.PENDAPATAN,REVENUE,-107900000,,107900000,,,,,-,,-823334257\n98,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,SAP,1.PENDAPATAN Total,,-107900000,,107900000,,,,,-,,-823334257\n99,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,SAP,2.DIRECT,BEBAN JASNAKER,32378740,-2299180,3934202,-2705772,1352886,-2705772,,29955104,,255698749\n100,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,SAP,2.DIRECT,BEBAN LAIN - LAIN,,2365380,,,,,,2365380,,2365380\n101,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,,6400000,,,6400000,,6400000\n102,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,SAP,2.DIRECT,BEBAN MARKETING,,2391770,,,,,13335400,15727170,,2391770\n103,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,SAP,2.DIRECT Total,,32378740,2457970,3934202,-2705772,7752886,-2705772,13335400,54447654,,266855899\n104,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,SAP,1.PENDAPATAN,REVENUE,,,-627000000,-209000000,-209000000,-209000000,,,,-1254000000\n105,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,SAP,1.PENDAPATAN Total,,,,-627000000,-209000000,-209000000,-209000000,,,,-1254000000\n106,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,SAP,2.DIRECT,BEBAN JARKOM,-,-11786732,10114338,31719102,2112843,17886929,31161243,-11192644,,70015079\n107,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,SAP,2.DIRECT,BEBAN JASNAKER,19613636,62366408,102428492,52552021,80102333,60282497,14980940,3168409,3168409,398663145\n108,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,1187818,16317000,,,1350000,,,-16317000,2537818\n109,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,SAP,2.DIRECT,BEBAN LAIN - LAIN,153697500,,663000,,275000,,65715169,-122131784,-153697500,-55478615\n110,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,3020080,12166106,38914649,6102837,12578275,16219395,1760122,525417,-1483634,89803247\n,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,SAP,2.DIRECT Total,,176331216,63933600,168437479,90373960,95068451,95738821,113617474,-129630602,-168329725,505540674\n113,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,SAP,1.PENDAPATAN,REVENUE,,-615000000,153750000,-153750000,-153750000,-153750000,-287750000,-287750000,-307500000,-1805500000\n114,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,SAP,1.PENDAPATAN Total,,,-615000000,153750000,-153750000,-153750000,-153750000,-287750000,-287750000,-307500000,-1805500000\n115,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,SAP,2.DIRECT,BEBAN JASNAKER,-,215113368,133818774,122360376,121313053,132202043,134003890,182917346,200158614,1241887464\n116,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,,551000,,301500,,,,852500\n117,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,25100000,,,,,,,26148886,51248886\n118,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,SAP,2.DIRECT Total,,-,240213368,133818774,122911376,121313053,132503543,134003890,182917346,226307500,1293988850\n119,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,SAP,1.PENDAPATAN,REVENUE,-21482000,-21482000,-23630200,-27926600,20551700,6054980,-8456860,-1994160,2004550,-76360590\n120,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,SAP,1.PENDAPATAN Total,,-21482000,-21482000,-23630200,-27926600,20551700,6054980,-8456860,-1994160,2004550,-76360590\n121,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,SAP,2.DIRECT,BEBAN JARKOM,,,,6613238,,,22922142,-7253053,,22282327\n122,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,SAP,2.DIRECT,BEBAN JASNAKER,,,,,,49417,52611,131114,144834,377976\n123,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,1628853,5141393,2626172,1202558,2500107,3164415,2530592,3407155,1310437,23511682\n124,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,SAP,2.DIRECT Total,,1628853,5141393,2626172,7815796,2500107,3213832,25505345,-3714784,1455271,46171985\n125,BP Tapera,22CIN10E6T31,IO 1500156 BP Tapera,1500156 BP Tapera,SAP,1.PENDAPATAN,REVENUE,-5133167,-8651900,-7931867,-7790000,-9754017,-7927800,-7790000,-8622250,-7790000,-71391001\n126,BP Tapera,22CIN10E6T31,IO 1500156 BP Tapera,1500156 BP Tapera,SAP,1.PENDAPATAN Total,,-5133167,-8651900,-7931867,-7790000,-9754017,-7927800,-7790000,-8622250,-7790000,-71391001\n127,BP Tapera,22CIN10E6T31,IO 1500156 BP Tapera,1500156 BP Tapera,SAP,2.DIRECT,BEBAN JARKOM,6832712,10263371,6164193,2830912,7254862,7248773,5515058,6831172,7254861,60195914\n128,BP Tapera,22CIN10E6T31,IO 1500156 BP Tapera,1500156 BP Tapera,SAP,2.DIRECT Total,,6832712,10263371,6164193,2830912,7254862,7248773,5515058,6831172,7254861,60195914\n129,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,SAP,1.PENDAPATAN,REVENUE,-372068000,-260572747,472741232,-263468000,-263468000,-236225100,-263468000,,,-1186528615\n130,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,SAP,1.PENDAPATAN Total,,-372068000,-260572747,472741232,-263468000,-263468000,-236225100,-263468000,,,-1186528615\n131,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,SAP,2.DIRECT,BEBAN JARKOM,35500000,-2043896,2187957,16662332,16827877,-94187648,8077454,,,-16975924\n132,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,SAP,2.DIRECT,BEBAN JASNAKER,236161304,36149586,145544294,137349650,204761779,163979935,153577116,,,1077523664\n133,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,,1745768,,,,,,1745768\n134,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,1876000,3082000,,,,,,4958000\n135,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,SAP,2.DIRECT Total,,271661304,34105690,149608251,158839750,221589656,69792287,161654570,,,1067251508\n136,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),SAP,1.PENDAPATAN,REVENUE,-630504485,-570790562,-294908458,-288566340,-263468000,-571024138,0,,,-2619261983\n137,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),SAP,1.PENDAPATAN Total,,-630504485,-570790562,-294908458,-288566340,-263468000,-571024138,0,,,-2619261983\n138,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),SAP,2.DIRECT,BEBAN JASNAKER,,127831146,8893256,8893256,8893256,-26679768,,,,127831146\n139,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,0,,,,,,,,0\n140,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,530657388,88681276,642026250,657900000,,,,1919264914\n141,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),SAP,2.DIRECT Total,,,127831146,539550644,97574532,650919506,631220232,,,,2047096060\n142,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,SAP,1.PENDAPATAN,REVENUE,-29925000,-29925000,0,,,,,,,-59850000\n143,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,SAP,1.PENDAPATAN Total,,-29925000,-29925000,0,,,,,,,-59850000\n144,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,,,980000,,,,,980000\n145,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,346075,386327,7711,354769,,,,,,1094882\n146,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,SAP,2.DIRECT Total,,346075,386327,7711,354769,980000,,,,,2074882\n147,BPOM RI,21CIN10E6T21,IO 1500533 BPOM RI ,1500533 BPOM RI,SAP,1.PENDAPATAN,REVENUE,-12359415,-12340656,-12327290,-12257376,-12309237,-12281821,-12311901,,,-86187696\n148,BPOM RI,21CIN10E6T21,IO 1500533 BPOM RI ,1500533 BPOM RI,SAP,1.PENDAPATAN Total,,-12359415,-12340656,-12327290,-12257376,-12309237,-12281821,-12311901,,,-86187696\n149,BPOM RI,21CIN10E6T21,IO 1500533 BPOM RI ,1500533 BPOM RI,SAP,2.DIRECT,BEBAN JARKOM,2864988,4765015,2743065,468291,2803848,3533584,3300511,,,20479302\n150,BPOM RI,21CIN10E6T21,IO 1500533 BPOM RI ,1500533 BPOM RI,SAP,2.DIRECT Total,,2864988,4765015,2743065,468291,2803848,3533584,3300511,,,20479302\n151,Direkorat Bea & Cukai,24CIN10F0234,IO 1500225 DirJen Bea dan Cukai 2024,1500225 Bea dan Cukai,SAP,1.PENDAPATAN,REVENUE,,,,,,-150460771,-25088576,,,-175549347\n152,Direkorat Bea & Cukai,24CIN10F0234,IO 1500225 DirJen Bea dan Cukai 2024,1500225 Bea dan Cukai,SAP,1.PENDAPATAN Total,,,,,,,-150460771,-25088576,,,-175549347\n153,Direkorat Bea & Cukai,24CIN10F0234,IO 1500225 DirJen Bea dan Cukai 2024,1500225 Bea dan Cukai,SAP,2.DIRECT,BEBAN JARKOM,12070146,14003149,11453552,5969450,8291501,19168511,-529727,,,70426582\n154,Direkorat Bea & Cukai,24CIN10F0234,IO 1500225 DirJen Bea dan Cukai 2024,1500225 Bea dan Cukai,SAP,2.DIRECT Total,,12070146,14003149,11453552,5969450,8291501,19168511,-529727,,,70426582\n155,PT Inggris Prima Indonesia,22CIN10E6T11,IO 1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,SAP,1.PENDAPATAN,REVENUE,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,,,-73850000\n156,PT Inggris Prima Indonesia,22CIN10E6T11,IO 1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,SAP,1.PENDAPATAN Total,,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,,,-73850000\n157,PT Inggris Prima Indonesia,22CIN10E6T11,IO 1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,SAP,2.DIRECT,BEBAN JARKOM,1530321,3129093,1559466,39181,1540023,1540023,1566690,,,10904797\n158,PT Inggris Prima Indonesia,22CIN10E6T11,IO 1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,SAP,2.DIRECT Total,,1530321,3129093,1559466,39181,1540023,1540023,1566690,,,10904797\n159,Dirjen Pajak,22CIN10E6T14,IO 1500200 Dirjen Pajak,1500200 Dirjen Pajak,SAP,1.PENDAPATAN,REVENUE,-142887401,-273005186,-137602260,-171255693,-157765573,-127055083,-137884721,,,-1147455917\n160,Dirjen Pajak,22CIN10E6T14,IO 1500200 Dirjen Pajak,1500200 Dirjen Pajak,SAP,1.PENDAPATAN Total,,-142887401,-273005186,-137602260,-171255693,-157765573,-127055083,-137884721,,,-1147455917\n161,Dirjen Pajak,22CIN10E6T14,IO 1500200 Dirjen Pajak,1500200 Dirjen Pajak,SAP,2.DIRECT,BEBAN JARKOM,133104508,98290165,72884442,127140556,85017214,84521045,64596537,,,665554467\n162,Dirjen Pajak,22CIN10E6T14,IO 1500200 Dirjen Pajak,1500200 Dirjen Pajak,SAP,2.DIRECT Total,,133104508,98290165,72884442,127140556,85017214,84521045,64596537,,,665554467\n163,Bappenda NTB,22CIN10E6T90,(BLOCK) IO 1500186 Bappenda NTB,1500186 Bappenda NTB,SAP,1.PENDAPATAN,REVENUE,-5000000,-5000000,-5000000,-5000000,-5000000,-5000000,-5000000,,,-35000000\n164,Bappenda NTB,22CIN10E6T90,(BLOCK) IO 1500186 Bappenda NTB,1500186 Bappenda NTB,SAP,1.PENDAPATAN Total,,-5000000,-5000000,-5000000,-5000000,-5000000,-5000000,-5000000,,,-35000000\n165,Bappenda NTB,22CIN10E6T90,(BLOCK) IO 1500186 Bappenda NTB,1500186 Bappenda NTB,SAP,2.DIRECT,BEBAN JARKOM,,,,,,,1970,,,1970\n166,Bappenda NTB,22CIN10E6T90,(BLOCK) IO 1500186 Bappenda NTB,1500186 Bappenda NTB,SAP,2.DIRECT Total,,,,,,,,1970,,,1970\n167,Universitas Gunadarma,24CIN10F0001,IO 1500158 UNIVERSITAS GUNADARMA,1500158 UNIVERSITAS GUNADARMA,SAP,1.PENDAPATAN,REVENUE,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,,,-49000000\n168,Universitas Gunadarma,24CIN10F0001,IO 1500158 UNIVERSITAS GUNADARMA,1500158 UNIVERSITAS GUNADARMA,SAP,1.PENDAPATAN Total,,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,,,-49000000\n169,Universitas Gunadarma,24CIN10F0001,IO 1500158 UNIVERSITAS GUNADARMA,1500158 UNIVERSITAS GUNADARMA,SAP,2.DIRECT,BEBAN JARKOM,3775556,3775556,3799625,3796226,3860022,5360022,3745978,,,28112985\n170,Universitas Gunadarma,24CIN10F0001,IO 1500158 UNIVERSITAS GUNADARMA,1500158 UNIVERSITAS GUNADARMA,SAP,2.DIRECT Total,,3775556,3775556,3799625,3796226,3860022,5360022,3745978,,,28112985\n171,Universitas Terbuka,24CIN10F0003,IO 1500024 Universitas Terbuka,1500024 Universitas Terbuka,SAP,1.PENDAPATAN,REVENUE,-20526216,-29598850,-18850117,-11205000,-12431567,-11241467,-18053867,,,-121907084\n172,Universitas Terbuka,24CIN10F0003,IO 1500024 Universitas Terbuka,1500024 Universitas Terbuka,SAP,1.PENDAPATAN Total,,-20526216,-29598850,-18850117,-11205000,-12431567,-11241467,-18053867,,,-121907084\n173,Universitas Terbuka,24CIN10F0003,IO 1500024 Universitas Terbuka,1500024 Universitas Terbuka,SAP,2.DIRECT,BEBAN JARKOM,11865302,16257833,12435469,12892144,8679667,9870803,14631802,,,86633020\n174,Universitas Terbuka,24CIN10F0003,IO 1500024 Universitas Terbuka,1500024 Universitas Terbuka,SAP,2.DIRECT Total,,11865302,16257833,12435469,12892144,8679667,9870803,14631802,,,86633020\n175,Kementerian Perdagangan,25CIN10F0077,IO No Akses 1500067 Kementerian Perdagangan 2025,1500067 Kementerian Perdagangan 2025,SAP,1.PENDAPATAN,REVENUE,-11940000,-11940000,0,-23880000,-11940000,-11940000,-11940000,,,-83580000\n176,Kementerian Perdagangan,25CIN10F0077,IO No Akses 1500067 Kementerian Perdagangan 2025,1500067 Kementerian Perdagangan 2025,SAP,1.PENDAPATAN Total,,-11940000,-11940000,0,-23880000,-11940000,-11940000,-11940000,,,-83580000\n177,Kementerian Perdagangan,25CIN10F0077,IO No Akses 1500067 Kementerian Perdagangan 2025,1500067 Kementerian Perdagangan 2025,SAP,2.DIRECT,BEBAN JARKOM,4033781,3521941,0,6726181,3278635,4384035,3733812,,,25678385\n178,Kementerian Perdagangan,25CIN10F0077,IO No Akses 1500067 Kementerian Perdagangan 2025,1500067 Kementerian Perdagangan 2025,SAP,2.DIRECT Total,,4033781,3521941,0,6726181,3278635,4384035,3733812,,,25678385\n179,IDP Education,25CIN10F0236,IO 1500400 IDP Education,1500400 IDP Education,SAP,1.PENDAPATAN,REVENUE,-17914593,-16224633,-13200000,-22676774,-16733600,-3879200,-30282800,,,-120911600\n180,IDP Education,25CIN10F0236,IO 1500400 IDP Education,1500400 IDP Education,SAP,1.PENDAPATAN Total,,-17914593,-16224633,-13200000,-22676774,-16733600,-3879200,-30282800,,,-120911600\n181,IDP Education,25CIN10F0236,IO 1500400 IDP Education,1500400 IDP Education,SAP,2.DIRECT,BEBAN JARKOM,10972082,15110465,11048087,8175578,8766147,10211362,11292316,,,75576037\n182,IDP Education,25CIN10F0236,IO 1500400 IDP Education,1500400 IDP Education,SAP,2.DIRECT Total,,10972082,15110465,11048087,8175578,8766147,10211362,11292316,,,75576037\n183,Universitas Indonesia,25CIN10F0248,IO 1500002 Universitas Indonesia 2025,1500002 Universitas Indonesia 2025,SAP,1.PENDAPATAN,REVENUE,-10000000,-10000000,-10000000,-10000000,-10000000,0,,,,-50000000\n184,Universitas Indonesia,25CIN10F0248,IO 1500002 Universitas Indonesia 2025,1500002 Universitas Indonesia 2025,SAP,1.PENDAPATAN Total,,-10000000,-10000000,-10000000,-10000000,-10000000,0,,,,-50000000\n185,Universitas Indonesia,25CIN10F0248,IO 1500002 Universitas Indonesia 2025,1500002 Universitas Indonesia 2025,SAP,2.DIRECT,BEBAN JARKOM,2492306,2513464,2747439,2522617,2702937,2702937,3176973,,,18858673\n186,Universitas Indonesia,25CIN10F0248,IO 1500002 Universitas Indonesia 2025,1500002 Universitas Indonesia 2025,SAP,2.DIRECT Total,,2492306,2513464,2747439,2522617,2702937,2702937,3176973,,,18858673\n187,Kemendesa,22CIN10E6T18,IO 1500040 Kemendesa,1500040 Kemendesa,SAP,1.PENDAPATAN,REVENUE,-19250000,-19250000,-15434684,-19250000,-15434685,19250000,-53934684,,,-123304053\n188,Kemendesa,22CIN10E6T18,IO 1500040 Kemendesa,1500040 Kemendesa,SAP,1.PENDAPATAN Total,,-19250000,-19250000,-15434684,-19250000,-15434685,19250000,-53934684,,,-123304053\n189,Kemendesa,22CIN10E6T18,IO 1500040 Kemendesa,1500040 Kemendesa,SAP,2.DIRECT,BEBAN JARKOM,1500000,3060581,1500000,0,1500000,1500000,1500215,,,10560796\n190,Kemendesa,22CIN10E6T18,IO 1500040 Kemendesa,1500040 Kemendesa,SAP,2.DIRECT Total,,1500000,3060581,1500000,0,1500000,1500000,1500215,,,10560796\n191,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,SAP,1.PENDAPATAN,REVENUE,-14950000,-14590000,-14590000,-14590000,-15230000,-14590000,-14590000,,,-103130000\n192,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,SAP,1.PENDAPATAN Total,,-14950000,-14590000,-14590000,-14590000,-15230000,-14590000,-14590000,,,-103130000\n193,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,SAP,2.DIRECT,BEBAN JARKOM,4348033,2632053,3772079,2672380,2856621,3491507,3312123,,,23084796\n194,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,,,28740000,,,,,28740000\n195,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,SAP,2.DIRECT Total,,4348033,2632053,3772079,2672380,31596621,3491507,3312123,,,51824796\n196,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,SAP,1.PENDAPATAN,REVENUE,,,,,-38000000,-9500000,-9500000,,,-57000000\n197,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,SAP,1.PENDAPATAN Total,,,,,,-38000000,-9500000,-9500000,,,-57000000\n198,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,SAP,2.DIRECT,BEBAN JARKOM,915,2164002,0,229204,3614550,2514660,2372734,,,8501944\n199,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,,1372208,,,,,1372208\n200,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,SAP,2.DIRECT Total,,915,2164002,0,229204,4986758,2514660,2372734,,,9874152\n201,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,SAP,1.PENDAPATAN,REVENUE,-13085000,-14350000,-14350000,-14350000,-44843750,11291250,-12556250,,,-102243750\n202,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,SAP,1.PENDAPATAN Total,,-13085000,-14350000,-14350000,-14350000,-44843750,11291250,-12556250,,,-102243750\n203,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,SAP,2.DIRECT,BEBAN JARKOM,4120000,4120000,4120000,4120000,4120000,4120000,4120000,,,28840000\n204,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,1700000,,,,,,1700000\n205,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,SAP,2.DIRECT Total,,4120000,4120000,4120000,5820000,4120000,4120000,4120000,,,30540000\n206,KUMKM,25CIN10F0173,IO Call Center KUMKM TA 2025,1500856 Lembaga Pengelola Dana Bergulir KUMKM ,SAP,1.PENDAPATAN,REVENUE\n207,KUMKM,25CIN10F0173,IO Call Center KUMKM TA 2025,1500856 Lembaga Pengelola Dana Bergulir KUMKM ,SAP,1.PENDAPATAN Total\n208,KUMKM,25CIN10F0173,IO Call Center KUMKM TA 2025,1500856 Lembaga Pengelola Dana Bergulir KUMKM ,SAP,2.DIRECT,BEBAN JARKOM,1500000,1500000,1500000,1500000,,3000000,1500000,,,10500000\n209,KUMKM,25CIN10F0173,IO Call Center KUMKM TA 2025,1500856 Lembaga Pengelola Dana Bergulir KUMKM ,SAP,2.DIRECT Total,,1500000,1500000,1500000,1500000,,3000000,1500000,,,10500000\n210,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,SAP,1.PENDAPATAN,REVENUE,,,-3098361,,-6196722,-22204917,,,,-31500000\n211,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,SAP,1.PENDAPATAN Total,,,,-3098361,,-6196722,-22204917,,,,-31500000\n212,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,SAP,2.DIRECT,BEBAN JARKOM,,,,110,69795,69795,26574,,,166274\n213,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,SAP,2.DIRECT,BEBAN JASNAKER,,,,,37234,36327,33690,,,107251\n214,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,539332,,,,,,,539332\n215,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,SAP,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,1700000,3600000,0,,,,5300000\n216,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,SAP,2.DIRECT Total,,,,539332,1700110,3707029,106122,60264,,,6112857\n217,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,SAP,1.PENDAPATAN,REVENUE\n218,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,SAP,1.PENDAPATAN Total\n219,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,SAP,2.DIRECT,BEBAN JARKOM,,,,,1170578,2272,,,,1172850\n220,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,SAP,2.DIRECT,BEBAN JASNAKER,,,,,61740,65603,62331,,,189674\n221,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,0,183332,0,0,,,,183332\n222,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,SAP,2.DIRECT,BEBAN LAIN - LAIN,,,,,431000,,,,,431000\n223,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,SAP,2.DIRECT Total,,,,0,183332,1663318,67875,62331,,,1976856\n224,Universitas Dipenogero,26CIN10F0180,IO Omnix Channel WABA FK Undip,WABA FK Undip,SAP,1.PENDAPATAN,REVENUE,,,,,-6075000,-6075000,-6075000,,,-18225000\n225,Universitas Dipenogero,26CIN10F0180,IO Omnix Channel WABA FK Undip,WABA FK Undip,SAP,1.PENDAPATAN Total,,,,,,-6075000,-6075000,-6075000,,,-18225000\n226,Universitas Dipenogero,26CIN10F0180,IO Omnix Channel WABA FK Undip,WABA FK Undip,SAP,2.DIRECT,BEBAN JARKOM\n227,Universitas Dipenogero,26CIN10F0180,IO Omnix Channel WABA FK Undip,WABA FK Undip,SAP,2.DIRECT Total\n228,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,SAP,1.PENDAPATAN,REVENUE,,,-6659689,,-26860746,13208383,-19400060,,,-39712112\n229,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,SAP,1.PENDAPATAN Total,,,,-6659689,,-26860746,13208383,-19400060,,,-39712112\n230,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,SAP,2.DIRECT,BEBAN JASNAKER,,,,,,93696,99760,,,193456\n231,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,SAP,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,,1545566,2028255,,,,,3573821\n232,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,SAP,2.DIRECT Total,,,,,1545566,2028255,93696,99760,,,3767277\n233,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,OPS,1.PENDAPATAN,REVENUE,,444142255,444142255,444142255,507769507,507769507,634879507,507769507,507769507,3998384300\n234,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,OPS,1.PENDAPATAN Total,,,444142255,444142255,444142255,507769507,507769507,634879507,507769507,507769507,3998384300\n235,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,OPS,2.DIRECT,BEBAN JARKOM,,41482558,41152276,43141446,44702280,44380893,38097000,22924000,68545048,344425501\n236,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,OPS,2.DIRECT,BEBAN JASNAKER,\"119352749,3\",\"181383778,4\",\"214045510,4\",\"202949553,4\",\"238237431,8\",\"245921475,9\",\"252883785,5\",\"243967144,6\",\"248635497,7\",0\n237,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,2852581,,,,,,700000,,3552581\n238,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,OPS,2.DIRECT,BEBAN LAIN - LAIN,,1210354,1105193,303000,1952607,501892,6537534,1156284,2709792,15476656\n239,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,9790326,8721380,112047485,-109883845,3823640,68470658,1119000,94088644\n240,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,OPS,2.DIRECT,BEBAN MARKETING,,3333890,,,2083915,-208510,1738098,738000,689300,8374693\n241,BKPM,26CIN10F0070,IO CC BKPM 2026,CC BKPM,OPS,2.DIRECT Total,,0,48879383,52047795,52165826,160786287,-65209570,50196272,,,298865993\n242,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,OPS,1.PENDAPATAN,REVENUE,,,,179865000,,,,,,179865000\n243,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,OPS,1.PENDAPATAN Total,,,,,179865000,,,,,,179865000\n244,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,31721418,26490494,16306884,22758812,26054961,10869260,,,134201829\n245,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,2002032,,,,,,,,2002032\n246,BKPM,26CIN10F0068,IO OTP Whatsapp BKPM 2026,OTA BKPM,OPS,2.DIRECT Total,,,33723450,26490494,16306884,22758812,26054961,10869260,,,136203861\n247,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,1.PENDAPATAN,REVENUE,348187000,348187000,348187000,595788973,411788973,411788973,411788973,,,2875716892\n248,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,1.PENDAPATAN Total,,348187000,348187000,348187000,595788973,411788973,411788973,411788973,,,2875716892\n249,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,2.DIRECT,BEBAN JARKOM,9042333,9042333,9042333,9042333,9042333,9042333,9042333,9042333,72321509,63296333\n250,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,2.DIRECT,BEBAN JASNAKER,\"165842960,5\",\"160342279,5\",\"160263176,1\",\"160158481,7\",\"211196871,5\",\"172767493,8\",\"172959786,8\",\"177432814,2\",\"168074615,5\",0\n251,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,,-15711600,,,,,,-15711600\n252,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,2.DIRECT,BEBAN LAIN - LAIN,,670000,,20000000,,28500000,1754500,,,50924500\n253,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,12000000,,,,0,6000000,24000000,,,42000000\n254,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,2.DIRECT,BEBAN MARKETING,,86963805,,,,,,,,86963805\n255,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,2.DIRECT Total,,21042333,96676138,9042333,13330733,9042333,43542333,34796833,,,227473038\n256,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,4.DEPRESIASI,DEPRESIASI,18624991,,,,,,,,,18624991\n257,Kemendikti,\"25CIN10F0002\n26CIN10F0025\n26CIN10F0157\n26CIN10F0158\n26CIN10F0171\n26CIN10F0187\n26CIN10F0195\n26CIN10F0197\n26CIN10F0207\n26CIN10F0208\n26CIN10F0209\",\"IO PraPO CC Kemendiktisaintek TA 2025\nIO CC Kemdiktisaintek TA 2026\nIO CC Kemdiktisaintek April 2026\nIO Dev. CC Kemdiktisiantek\nIO CC SDM Kemdiktisaintek April 2026\nIO CC SDM Kemdiktisaintek Mei 26\nIO AI QA & CC Kemdiktisaintek Mei 26\nIO AD & Platform CRM CC Kemdiktisaintek\nIO SDM, Platform CRM CC Kemdiktisaintek Juni 26\nIO CC SDM Kemdiktisaintek Juni 26\nIO AI QA & CC Kemdiktisaintek Juni 26\",CC ULT,OPS,4.DEPRESIASI Total,,18624991,,,,,,,,,18624991\n258,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,1.PENDAPATAN,REVENUE,99266000,99266000,99266000,99266000,99266000,99266000,99266000,,,694862000\n259,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,1.PENDAPATAN Total,,99266000,99266000,99266000,99266000,99266000,99266000,99266000,,,694862000\n260,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,2.DIRECT,BEBAN JARKOM,7865646,1771359,2624938,2611326,24432423,7857445,7854677,7998404,8000218,55017814\n261,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,2.DIRECT,BEBAN JASNAKER,47654087,47654087,56326895,32422368,40017620,32422368,32422368,,,288919794\n262,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,2844,38674,41629,112575,223978,113748,124302,,,657750\n263,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,2.DIRECT,BEBAN LAIN - LAIN,,,154500,,20000,,,,,174500\n264,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,43650000,1632000,,,,,45282000\n265,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,2.DIRECT,BEBAN MARKETING,,,,,902000,,,,,902000\n266,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,2.DIRECT Total,,55522577,49464120,59147962,78796269,67228021,40393561,40401347,,,390953858\n267,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,4.DEPRESIASI,DEPRESIASI,9070834,9070832,9070834,9070834,9070833,,,,,45354167\n268,Kejagung,\"25CIN10F0183\n26CIN10F0096\",\"IO CC Kejagung RI\nIO CC Kejagung RI Tahun 2026\",CC Kejagung,OPS,4.DEPRESIASI Total,,9070834,9070832,9070834,9070834,9070833,,,,,45354167\n269,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,OPS,1.PENDAPATAN,REVENUE,45045045,51600000,51600000,51600000,51600000,51600000,51600000,,,354645045\n270,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,OPS,1.PENDAPATAN Total,,45045045,51600000,51600000,51600000,51600000,51600000,51600000,,,354645045\n271,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,OPS,2.DIRECT,BEBAN JASNAKER,28408809,28408809,58001319,32833680,31600800,30007712,29134735,,,238395864\n272,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,,,679554,-679554,,,,0\n273,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,938000,1742000,938000,-938000,,,,2680000\n274,Kemenhub,26CIN10F0013,IO Pra PO - Managed Service CC Kemenhub 2026,SDM CC 151,OPS,2.DIRECT Total,,28408809,28408809,58939319,34575680,33218354,28390158,29134735,,,241075864\n275,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,Sistem CC 151,OPS,1.PENDAPATAN,REVENUE,,,539700000,,,,,,,539700000\n276,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,Sistem CC 151,OPS,1.PENDAPATAN Total,,,,539700000,,,,,,,539700000\n277,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,Sistem CC 151,OPS,2.DIRECT,BEBAN JARKOM,3561000,3561000,3959704,3841850,3561000,3561000,3561000,3561000,3561000,25606554\n,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,Sistem CC 151,OPS,2.DIRECT,BEBAN JASNAKER,,,,,300878,304390,1789238,,,2394506\n,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,Sistem CC 151,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,398704,280850,-679554,679554,,,,679554\n,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,Sistem CC 151,OPS,2.DIRECT,BEBAN LAIN - LAIN,,,,,,35000,,,,35000\n,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,Sistem CC 151,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,340000,,,,,,,340000\n278,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,Sistem CC 151,OPS,2.DIRECT,BEBAN MARKETING,,,,,,1840703,,,,1840703\n279,Kemenhub,26CIN10F0005,IO CC 151 Kementerian Perhubungan,Sistem CC 151,OPS,2.DIRECT Total,,3561000,3561000,4698408,4122700,3182324,6420647,5350238,,,30896317\n280,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,1.PENDAPATAN,REVENUE,191441441,191441441,191441441,191441441,191441441,191441441,191441441,,,1340090089\n281,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,1.PENDAPATAN Total,,191441441,191441441,191441441,191441441,191441441,191441441,191441441,,,1340090089\n282,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,2.DIRECT,BEBAN JARKOM,6645910,6431068,6630794,6556849,6638222,4325789,4317450,4327179,4317450,41546082\n283,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,2.DIRECT,BEBAN JASNAKER,119539784,83182313,82308928,78958985,82706751,78218834,71698754,,,596614349\n284,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,1275000,,1465859,,,,,2740859\n285,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,2.DIRECT,BEBAN LAIN - LAIN,,,,,,716553,1614667,,,2331220\n286,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,1500000,,,,1450000,29713500,,,32663500\n287,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,2.DIRECT,BEBAN MARKETING,,,,,500000,884971,633300,,,2018271\n288,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,2.DIRECT Total,,126185694,91113381,90214723,85515833,91310832,85596147,107977671,,,677914282\n289,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,4.DEPRESIASI,DEPRESIASI,1374999,,,,,,,,,1374999\n290,Badan Meteorologi dan Geofisika,26CIN10F0015,IO CC BMKG,CC BMKG,OPS,4.DEPRESIASI Total,,1374999,,,,,,,,,1374999\n291,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,OPS,1.PENDAPATAN,REVENUE,67567568,67567568,67567568,67567568,67567568,67567568,67567568,,,472972972\n292,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,OPS,1.PENDAPATAN Total,,67567568,67567568,67567568,67567568,67567568,67567568,67567568,,,472972972\n293,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,OPS,2.DIRECT,BEBAN JARKOM,5735337,5761568,5882902,4756540,5057818,4766346,4603127,4846763,10530078,36563638\n294,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,OPS,2.DIRECT,BEBAN JASNAKER,18983398,18983398,33810038,24050261,24050261,23815256,23815256,,,167507868\n295,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,OPS,2.DIRECT,BEBAN LAIN - LAIN,,480600,,,,902500,,,,1383100\n296,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,132000,,3000000,2500000,,,,,5632000\n297,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,OPS,2.DIRECT,BEBAN MARKETING,,850000,,,,,,,,850000\n298,Kementerian Koperasi,26CIN10F0017,IO Layanan CC Kemenkorp 2026,CC Kemenkop,OPS,2.DIRECT Total,,24718735,26207566,39692940,31806801,31608079,29484102,28418383,,,211936606\n299,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,OPS,1.PENDAPATAN,REVENUE,,,39030000,39030000,39030000,39030000,39030000,,,195150000\n300,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,OPS,1.PENDAPATAN Total,,,,39030000,39030000,39030000,39030000,39030000,,,195150000\n301,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,OPS,2.DIRECT,BEBAN JASNAKER,,,,,,,,,,0\n302,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,OPS,2.DIRECT,BEBAN LAIN - LAIN,,,,227000,,,,,,227000\n303,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,92800,,1500000,,,,1592800\n304,Kementerian Koperasi,26CIN10F0131,IO CC KDKMP 2026,CC KDKMP,OPS,2.DIRECT Total,,0,0,0,319800,0,1500000,0,,,1819800\n305,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,1.PENDAPATAN,REVENUE,157637500,157637500,157637500,157637500,157637500,157637500,157637500,,,1103462500\n306,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,1.PENDAPATAN Total,,157637500,157637500,157637500,157637500,157637500,157637500,157637500,,,1103462500\n307,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,2.DIRECT,BEBAN JARKOM,3947749,4062964,4019212,3967915,3995140,3929809,3912631,4671944,4023744,27835418\n308,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,2.DIRECT,BEBAN JASNAKER,19936628,27818004,43051238,28082969,28038318,27818004,28038318,,,202783479\n309,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,2959960,,,,,,,2959960\n310,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,2.DIRECT,BEBAN LAIN - LAIN,,100000,,,538000,,1533700,,,2171700\n311,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,7205153,7287552,7673893,7239523,8417020,6748475,6748475,,,51320092\n312,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,2.DIRECT,BEBAN MARKETING,,,,,260500,,801533,,,1062033\n313,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,2.DIRECT Total,,31089529,39268520,57704303,39290406,41248978,38496288,41034657,,,288132682\n314,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,4.DEPRESIASI,DEPRESIASI,,,,1858333,1858334,,,,,3716667\n315,Kementerian HAM,26CIN10F0042,IO CC KEMENHAM 2026,CC KemenHAM,OPS,4.DEPRESIASI Total,,,,,1858333,1858334,,,,,3716667\n316,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,OPS,1.PENDAPATAN,REVENUE,99099099,99099099,99099099,99099099,154954955,154954955,154954955,,,861261261\n317,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,OPS,1.PENDAPATAN Total,,99099099,99099099,99099099,99099099,154954955,154954955,154954955,,,861261261\n318,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,OPS,2.DIRECT,BEBAN JASNAKER,26327044,26327044,37879079,28409504,35860423,29726962,47559132,,,232089188\n319,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,OPS,2.DIRECT,BEBAN LAIN - LAIN,,2365380,,,,,,,,2365380\n320,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,,6400000,,,,,6400000\n321,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,OPS,2.DIRECT,BEBAN MARKETING,,2391770,,,,,,,,2391770\n322,Direktorat Jenderal Mineral & Batubara,\"25CIN10F0317\n26CIN10F0090\n26CIN10F0094\n26CIN10F0154\n26CIN10F0198\n26CIN10F0220\",\"IO CC Dir Mineral Batubara 2025\nIO CC DITJEN MINERBA 2026\nIO CC Minerba Januari 2026\nIO CC DITJEN MINERBA April 2026\nIO CC DITJEN MINERBA Mei 2026\nIO CC DITJEN MINERBA Jun - Dec 2026\",CC Minerba,OPS,2.DIRECT Total,,26327044,31084194,37879079,28409504,42260423,29726962,47559132,,,243246338\n323,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,OPS,1.PENDAPATAN,REVENUE,209000000,209000000,209000000,209000000,209000000,209000000,209000000,,,1463000000\n324,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,OPS,1.PENDAPATAN Total,,209000000,209000000,209000000,209000000,209000000,209000000,209000000,,,1463000000\n325,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,OPS,2.DIRECT,BEBAN JARKOM,13614371,13551883,14318021,13655420,33677355,8711333,8709939,8790740,10013095,106238322,\"Anomali data , peningkatan tagihan metro e dibandingkan bulan sebelumnya\"\n326,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,OPS,2.DIRECT,BEBAN JASNAKER,19613636,62366408,102428492,52552021,80102333,60282497,65246198,,,442591585\n327,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,1187818,16317000,,,1350000,,,,18854818\n328,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,OPS,2.DIRECT,BEBAN LAIN - LAIN,153697500,,663000,,275000,,65715169,,,220350669\n329,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,13038424,13038424,13038424,13038424,13038424,13038424,13038424,,,91268965\n330,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,OPS,2.DIRECT,BEBAN MARKETING,,,,,,,,,,0\n331,Dewan Perwakilan Rakyat,\"25CIN10F0088\n26CIN10F0093\n26CIN10F0173\",\"IO CC 139 DPR RI 2025\nIO CC 139 DPR RI Januari - Maret 2026\nIO CC 139 DPR RI April - Juni 2026\",CC 139 DPR,OPS,2.DIRECT Total,,199963931,90144532,146764936,79245864,127093112,83382254,-168762500,,,557832129\n332,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,OPS,1.PENDAPATAN,REVENUE,153750000,153750000,153750000,153750000,153750000,153750000,153750000,,,922500000\n333,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,OPS,1.PENDAPATAN Total,,153750000,153750000,153750000,153750000,153750000,153750000,153750000,,,922500000\n334,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,OPS,2.DIRECT,BEBAN JASNAKER,100485513,98654142,190431520,100376417,100376417,100492341,100575142,,,791391490\n335,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,OPS,2.DIRECT,BEBAN LAIN - LAIN,,,,551000,,301500,,,,852500\n336,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,25100000,,,,,,,,25100000\n337,Kementerian Luar Negeri,25CIN10F0377,IO Helpdesk TI dan Komunikasi Kemenlu 2026,Helpdesk TIK,OPS,2.DIRECT Total,,100485512,123754142,190431520,100927417,100376417,100793841,100575142,,,716768848\n338,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,OPS,1.PENDAPATAN,REVENUE,11328400,8454970,6925330,8450560,9124660,8456860,8456860,,,61197640\n339,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,OPS,1.PENDAPATAN Total,,11328400,8454970,6925330,8450560,9124660,8456860,8456860,,,61197640\n340,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,OPS,2.DIRECT,BEBAN JARKOM,,,,6613238,,,,,,6613238\n341,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,OPS,2.DIRECT,BEBAN JASNAKER,,,,,,49417,,,,49417\n342,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,8843285,12292246,10543188,8455611,3169633,3164415,3164415,,,49632793\n343,BP Tapera,25CIN10F0372,IO WABA BP Tapera 2026,WABA Tapera,OPS,2.DIRECT Total,,8843285,12292246,10543188,15068849,3169633,3213832,3164415,,,56295448\n344,BP Tapera,22CIN10E6T31,IO 1500156 BP Tapera,1500156 BP Tapera,OPS,1.PENDAPATAN,REVENUE,7790000,7790000,7790000,7790000,7790000,7790000,7790000,,,54530000\n345,BP Tapera,22CIN10E6T31,IO 1500156 BP Tapera,1500156 BP Tapera,OPS,1.PENDAPATAN Total,,7790000,7790000,7790000,7790000,7790000,7790000,7790000,,,54530000\n346,BP Tapera,22CIN10E6T31,IO 1500156 BP Tapera,1500156 BP Tapera,OPS,2.DIRECT,BEBAN JARKOM,6832712,7058977,6164193,5725147,7254862,6174957,7864000,6601175,5615694,47074848\n347,BP Tapera,22CIN10E6T31,IO 1500156 BP Tapera,1500156 BP Tapera,OPS,2.DIRECT Total,,6832712,7058977,6164193,5725147,7254862,6174957,7864000,,,47074848\n348,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,OPS,1.PENDAPATAN,REVENUE,263468000,263468000,263468000,263468000,263468000,263468000,263468000,,,1844276000\n349,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,OPS,1.PENDAPATAN Total,,263468000,263468000,263468000,263468000,263468000,263468000,263468000,,,1844276000\n350,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,OPS,2.DIRECT,BEBAN JARKOM,4811992,4588576,4812352,4737760,4812352,2500000,2500000,,,28763032\n351,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,OPS,2.DIRECT,BEBAN JASNAKER,284280806,126916151,241186475,128686151,131456566,122919034,144964601,,,1180409784\n352,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,OPS,2.DIRECT,BEBAN LAIN - LAIN,,,,1745768,,,,,,1745768\n353,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,1876000,3082000,,,,,,4958000\n354,LKPP,\"25CIN10F0041\n26CIN10F0039\",\"(BLOCK) IO CC LKPP 2025\nIO Help Center SPSE 2026\",CC SPSE,OPS,2.DIRECT Total,,289092798,131504727,247874827,138251679,136268918,125419034,147464601,,,1215876584\n355,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),OPS,1.PENDAPATAN,REVENUE,288566340,288566340,288566340,288566340,288566340,288566340,288566340,,,2019964380\n356,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),OPS,1.PENDAPATAN Total,,288566340,288566340,288566340,288566340,288566340,288566340,288566340,,,2019964380\n357,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),OPS,2.DIRECT,BEBAN JASNAKER,,,,,,,,,,0\n358,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,0,,,,,,,,0\n359,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,530657388,88681276,642026250,657900000,,,,1919264914\n360,LKPP,\"25CIN10F0347\n26CIN10F0026\",\"IO Resolution Center LKPP 2025\nIO Resolution Center LKPP 2026\",Resolution Center LKPP (Zendesk),OPS,2.DIRECT Total,,0,0,530657388,88681276,642026250,657900000,0,,,1919264914\n361,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,OPS,1.PENDAPATAN,REVENUE,29925000,29925000,0,,,,,,,59850000\n362,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,OPS,1.PENDAPATAN Total,,29925000,29925000,0,,,,,,,59850000\n363,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,OPS,2.DIRECT,BEBAN LAIN - LAIN,,,,,980000,,,,,980000\n364,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,346075,386327,7711,354769,,,,,,1094882\n365,Al Azhar Al-Muhajirin,25CIN10F0332,IO CRM Yayasan Pendidikan Al Azhar Muhajirin,CRM Al-muhajirin,OPS,2.DIRECT Total,,346075,386327,7711,354769,980000,,,,,2074882\n366,BPOM RI,21CIN10E6T21,IO 1500533 BPOM RI ,1500533 BPOM RI,OPS,1.PENDAPATAN,REVENUE,-12359415,-12340656,-12327290,-12257376,-12309237,-12281821,-12311901,-12303773,-12277222,-110768691\n367,BPOM RI,21CIN10E6T21,IO 1500533 BPOM RI ,1500533 BPOM RI,OPS,1.PENDAPATAN Total,,-12359415,-12340656,-12327290,-12257376,-12309237,-12281821,-12311901,-12303773,-12277222,-110768691\n368,BPOM RI,21CIN10E6T21,IO 1500533 BPOM RI ,1500533 BPOM RI,OPS,2.DIRECT,BEBAN JARKOM,2864988,4765015,2743065,468291,2803848,3533584,3300511,3211189,3230232,26920723\n369,BPOM RI,21CIN10E6T21,IO 1500533 BPOM RI ,1500533 BPOM RI,OPS,2.DIRECT Total,,2864988,4765015,2743065,468291,2803848,3533584,3300511,3211189,3230232,26920723\n370,Direkorat Bea & Cukai,24CIN10F0234,IO 1500225 DirJen Bea dan Cukai 2024,1500225 Bea dan Cukai,OPS,1.PENDAPATAN,REVENUE,,,,,,-150460771,-25088576,-25080680,-25095959,-225725986\n371,Direkorat Bea & Cukai,24CIN10F0234,IO 1500225 DirJen Bea dan Cukai 2024,1500225 Bea dan Cukai,OPS,1.PENDAPATAN Total,,,,,,,-150460771,-25088576,-25080680,-25095959,-225725986\n372,Direkorat Bea & Cukai,24CIN10F0234,IO 1500225 DirJen Bea dan Cukai 2024,1500225 Bea dan Cukai,OPS,2.DIRECT,BEBAN JARKOM,12070146,14003149,11453552,5969450,8291501,19168511,-529727,15699411,19194700,105320693\n373,Direkorat Bea & Cukai,24CIN10F0234,IO 1500225 DirJen Bea dan Cukai 2024,1500225 Bea dan Cukai,OPS,2.DIRECT Total,,12070146,14003149,11453552,5969450,8291501,19168511,-529727,15699411,19194700,105320693\n374,PT Inggris Prima Indonesia,22CIN10E6T11,IO 1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,OPS,1.PENDAPATAN,REVENUE,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-94950000\n375,PT Inggris Prima Indonesia,22CIN10E6T11,IO 1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,OPS,1.PENDAPATAN Total,,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-10550000,-94950000\n376,PT Inggris Prima Indonesia,22CIN10E6T11,IO 1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,OPS,2.DIRECT,BEBAN JARKOM,1530321,3129093,1559466,39181,1540023,1540023,1566690,1567164,1540023,14011984\n377,PT Inggris Prima Indonesia,22CIN10E6T11,IO 1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia,OPS,2.DIRECT Total,,1530321,3129093,1559466,39181,1540023,1540023,1566690,1567164,1540023,14011984\n378,Dirjen Pajak,22CIN10E6T14,IO 1500200 Dirjen Pajak,1500200 Dirjen Pajak,OPS,1.PENDAPATAN,REVENUE,-142887401,-273005186,-137602260,-171255693,-157765573,-127055083,-137884721,-139093847,-138856068,-1425405832\n379,Dirjen Pajak,22CIN10E6T14,IO 1500200 Dirjen Pajak,1500200 Dirjen Pajak,OPS,1.PENDAPATAN Total,,-142887401,-273005186,-137602260,-171255693,-157765573,-127055083,-137884721,-139093847,-138856068,-1425405832\n380,Dirjen Pajak,22CIN10E6T14,IO 1500200 Dirjen Pajak,1500200 Dirjen Pajak,OPS,2.DIRECT,BEBAN JARKOM,133104508,98290165,72884442,127140556,85017214,84521045,64596537,82113268,85017213,832684948\n381,Dirjen Pajak,22CIN10E6T14,IO 1500200 Dirjen Pajak,1500200 Dirjen Pajak,OPS,2.DIRECT Total,,133104508,98290165,72884442,127140556,85017214,84521045,64596537,82113268,85017213,832684948\n382,Bappenda NTB,22CIN10E6T90,(BLOCK) IO 1500186 Bappenda NTB,1500186 Bappenda NTB,OPS,1.PENDAPATAN,REVENUE,5000000,5000000,5000000,5000000,5000000,5000000,5000000,,,35000000\n383,Bappenda NTB,22CIN10E6T90,(BLOCK) IO 1500186 Bappenda NTB,1500186 Bappenda NTB,OPS,1.PENDAPATAN Total,,5000000,5000000,5000000,5000000,5000000,5000000,5000000,,,35000000\n384,Bappenda NTB,22CIN10E6T90,(BLOCK) IO 1500186 Bappenda NTB,1500186 Bappenda NTB,OPS,2.DIRECT,BEBAN JARKOM,1508026,1508448,1508977,1500588,1503949,1505116,1500000,1504371,1502323,10535104\n385,Bappenda NTB,22CIN10E6T90,(BLOCK) IO 1500186 Bappenda NTB,1500186 Bappenda NTB,OPS,2.DIRECT Total,,1508026,1508448,1508977,1500588,1503949,1505116,1500000,,,10535104\n386,Universitas Gunadarma,24CIN10F0001,IO 1500158 UNIVERSITAS GUNADARMA,1500158 UNIVERSITAS GUNADARMA,OPS,1.PENDAPATAN,REVENUE,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-63000000\n387,Universitas Gunadarma,24CIN10F0001,IO 1500158 UNIVERSITAS GUNADARMA,1500158 UNIVERSITAS GUNADARMA,OPS,1.PENDAPATAN Total,,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-7000000,-63000000\n388,Universitas Gunadarma,24CIN10F0001,IO 1500158 UNIVERSITAS GUNADARMA,1500158 UNIVERSITAS GUNADARMA,OPS,2.DIRECT,BEBAN JARKOM,3775556,3775556,3799625,3796226,3860022,5360022,3745978,3990138,3860021,35963144\n389,Universitas Gunadarma,24CIN10F0001,IO 1500158 UNIVERSITAS GUNADARMA,1500158 UNIVERSITAS GUNADARMA,OPS,2.DIRECT Total,,3775556,3775556,3799625,3796226,3860022,5360022,3745978,3990138,3860021,35963144\n390,Universitas Terbuka,24CIN10F0003,IO 1500024 Universitas Terbuka,1500024 Universitas Terbuka,OPS,1.PENDAPATAN,REVENUE,-20526216,-29598850,-18850117,-11205000,-12431567,-11241467,-18053867,-22763517,-11359700,-156030301\n391,Universitas Terbuka,24CIN10F0003,IO 1500024 Universitas Terbuka,1500024 Universitas Terbuka,OPS,1.PENDAPATAN Total,,-20526216,-29598850,-18850117,-11205000,-12431567,-11241467,-18053867,-22763517,-11359700,-156030301\n392,Universitas Terbuka,24CIN10F0003,IO 1500024 Universitas Terbuka,1500024 Universitas Terbuka,OPS,2.DIRECT,BEBAN JARKOM,11865302,16257833,12435469,12892144,8679667,9870803,14631802,12477013,8679664,107789697\n393,Universitas Terbuka,24CIN10F0003,IO 1500024 Universitas Terbuka,1500024 Universitas Terbuka,OPS,2.DIRECT Total,,11865302,16257833,12435469,12892144,8679667,9870803,14631802,12477013,8679664,107789697\n394,Kementerian Perdagangan,25CIN10F0077,IO No Akses 1500067 Kementerian Perdagangan 2025,1500067 Kementerian Perdagangan 2025,OPS,1.PENDAPATAN,REVENUE,-11940000,-11940000,-,-23880000,-11940000,-11940000,-11940000,-11940000,-11940000,-107460000\n395,Kementerian Perdagangan,25CIN10F0077,IO No Akses 1500067 Kementerian Perdagangan 2025,1500067 Kementerian Perdagangan 2025,OPS,1.PENDAPATAN Total,,-11940000,-11940000,-,-23880000,-11940000,-11940000,-11940000,-11940000,-11940000,-107460000\n396,Kementerian Perdagangan,25CIN10F0077,IO No Akses 1500067 Kementerian Perdagangan 2025,1500067 Kementerian Perdagangan 2025,OPS,2.DIRECT,BEBAN JARKOM,4033781,3521941,-,6726181,3278635,4384035,3733812,3538158,3367363,32583906\n397,Kementerian Perdagangan,25CIN10F0077,IO No Akses 1500067 Kementerian Perdagangan 2025,1500067 Kementerian Perdagangan 2025,OPS,2.DIRECT Total,,4033781,3521941,-,6726181,3278635,4384035,3733812,3538158,3367363,32583906\n398,IDP Education,25CIN10F0236,IO 1500400 IDP Education,1500400 IDP Education,OPS,1.PENDAPATAN,REVENUE,-17914593,-16224633,-13200000,-22676774,-16733600,-3879200,-30282800,-15877600,-16770400,-153559600\n399,IDP Education,25CIN10F0236,IO 1500400 IDP Education,1500400 IDP Education,OPS,1.PENDAPATAN Total,,-17914593,-16224633,-13200000,-22676774,-16733600,-3879200,-30282800,-15877600,-16770400,-153559600\n400,IDP Education,25CIN10F0236,IO 1500400 IDP Education,1500400 IDP Education,OPS,2.DIRECT,BEBAN JARKOM,10972082,15110465,11048087,8175578,8766147,10211362,11292316,8031171,8766147,92373355\n401,IDP Education,25CIN10F0236,IO 1500400 IDP Education,1500400 IDP Education,OPS,2.DIRECT Total,,10972082,15110465,11048087,8175578,8766147,10211362,11292316,8031171,8766147,92373355\n402,Universitas Indonesia,25CIN10F0248,IO 1500002 Universitas Indonesia 2025,1500002 Universitas Indonesia 2025,OPS,1.PENDAPATAN,REVENUE,-10000000,-10000000,-10000000,-10000000,-10000000,-,,,,-50000000\n403,Universitas Indonesia,25CIN10F0248,IO 1500002 Universitas Indonesia 2025,1500002 Universitas Indonesia 2025,OPS,1.PENDAPATAN Total,,-10000000,-10000000,-10000000,-10000000,-10000000,-,,,,-50000000\n404,Universitas Indonesia,25CIN10F0248,IO 1500002 Universitas Indonesia 2025,1500002 Universitas Indonesia 2025,OPS,2.DIRECT,BEBAN JARKOM,2492306,2513464,2747439,2522617,2702937,2702937,3176973,2660601,2702937,24222211\n405,Universitas Indonesia,25CIN10F0248,IO 1500002 Universitas Indonesia 2025,1500002 Universitas Indonesia 2025,OPS,2.DIRECT Total,,2492306,2513464,2747439,2522617,2702937,2702937,3176973,2660601,2702937,24222211\n406,Kemendesa,22CIN10E6T18,IO 1500040 Kemendesa,1500040 Kemendesa,OPS,1.PENDAPATAN,REVENUE,-19250000,-19250000,-15434684,-19250000,-15434685,19250000,-53934684,-19250000,-15434684,-157988737\n407,Kemendesa,22CIN10E6T18,IO 1500040 Kemendesa,1500040 Kemendesa,OPS,1.PENDAPATAN Total,,-19250000,-19250000,-15434684,-19250000,-15434685,19250000,-53934684,-19250000,-15434684,-157988737\n408,Kemendesa,22CIN10E6T18,IO 1500040 Kemendesa,1500040 Kemendesa,OPS,2.DIRECT,BEBAN JARKOM,1500000,3060581,1500000,-,1500000,1500000,1500215,1552560,1500000,13613356\n409,Kemendesa,22CIN10E6T18,IO 1500040 Kemendesa,1500040 Kemendesa,OPS,2.DIRECT Total,,1500000,3060581,1500000,-,1500000,1500000,1500215,1552560,1500000,13613356\n410,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,OPS,1.PENDAPATAN,REVENUE,-14950000,-14590000,-14590000,-14590000,-15230000,-14590000,-14590000,-14590000,-15590000,-133310000\n411,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,OPS,1.PENDAPATAN Total,,-14950000,-14590000,-14590000,-14590000,-15230000,-14590000,-14590000,-14590000,-15590000,-133310000\n412,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,OPS,2.DIRECT,BEBAN JARKOM,4348033,2632053,3772079,2672380,2856621,3491507,3312123,1637091,2858393,27580280\n413,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,OPS,2.DIRECT,BEBAN LAIN - LAIN,,,,,28740000,,,,,28740000\n414,Kemnaker,26CIN10F0058,IO 1500630 Kemnaker 2026,1500630 Kemnaker 2026,OPS,2.DIRECT Total,,4348033,2632053,3772079,2672380,31596621,3491507,3312123,1637091,2858393,56320280\n415,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,OPS,1.PENDAPATAN,REVENUE,9500000,9500000,9500000,9500000,9500000,9500000,9500000,-9500000,-9500000,-76000000\n416,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,OPS,1.PENDAPATAN Total,,9500000,9500000,9500000,9500000,9500000,9500000,9500000,-9500000,-9500000,-76000000\n417,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,OPS,2.DIRECT,BEBAN JARKOM,3629880,3629230,3643941,3641148,3639550,3639736,3608600,8351221,2346393,19199558,\"double cost, karena IO 2024 masih ada cost Metro e\"\n418,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,,1372208,,,,,1372208\n419,Kementerian Komunikasi & Digital,26CIN10F0204,IO 1500876 BAKTI Feb-Sep 2026,1500876 BAKTI,OPS,2.DIRECT Total,,3629880,3629230,3643941,3641148,5011758,3639736,3608600,8351221,2346393,20571766\n420,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,OPS,1.PENDAPATAN,REVENUE,-13085000,-14350000,-14350000,-14350000,-44843750,11291250,-12556250,-16143750,-16143750,-134531250\n421,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,OPS,1.PENDAPATAN Total,,-13085000,-14350000,-14350000,-14350000,-44843750,11291250,-12556250,-16143750,-16143750,-134531250\n422,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,OPS,2.DIRECT,BEBAN JARKOM,4120000,4120000,4120000,4120000,4120000,4120000,4120000,4263624,4120000,37223624\n423,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,1700000,,,,,,1700000\n424,BSSN,26CIN10F0002,IO CC 183 BSSN RI,Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026,OPS,2.DIRECT Total,,4120000,4120000,4120000,5820000,4120000,4120000,4120000,4263624,4120000,38923624\n425,KUMKM,25CIN10F0173,IO Call Center KUMKM TA 2025,1500856 Lembaga Pengelola Dana Bergulir KUMKM ,OPS,1.PENDAPATAN,REVENUE,8929730,,,,,,,,,8929730\n426,KUMKM,25CIN10F0173,IO Call Center KUMKM TA 2025,1500856 Lembaga Pengelola Dana Bergulir KUMKM ,OPS,1.PENDAPATAN Total,,8929730,,,,,,,,,8929730\n427,KUMKM,25CIN10F0173,IO Call Center KUMKM TA 2025,1500856 Lembaga Pengelola Dana Bergulir KUMKM ,OPS,2.DIRECT,BEBAN JARKOM,1500000,1500000,1500000,1500000,,3000000,1500000,3000000,1500000,15000000\n428,KUMKM,25CIN10F0173,IO Call Center KUMKM TA 2025,1500856 Lembaga Pengelola Dana Bergulir KUMKM ,OPS,2.DIRECT Total,,1500000,1500000,1500000,1500000,,3000000,1500000,3000000,1500000,15000000\n429,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,OPS,1.PENDAPATAN,REVENUE,,,-3098361,,-6196722,-22204917,,12600000,-3150000,-22050000\n430,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,OPS,1.PENDAPATAN Total,,,,-3098361,,-6196722,-22204917,,12600000,-3150000,-22050000\n431,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,OPS,2.DIRECT,BEBAN JARKOM,,,,110,69795,69795,26574,63357,69795,299426\n432,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,OPS,2.DIRECT,BEBAN JASNAKER,,,,,37234,36327,33690,97347,107844,312442\n433,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,539332,,,,,,,539332\n434,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,OPS,2.DIRECT,BEBAN MANDATORY GEDUNG,,,,1700000,3600000,-,,,,5300000\n435,LPSK,\"25CIN10F0376\n26CIN10F0110\",\"IO CC LPSK 2026\nIO CC LPSK 2026 Tahap 2\",Omni LPSK,OPS,2.DIRECT Total,,,,539332,1700110,3707029,106122,60264,160704,177639,6451200\n436,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,OPS,1.PENDAPATAN,REVENUE,3791667,3791667,3791667,3791667,3791667,3791667,3791667,3791667,3791667,34125000\n437,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,OPS,1.PENDAPATAN Total,,3791667,3791667,3791667,3791667,3791667,3791667,3791667,3791667,3791667,34125000\n438,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,OPS,2.DIRECT,BEBAN JARKOM,0,2272,,,1170578,2272,,27659707,4157847,32990404\n439,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,OPS,2.DIRECT,BEBAN JASNAKER,,,,,61740,65603,62331,156592,173007,519273\n440,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,-,183332,-,-,,,,183332\n441,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,OPS,2.DIRECT,BEBAN LAIN - LAIN,,,,,431000,,,,,431000\n442,LPSK,25CIN10F0378,IO Waba LPSK 2026,WABA LPSK,OPS,2.DIRECT Total,,0,2272,-,183332,1663318,67875,62331,27816299,4330854,34124009\n443,Universitas Dipenogero,26CIN10F0180,IO Omnix Channel WABA FK Undip,WABA FK Undip,OPS,1.PENDAPATAN,REVENUE,4860000,4860000,4860000,4860000,4860000,,,,,24300000\n444,Universitas Dipenogero,26CIN10F0180,IO Omnix Channel WABA FK Undip,WABA FK Undip,OPS,1.PENDAPATAN Total,,4860000,4860000,4860000,4860000,4860000,,,,,24300000\n445,Universitas Dipenogero,26CIN10F0180,IO Omnix Channel WABA FK Undip,WABA FK Undip,OPS,2.DIRECT,BEBAN JARKOM,1077496,1752848,1531896,,,,,13654152,2032872,4362240\n446,Universitas Dipenogero,26CIN10F0180,IO Omnix Channel WABA FK Undip,WABA FK Undip,OPS,2.DIRECT Total,,1077496,1752848,1531896,,,,,,,4362240\n447,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,OPS,1.PENDAPATAN,REVENUE,,,-6659689,,-26860746,13208383,-19400060,-6770684,-12942416,-59425212\n448,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,OPS,1.PENDAPATAN Total,,,,-6659689,,-26860746,13208383,-19400060,-6770684,-12942416,-59425212\n,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,OPS,2.DIRECT,BEBAN JARKOM,,,,,,,,8924416,4061768,12986184\n449,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,OPS,2.DIRECT,BEBAN JASNAKER,,,,,,93696,99760,248597,6246,448299\n450,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,OPS,2.DIRECT,BEBAN KERJASAMA PIHAK KETIGA,,,,1545566,2028255,,,,,3573821\n451,ARS University,26CIN10F0137,IO WABA ARS University 2026,WABA & Omnix Ars,OPS,2.DIRECT Total,,,,,1545566,2028255,93696,99760,9173013,4068014,17008304\n,Kementerian Luar Negeri,25CIN10F0377,IO Aplikasi KEMENLU 2026,Programer Kemenlu,SAP,1.PENDAPATAN,REVENUE,,-615000000,153750000,-153750000,-153750000,-153750000,-153750000,-153750000,-153750000,-1383750000\n,Kementerian Luar Negeri,25CIN10F0377,IO Aplikasi KEMENLU 2026,Programer Kemenlu,SAP,1.PENDAPATAN Total,,,-615000000,153750000,-153750000,-153750000,-153750000,-153750000,-153750000,-153750000,-1383750000\n,Kementerian Luar Negeri,25CIN10F0377,IO Aplikasi KEMENLU 2026,Programer Kemenlu,SAP,2.DIRECT,BEBAN JASNAKER,-,215113368,133818774,122360376,121313053,132202043,110534922,121526437,128399521,1085268494\n,Kementerian Luar Negeri,25CIN10F0377,IO Aplikasi KEMENLU 2026,Programer Kemenlu,SAP,,BEBAN LAIN - LAIN,,,,551000,,301500,,,,852500,,23468968,23468968\n,Kementerian Luar Negeri,25CIN10F0377,IO Aplikasi KEMENLU 2026,Programer Kemenlu,OPS,,BEBAN MANDATORY GEDUNG,,25100000,,,,,,,,25100000\n,Kementerian Luar Negeri,26CIN10F0241,IO Aplikasi KEMENLU 2026,Programer Kemenlu,OPS,2.DIRECT Total,,-,240213368,133818774,122911376,121313053,132503543,110534922,121526437,128399521,1111220994\n,Kementerian Luar Negeri,26CIN10F0241,IO Aplikasi KEMENLU 2026,Programer Kemenlu,OPS,1.PENDAPATAN,REVENUE,,,,,,,-134000000,-134000000,-153750000,-421750000\n,Kementerian Luar Negeri,26CIN10F0241,IO Aplikasi KEMENLU 2026,Programer Kemenlu,OPS,1.PENDAPATAN Total,,,,,,,,-134000000,-134000000,-153750000,-421750000\n,Kementerian Luar Negeri,26CIN10F0241,IO Aplikasi KEMENLU 2027,Programer Kemenlu,OPS,2.DIRECT,BEBAN JASNAKER,,,,,,,23468968,61390909,71759093,156618970\n,Kementerian Luar Negeri,26CIN10F0241,IO Aplikasi KEMENLU 2028,Programer Kemenlu,OPS,,BEBAN MANDATORY GEDUNG,,,,,,,,,26148886,26148886\n,Kementerian Luar Negeri,26CIN10F0241,IO Aplikasi KEMENLU 2029,Programer Kemenlu,OPS,2.DIRECT Total,,,,,,,,23468968,61390909,97907979,182767856\n", "catatan": ""}</script>
+<!-- ===================== DATA LAYER & ENGINE ===================== -->
+<script id="engine">
+/* ---------- KONFIGURASI (ubah di sini bila header / sheet berubah) ---------- */
+const CONFIG = {
+  docId: '136WDca06uNWi2oZ1PQ6cpYVB4fw-G5CAbx5GiSnNhd8', // ID dokumen (opsional, untuk URL cadangan)
+  pubBase: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRSlWbNxK1mZ7p1WWoFEuM4iJ-BtMQQff4KvWuGrc8Jdz0M8oQN92xNg2ciG91p6M3LEwe77RCyzH9h/pub',
+  sheets: {
+    summary: { name: 'Summary',      gid: '234097047' },
+    rekap:   { name: 'Rekap SAP S3', gid: '1759194258' },
+    catatan: { name: 'Catatan',      gid: '491419396' }
+  },
+  otherSheets: [
+    { name: 'Sheet4', gid: '1859462598', role: 'Pivot Layanan × PL × Pareto (Jan–Jun) – turunan, tidak dipakai' },
+    { name: 'Sheet2', gid: '1738473540', role: 'Pivot Klien × PL × Source – turunan, tidak dipakai' },
+    { name: 'Breakdown Pareto', gid: '145991469', role: 'Pivot GAP OPS vs SAP per kategori – turunan, tidak dipakai' },
+    { name: 'Sheet3', gid: '1955733961', role: 'Pivot Pareto × Source – turunan, tidak dipakai' }
+  ],
+  rekapCols: { no:'No', klien:'Klien', io:'Nomor IO', namaIo:'Nama IO', layanan:'Layanan', source:'Source', pl:'PL', pareto:'PARETO', gt:'Grand Total' },
+  planSource: 'SAP',   // nilai kolom Source yang dianggap SAP / rencana
+  actualSource: 'OPS', // nilai kolom Source yang dianggap Realisasi
+  summaryGroups: { rev: /PENDAPATAN/i, dir: /DIRECT/i, gp: /GROSS\s*PROFIT/i },
+  monthRe: /^(Jan|Feb|Mar|Apr|May|Mei|Jun|Jul|Aug|Agu|Agt|Sep|Oct|Okt|Nov|Dec|Des)[-\s]?\d{2,4}$/i,
+  reconTolPct: 0.01, reconTolAbs: 1e6
+};
+
+/* ---------- Utilitas ---------- */
+function parseCSV(t){
+  const R=[];let row=[],f='',q=false;
+  for(let i=0;i<t.length;i++){const ch=t[i];
+    if(q){ if(ch=='"'){ if(t[i+1]=='"'){f+='"';i++} else q=false } else f+=ch }
+    else if(ch=='"') q=true;
+    else if(ch==','){row.push(f);f=''}
+    else if(ch=='\n'||ch=='\r'){ if(ch=='\r'&&t[i+1]=='\n') i++; row.push(f);R.push(row);row=[];f='' }
+    else f+=ch;
+  }
+  if(f!==''||row.length){row.push(f);R.push(row)}
+  return R;
+}
+/* angka format sheet: "  1,234,567 ", "- 440,355,036 ", "-134000000", "  -   " (=0), "40.86%" */
+function num(s){
+  if(s==null) return 0; s=String(s).trim(); if(!s) return 0;
+  let neg=false;
+  if(/^\(.*\)$/.test(s)){neg=true;s=s.slice(1,-1)}
+  if(/^-/.test(s)){neg=true;s=s.replace(/^-\s*/,'')}
+  s=s.replace(/\s/g,'').replace(/^Rp/i,'');
+  if(s===''||s==='-') return 0;
+  if(/^\d+,\d{1,2}$/.test(s)) s=s.replace(',','.'); // desimal koma (angka teks format ID, mis. 119352749,3)
+  else if(/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)||/^\d+(,\d{3})+$/.test(s)) s=s.replace(/,/g,''); // ribuan koma
+  else if(/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s=s.replace(/\./g,'').replace(',','.'); // format ID
+  const v=parseFloat(s.replace(/[^0-9.]/g,''));
+  return isNaN(v)?0:(neg?-v:v);
+}
+const T=s=>(s==null?'':String(s)).replace(/\s+/g,' ').trim();
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MON_ID={mei:4,agu:7,agt:7,okt:9,des:11};
+/* header bulan: 'Jan-26', 'Jan 2026', '2026-01-01', '1/1/2026' → 'Jan-26' */
+function normMonth(h){ h=T(h); if(!h) return null; let m;
+  if((m=h.match(/^([A-Za-z]{3})[a-z]*[-\s']?(\d{2}|\d{4})$/))){ const k=m[1].toLowerCase(); let mi=MON.findIndex(x=>x.toLowerCase()===k); if(mi<0&&MON_ID[k]!=null) mi=MON_ID[k]; if(mi<0) return null; return MON[mi]+'-'+m[2].slice(-2) }
+  if((m=h.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return MON[+m[2]-1]+'-'+m[1].slice(-2);
+  if((m=h.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/))) return MON[+m[1]-1]+'-'+m[3].slice(-2);
+  return null }
+
+/* ---------- Parser Summary (angka rekonsiliasi per klien) ---------- */
+function parseSummary(rows){
+  const issues=[];
+  const hi=rows.findIndex(r=>T(r[0]).toLowerCase()==='layanan');
+  if(hi<0) throw new Error('Sheet Summary: header "Layanan" tidak ditemukan');
+  const g=rows[hi], sub=rows[hi+1]||[];
+  const groups={};
+  for(let c=1;c<g.length;c++){
+    const name=T(g[c]); if(!name) continue;
+    let sap=-1,ops=-1;
+    for(let k=c;k<Math.min(c+4,sub.length);k++){const v=T(sub[k]).toUpperCase(); if(v==='SAP'&&sap<0)sap=k; if(v==='OPS'&&ops<0)ops=k;}
+    for(const key in CONFIG.summaryGroups) if(CONFIG.summaryGroups[key].test(name)&&!groups[key]) groups[key]={name,sap,ops};
+  }
+  ['rev','dir'].forEach(k=>{ if(!groups[k]) throw new Error('Sheet Summary: grup kolom '+k+' tidak ditemukan') });
+  const clients=[]; let total=null;
+  for(let i=hi+2;i<rows.length;i++){
+    const r=rows[i], name=T(r[0]); if(!name) continue;
+    const o={klien:name,row:i+1,revP:num(r[groups.rev.sap]),revA:num(r[groups.rev.ops]),dirP:num(r[groups.dir.sap]),dirA:num(r[groups.dir.ops]),
+      gpPs:groups.gp?num(r[groups.gp.sap]):null,gpAs:groups.gp?num(r[groups.gp.ops]):null};
+    if(/grand\s*total/i.test(name)){total=o;break}
+    clients.push(o);
+    if(groups.gp){
+      if(Math.abs((o.revP-o.dirP)-o.gpPs)>1) issues.push({klien:name,msg:'GP SAP di sheet ≠ Pendapatan − Direct (selisih '+Math.round((o.revP-o.dirP)-o.gpPs)+')'});
+      if(Math.abs((o.revA-o.dirA)-o.gpAs)>1) issues.push({klien:name,msg:'GP OPS di sheet ≠ Pendapatan − Direct'});
+    }
+  }
+  const names={}; clients.forEach(c=>{ if(names[c.klien]) issues.push({klien:c.klien,msg:'Nama klien duplikat di Summary'}); names[c.klien]=1 });
+  return {clients,total,groups,headerRow:hi+1,issues};
+}
+
+/* ---------- Parser Rekap SAP S3 (baris detail bulanan) ---------- */
+function parseRekap(rows){
+  const hi=rows.findIndex(r=>r.some(c=>T(c)===CONFIG.rekapCols.klien)&&r.some(c=>T(c)===CONFIG.rekapCols.source));
+  if(hi<0) throw new Error('Sheet Rekap: header Klien/Source tidak ditemukan');
+  const H=rows[hi].map(T), C={}, missing=[];
+  for(const k in CONFIG.rekapCols){ C[k]=H.findIndex(h=>h.toLowerCase()===CONFIG.rekapCols[k].toLowerCase()); if(C[k]<0&&k!=='gt'&&k!=='no') missing.push(CONFIG.rekapCols[k]); }
+  if(missing.length) throw new Error('Sheet Rekap: kolom tidak ditemukan → '+missing.join(', '));
+  const months=H.map((h,i)=>({h:normMonth(h),i})).filter(x=>x.h);
+  if(!months.length) throw new Error('Sheet Rekap: kolom bulan tidak ditemukan');
+  const recs=[]; let skippedTotal=0, skippedBlank=0, textNums=0;
+  for(let i=hi+1;i<rows.length;i++){
+    const r=rows[i]; let pl=T(r[C.pl]); const kl=T(r[C.klien]); let plInferred=false;
+    if(!pl&&!kl){skippedBlank++;continue}
+    if(/total/i.test(pl)||/total/i.test(kl)){skippedTotal++;continue}
+    const pareto=T(r[C.pareto]).toUpperCase();
+    if(!pl&&kl&&pareto){ pl=pareto==='REVENUE'?'1.PENDAPATAN':pareto==='DEPRESIASI'?'4.DEPRESIASI':'2.DIRECT'; plInferred=true; }
+    if(!pl||!kl){skippedBlank++;continue}
+    const plU=pl.toUpperCase();
+    const type= (plU.includes('PENDAPATAN')||pareto==='REVENUE')?'REV' : (plU.includes('DEPRESIASI')||pareto==='DEPRESIASI')?'DEP' : plU.includes('DIRECT')?'DIR':'OTH';
+    const srcRaw=T(r[C.source]).toUpperCase();
+    const src= srcRaw===CONFIG.planSource?'P': srcRaw===CONFIG.actualSource?'A':'X';
+    let txt=false; const m=months.map(x=>{const s=T(r[x.i]); if(/^-?\s*\d+,\d{1,2}$/.test(s)){txt=true;textNums++} return num(r[x.i])});
+    const gt=C.gt>=0?num(r[C.gt]):null;
+    recs.push({row:i+1,no:C.no>=0?T(r[C.no]):'',klien:kl,io:T(r[C.io]).replace(/ /g,', '),ioRaw:T(r[C.io]),namaIo:T(r[C.namaIo]),layanan:T(r[C.layanan]),srcRaw,src,pl,plInferred,txtNum:txt,pareto:pareto||'(kosong)',type,m,gt});
+  }
+  // normalisasi tanda pendapatan per Source (SAP mencatat pendapatan sebagai kredit/negatif)
+  const sign={};
+  ['P','A'].forEach(s=>{const tot=recs.filter(r=>r.type==='REV'&&r.src===s).reduce((a,r)=>a+r.m.reduce((x,y)=>x+y,0),0); sign[s]=tot<0?-1:1});
+  recs.forEach(r=>{ r.mRaw=r.m.slice(); r.gtRaw=r.gt; if(r.type==='REV'&&sign[r.src]===-1){ r.m=r.m.map(v=>-v); if(r.gt!=null) r.gt=-r.gt; } });
+  // flag kualitas data
+  const dupMap={};
+  recs.forEach(r=>{ const k=[r.klien,r.ioRaw,r.namaIo,r.layanan,r.srcRaw,r.pl,r.pareto,r.mRaw.join(',')].join('|'); (dupMap[k]=dupMap[k]||[]).push(r) });
+  Object.values(dupMap).forEach(a=>{ if(a.length>1) a.forEach(r=>r.dup=true) });
+  recs.forEach(r=>{ const s=r.m.reduce((a,b)=>a+b,0); r.sum=s; r.gtMismatch=(r.gt!=null&&Math.abs(s-r.gt)>10); r.negCost=(r.type!=='REV'&&s<0); });
+  // pasangan SAP↔OPS: Klien × Nomor IO × Pareto
+  const pairs={};
+  recs.forEach(r=>{ const k=r.klien+'¦'+r.ioRaw+'¦'+r.pareto; const p=pairs[k]=pairs[k]||{key:k,klien:r.klien,io:r.io,pareto:r.pareto,type:r.type,P:[],A:[],X:[],namaIo:new Set(),layanan:new Set()}; p[r.src].push(r); p.namaIo.add(r.namaIo); p.layanan.add(r.layanan); });
+  const pairList=Object.values(pairs).map(p=>({...p,namaIo:[...p.namaIo].join(' / '),layanan:[...p.layanan].join(' / '),nomap:!(p.P.length&&p.A.length)}));
+  pairList.forEach(p=>[...p.P,...p.A].forEach(r=>r.nomap=p.nomap));
+  return {recs,months:months.map(x=>x.h),headerRow:hi+1,header:H,cols:C,sign,skippedTotal,skippedBlank,textNums,pairList,srcUnknown:recs.filter(r=>r.src==='X').length};
+}
+function parseCatatan(rows){ return rows.map((r,i)=>({row:i+1,cells:r.map(T).filter(Boolean)})).filter(x=>x.cells.length) }
+
+/* ---------- Agregasi ---------- */
+function sumM(r,m0,m1){let s=0;for(let i=m0;i<=m1;i++)s+=r.m[i]||0;return s}
+function emptyAgg(k){return {klien:k,revP:0,revA:0,dirP:0,dirA:0,depP:0,depA:0}}
+function aggRecs(recs,m0,m1,keyFn){
+  const o={};
+  recs.forEach(r=>{ if(r.src==='X') return; const k=keyFn(r); const a=o[k]=o[k]||emptyAgg(k); const v=sumM(r,m0,m1); const s=r.src;
+    if(r.type==='REV') a['rev'+s]+=v; else if(r.type==='DIR') a['dir'+s]+=v; else if(r.type==='DEP') a['dep'+s]+=v; });
+  return Object.values(o).map(finish);
+}
+function finish(a){ a.gpP=a.revP-a.dirP; a.gpA=a.revA-a.dirA; a.gpmP=a.revP?a.gpP/a.revP:null; a.gpmA=a.revA?a.gpA/a.revA:null; return a }
+function totalOf(list){ const t=emptyAgg('TOTAL'); let hasDep=false; list.forEach(a=>{ ['revP','revA','dirP','dirA'].forEach(k=>t[k]+=a[k]||0); if(a.depP!=null){t.depP+=a.depP||0;t.depA+=a.depA||0;hasDep=true} }); if(!hasDep){t.depP=null;t.depA=null} return finish(t) }
+function monthly(recs,m0,m1){
+  const out=[];
+  for(let i=m0;i<=m1;i++){ const a=emptyAgg(i); recs.forEach(r=>{ if(r.src==='X')return; const v=r.m[i]||0; if(r.type==='REV')a['rev'+r.src]+=v; else if(r.type==='DIR')a['dir'+r.src]+=v; else if(r.type==='DEP')a['dep'+r.src]+=v }); out.push(finish(a)); }
+  return out;
+}
+const ratio=(a,p)=>p?a/p:null;
+const varPct=(p,a)=>p?(a-p)/Math.abs(p):null;
+/* status: arah variance berbeda untuk pendapatan/profit vs biaya */
+function stRev(p,a){ if(!p) return 'na'; if(p<0) return a>=p?'fav':'unf'; const x=a/p; return x>=1?'fav':x>=.95?'ok':x>=.9?'warn':'unf' }
+function stCost(p,a){ if(!p) return a>0?'unf':'na'; const x=a/p; return x<.95?'fav':x<=1?'ok':x<=1.05?'warn':'unf' }
+</script>
+
+<!-- ===================== UI ===================== -->
+<script>
+const ST_LABEL={fav:'Favorable',ok:'On Track',warn:'Warning',unf:'Unfavorable',na:'N/A'};
+const CLR={plan:'#7F8EAD',act:'#C9A962',teal:'#2FB3A5',fav:'#34B37C',unf:'#E25D5D',warn:'#E2A94B',grid:'#1F2C45',muted:'#8D99B0',text:'#E8ECF4'};
+const CAT_CLR=['#C9A962','#2FB3A5','#7F8EAD','#B07CC6','#E2A94B','#5B9BD5','#D46A8C','#8FB573','#6C7A96'];
+const nf0=new Intl.NumberFormat('id-ID',{maximumFractionDigits:0});
+const nf2=new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
+const nf1=new Intl.NumberFormat('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1});
+function rp(v,full){ if(v==null||isNaN(v)) return 'N/A'; const a=Math.abs(v), s=v<0?'−':''; if(full) return s+'Rp '+nf0.format(a);
+  if(a>=1e12) return s+'Rp '+nf2.format(a/1e12)+' T'; if(a>=1e9) return s+'Rp '+nf2.format(a/1e9)+' M'; if(a>=1e6) return s+'Rp '+nf2.format(a/1e6)+' jt'; if(a>=1e3) return s+'Rp '+nf2.format(a/1e3)+' rb'; return s+'Rp '+nf0.format(a) }
+function rpAxis(v){ const a=Math.abs(v),s=v<0?'−':''; if(a>=1e9) return s+nf1.format(a/1e9)+' M'; if(a>=1e6) return s+nf0.format(a/1e6)+' jt'; return s+nf0.format(a) }
+function pct(x,d=1){ if(x==null||!isFinite(x)) return 'N/A'; return new Intl.NumberFormat('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d}).format(x*100)+'%' }
+function pp(x){ if(x==null||!isFinite(x)) return 'N/A'; return (x>=0?'+':'−')+nf1.format(Math.abs(x*100))+' pp' }
+function sgn(v){ return v==null?'N/A':(v>=0?'+':'')+rp(v) }
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const badge=s=>`<span class="st ${s}">${ST_LABEL[s]}</span>`;
+const $=id=>document.getElementById(id);
+const mLabel=h=>h.replace('-',' ');
+
+/* ---------- STATE ---------- */
+let RAW=null, D=null, lastHash=null, lastChange=null, timer=null, nextAt=0;
+const F={klien:'*',layanan:'*',pareto:'*',m0:0,m1:0,basis:'summary',mat:50e6};
+let activePage='p1'; const charts={};
+const detailState={q:'',type:'*',flag:'*',sort:'absVar',dir:-1,page:0,size:15};
+
+/* ---------- FETCH (live dari link publish) ----------
+   Strategi: (1) temukan gid tiap sheet dari halaman publish (tahan terhadap sheet diganti nama/urutan),
+   (2) ambil CSV satu per satu dengan retry, (3) URL alternatif export, (4) cache data terakhir di browser. */
+const CACHE_KEY='s3dash_cache_v1';
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function fetchText(url,tries=2){
+  let last;
+  for(let i=0;i<tries;i++){
+    try{
+      const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),20000);
+      const r=await fetch(url+(url.includes('?')?'&':'?')+'_='+Date.now(),{cache:'no-store',signal:ctl.signal,credentials:'omit'});
+      clearTimeout(to);
+      if(!r.ok){ last=new Error('HTTP '+r.status); if(r.status===400||r.status===404) break; }
+      else return await r.text();
+    }catch(e){ last=e.name==='AbortError'?new Error('timeout'):e }
+    if(i<tries-1) await sleep(600*(i+1));
+  }
+  throw last;
+}
+async function discoverGids(){
+  try{
+    const t=await fetchText(CONFIG.pubBase+"html",1);
+    const names=[...t.matchAll(/name:\s*"([^"]+)"/g)].map(m=>m[1]), gids=[...t.matchAll(/gid:\s*"(-?\d+)"/g)].map(m=>m[1]);
+    if(names.length&&names.length===gids.length){ const map={}; names.forEach((n,i)=>map[n.trim().toLowerCase()]=gids[i]); return map }
+  }catch(e){}
+  return null;
+}
+async function fetchSheet(key,gidMap){
+  const s=CONFIG.sheets[key];
+  let gid=s.gid;
+  if(gidMap){ const g=gidMap[s.name.toLowerCase()]; if(g) gid=g; else if(key!=='summary'&&key!=='rekap') throw new Error(s.name+' tidak ada di publikasi'); }
+  const urls=[CONFIG.pubBase+'?gid='+gid+'&single=true&output=csv'];
+  if(CONFIG.docId) urls.push('https://docs.google.com/spreadsheets/d/'+CONFIG.docId+'/export?format=csv&gid='+gid);
+  let last;
+  for(const u of urls){
+    try{
+      const t=await fetchText(u);
+      if(/^\s*<(!DOCTYPE|html)/i.test(t)) throw new Error('respons bukan CSV');
+      return t;
+    }catch(e){ last=e }
+  }
+  throw new Error(s.name+': '+(last&&last.message||'gagal'));
+}
+function hash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return h}
+function inSandbox(){ try{ return window.self!==window.top || location.origin==='null'&&location.protocol!=='file:' }catch(e){ return true } }
+let loading=false;
+async function load(manual){
+  if(loading) return; loading=true;
+  setLive('load','Memuat…');
+  try{
+    const gidMap=await discoverGids();
+    const summary=await fetchSheet('summary',gidMap);
+    const rekap=await fetchSheet('rekap',gidMap);
+    const catatan=await fetchSheet('catatan',gidMap).catch(()=>'');
+    ingest({summary,rekap,catatan},'Google Sheets (live)');
+    try{ localStorage.setItem(CACHE_KEY,JSON.stringify({raw:{summary,rekap,catatan},ts:Date.now()})) }catch(e){}
+    if(manual) toast('Data berhasil dimuat ulang');
+  }catch(e){
+    console.error(e);
+    let usedCache=false;
+    if(!RAW){ try{ const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); if(c&&c.raw){ ingest(c.raw,'Cache browser · '+fmtTime(new Date(c.ts))); usedCache=true } }catch(_){} }
+    setLive('err',usedCache?'Offline · data cache':'Gagal terhubung');
+    const why=inSandbox()
+      ? `File ini sedang dibuka di <b>jendela pratinjau</b> (mis. pratinjau di aplikasi Claude/Drive/WhatsApp/email) yang memblokir koneksi internet. <b>Unduh file-nya</b>, lalu buka dengan double-click di <b>Chrome / Edge</b>.`
+      : `Kemungkinan penyebab: koneksi internet terputus, jaringan kantor memblokir <code>docs.google.com</code> / <code>googleusercontent.com</code>, atau sheet tidak lagi “Publish to web”.`;
+    showNotice(D&&D.src.startsWith('Excel')?'warn':'err',`<div><b>Data live tidak dapat diambil</b> (${esc(e.message||String(e))}).<br>${why}<br>${usedCache?'Sementara ditampilkan data terakhir yang tersimpan di browser ini. ':RAW?`Dashboard tetap menampilkan data terakhir (${esc(D.src)}). `:''}Alternatif: tombol <b>⇪ Upload</b> untuk file Excel (.xlsx) hasil <i>File → Download</i> dari Google Sheets. <button class="btn" style="margin-left:6px" onclick="load(true)">↻ Coba lagi</button></div>`);
+    if(!RAW){ $('loader').classList.add('hide'); renderEmpty(); }
+  }finally{ loading=false }
+  schedule();
+}
+function ingest(raw,srcLabel){
+  const sk=srcLabel.split(/[:·(]/)[0].trim(); if(sk!==ingest._sk){ lastHash=null; lastChange=null } ingest._sk=sk;
+  const h=hash(raw.summary+'§'+raw.rekap+'§'+raw.catatan);
+  const changed=lastHash!==null&&h!==lastHash;
+  if(lastHash===null||changed) lastChange=new Date();
+  lastHash=h;
+  const summary=parseSummary(parseCSV(raw.summary));
+  const rekap=parseRekap(parseCSV(raw.rekap));
+  const catatan=raw.catatan?parseCatatan(parseCSV(raw.catatan)):[];
+  const firstLoad=!D;
+  RAW=raw; D={summary,rekap,catatan,src:srcLabel,fetched:new Date()};
+  if(firstLoad||F.m1>=rekap.months.length){F.m0=0;F.m1=rekap.months.length-1}
+  buildFilterOptions();
+  $('lastFetch').textContent=fmtTime(D.fetched); $('lastChange').textContent=lastChange?fmtTime(lastChange):'–';
+  setLive(srcLabel.includes('live')?'live':'load',srcLabel.includes('live')?'Live · Google Sheets':srcLabel.startsWith('Cache')?'Offline · data cache':srcLabel.startsWith('Excel')?'Data Excel':'Data unggahan (offline)');
+  if(srcLabel.includes('live')) $('notices').innerHTML='';
+  $('loader').classList.add('hide');
+  if(changed) toast('Perubahan data terdeteksi — dashboard diperbarui');
+  renderAll();
+}
+function fmtTime(d){ return d.toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}) }
+function setLive(c,t){ $('liveDot').className='dot '+c; $('liveTxt').textContent=t }
+function schedule(){
+  clearInterval(timer); const min=SRC_MODE==='live'?+$('refreshSel').value:0;
+  if(!min){ $('countdown').textContent=''; return }
+  nextAt=Date.now()+min*60000;
+  timer=setInterval(()=>{ const s=Math.max(0,Math.round((nextAt-Date.now())/1000)); $('countdown').textContent='berikutnya '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); if(s<=0){clearInterval(timer);load(false)} },1000);
+}
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3200) }
+function showNotice(cls,html){ $('notices').innerHTML=`<div class="notice ${cls}">${html}</div>` }
+
+/* ---------- UPLOAD (cadangan) ---------- */
+$('fileIn').addEventListener('change',async e=>{
+  const files=[...e.target.files]; if(!files.length) return;
+  const raw={summary:RAW?.summary||'',rekap:RAW?.rekap||'',catatan:RAW?.catatan||''};
+  try{
+    for(const f of files){
+      if(/\.xlsx?$/i.test(f.name)){
+        if(!window.XLSX) await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=res;s.onerror=()=>rej(new Error('Library Excel gagal dimuat'));document.head.appendChild(s)});
+        const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
+        for(const k in CONFIG.sheets){ const ws=wb.Sheets[CONFIG.sheets[k].name]; if(ws){ ws['!ref']&&(ws['!ref']=ws['!ref'].replace(/^[A-Z]+\d+/,'A1')); raw[k]=XLSX.utils.sheet_to_csv(ws,{blankrows:true,rawNumbers:false}); } }
+      }else{
+        const t=await f.text();
+        if(/(^|,)\s*Klien\s*,/m.test(t)&&/Source/.test(t)) raw.rekap=t;
+        else if(/^\s*Layanan\s*,/m.test(t)) raw.summary=t;
+        else if(/catatan/i.test(f.name)) raw.catatan=t;
+        else throw new Error('Tidak dapat mengenali isi '+f.name);
+      }
+    }
+    if(!raw.summary||!raw.rekap) throw new Error('Perlu sheet “Summary” dan “Rekap SAP S3”');
+    $('refreshSel').value='0'; schedule();
+    ingest(raw,'Upload: '+files.map(f=>f.name).join(', '));
+    toast('Data unggahan dimuat · auto-refresh dimatikan');
+  }catch(err){ showNotice('err','<b>Upload gagal:</b> '+esc(err.message)) }
+  e.target.value='';
+});
+
+/* ---------- FILTER ---------- */
+function opts(sel,list,allLabel,cur){ sel.innerHTML=`<option value="*">${allLabel}</option>`+list.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join(''); sel.value=list.includes(cur)?cur:'*' }
+function buildFilterOptions(){
+  const R=D.rekap.recs;
+  const kl=[...new Set([...D.summary.clients.map(c=>c.klien),...R.map(r=>r.klien)])].sort((a,b)=>a.localeCompare(b));
+  opts($('fKlien'),kl,'Semua klien',F.klien); F.klien=$('fKlien').value;
+  const lay=[...new Set(R.filter(r=>F.klien==='*'||r.klien===F.klien).map(r=>r.layanan))].sort();
+  opts($('fLayanan'),lay,'Semua layanan',F.layanan); F.layanan=$('fLayanan').value;
+  const par=[...new Set(R.map(r=>r.pareto))].sort();
+  opts($('fPareto'),par,'Semua kategori',F.pareto); F.pareto=$('fPareto').value;
+  const ms=D.rekap.months.map((m,i)=>`<option value="${i}">${mLabel(m)}</option>`).join('');
+  $('fM0').innerHTML=ms; $('fM1').innerHTML=ms; $('fM0').value=F.m0; $('fM1').value=F.m1;
+}
+function detailFiltersActive(){ return F.layanan!=='*'||F.pareto!=='*'||F.m0!==0||F.m1!==D.rekap.months.length-1 }
+function effBasis(){ return detailFiltersActive()?'rekap':F.basis }
+function fRecs(ignorePareto){ return D.rekap.recs.filter(r=>(F.klien==='*'||r.klien===F.klien)&&(F.layanan==='*'||r.layanan===F.layanan)&&(ignorePareto||F.pareto==='*'||r.pareto===F.pareto)) }
+function clientList(){
+  if(effBasis()==='summary') return D.summary.clients.filter(c=>F.klien==='*'||c.klien===F.klien).map(c=>finish({klien:c.klien,revP:c.revP,revA:c.revA,dirP:c.dirP,dirA:c.dirA,depP:null,depA:null}));
+  return aggRecs(fRecs(),F.m0,F.m1,r=>r.klien);
+}
+['fKlien','fLayanan','fPareto','fM0','fM1'].forEach(id=>$(id).addEventListener('change',()=>{
+  F.klien=$('fKlien').value; F.layanan=$('fLayanan').value; F.pareto=$('fPareto').value; F.m0=+$('fM0').value; F.m1=+$('fM1').value;
+  if(F.m0>F.m1){ if(id==='fM0'){F.m1=F.m0;$('fM1').value=F.m1}else{F.m0=F.m1;$('fM0').value=F.m0} }
+  if(id==='fKlien') buildFilterOptions();
+  detailState.page=0; renderAll();
+}));
+$('basisSeg').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; F.basis=b.dataset.b; renderAll() });
+$('fMat').addEventListener('change',()=>{ F.mat=Math.max(0,+$('fMat').value||0)*1e6; renderAll() });
+$('btnReset').addEventListener('click',()=>{ Object.assign(F,{klien:'*',layanan:'*',pareto:'*',m0:0,m1:D.rekap.months.length-1,basis:'summary'}); Object.assign(detailState,{q:'',type:'*',flag:'*',page:0}); $('dSearch').value='';$('dType').value='*';$('dFlag').value='*'; buildFilterOptions(); renderAll() });
+$('btnRefresh').addEventListener('click',()=>{ if(SRC_MODE==='live') load(true); else { loadEmbedded(); toast('Mode Excel: data statis dari file Excel. Pilih “Google Sheets (live)” untuk update otomatis.') } });
+$('srcSel').addEventListener('change',e=>{ SRC_MODE=e.target.value; try{localStorage.setItem('s3dash_src',SRC_MODE)}catch(_){} $('notices').innerHTML=''; boot() });
+$('refreshSel').addEventListener('change',schedule);
+$('tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; go(b.dataset.p) });
+function go(p){ activePage=p; document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.p===p)); document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x.id===p)); renderPage(p) }
+
+/* ---------- CHART helper ---------- */
+function ch(id){ const el=$(id); if(!el) return null; let c=charts[id]; if(c&&c.getDom()!==el){c.dispose();c=null} if(!c){c=echarts.init(el,null,{renderer:'canvas'});charts[id]=c} return c }
+const baseOpt=()=>({backgroundColor:'transparent',textStyle:{fontFamily:'Inter, Aptos, sans-serif',color:CLR.muted},animationDuration:600,
+  grid:{left:8,right:16,top:36,bottom:8,containLabel:true},
+  tooltip:{trigger:'axis',backgroundColor:'#16223A',borderColor:'#2A3956',textStyle:{color:CLR.text,fontSize:12},axisPointer:{type:'shadow',shadowStyle:{color:'rgba(201,169,98,.06)'}}},
+  legend:{top:0,right:0,textStyle:{color:CLR.muted,fontSize:11},itemWidth:10,itemHeight:10,icon:'roundRect'}});
+const axX=d=>({type:'category',data:d,axisLine:{lineStyle:{color:CLR.grid}},axisTick:{show:false},axisLabel:{color:CLR.muted,fontSize:11}});
+const axY=(fmt,extra)=>Object.assign({type:'value',splitLine:{lineStyle:{color:CLR.grid,type:'dashed'}},axisLabel:{color:CLR.muted,fontSize:11,formatter:fmt||rpAxis}},extra||{});
+function ttRp(params){ const ps=Array.isArray(params)?params:[params]; let s=`<b>${esc(ps[0].axisValueLabel||ps[0].name)}</b>`; ps.forEach(p=>{ const v=Array.isArray(p.value)?p.value[1]:p.value; if(p.seriesName==='_base') return; s+=`<br>${p.marker}${esc(p.seriesName)}: <b>${/%|Util|Variance %/.test(p.seriesName)?pct(v/100):rp(v)}</b>` }); return s }
+window.addEventListener('resize',()=>Object.values(charts).forEach(c=>c.resize()));
+
+/* ---------- RENDER ---------- */
+function renderEmpty(){ $('kpiGrid').innerHTML='<div class="card empty" style="grid-column:1/-1">Data Tidak Tersedia — sambungkan ulang ke Google Sheets atau unggah file.</div>' }
+function renderAll(){
+  if(!D) return;
+  document.querySelectorAll('#basisSeg button').forEach(b=>b.classList.toggle('on',b.dataset.b===effBasis()));
+  const forced=detailFiltersActive();
+  const per=`${mLabel(D.rekap.months[F.m0])} – ${mLabel(D.rekap.months[F.m1])}`;
+  $('subttl').textContent=`SAP vs Realisasi (OPS) · Segmen 3 · Periode ${per} · Basis KPI: ${effBasis()==='summary'?'Summary (rekonsiliasi)':'Rekap SAP S3 (detail)'}`;
+  let n='';
+  if(forced&&F.basis==='summary') n=`<div class="notice warn">Filter Layanan / Kategori / Bulan aktif → KPI otomatis dihitung dari <b>Rekap SAP S3</b> (sheet Summary hanya tersedia di level klien, YTD).</div>`;
+  if(!$('notices').querySelector('.err')) $('notices').innerHTML=n;
+  $('footInfo').textContent=`Sumber aktif: ${D.src} · ${D.rekap.recs.length} baris detail · ${D.summary.clients.length} klien di Summary`;
+  ['p1','p2','p3','p4','p5','p6'].forEach(p=>dirty[p]=true);
+  renderPage(activePage);
+}
+const dirty={};
+function renderPage(p){ if(!D||!dirty[p]) return; dirty[p]=false; ({p1:renderP1,p2:renderP2,p3:renderP3,p4:renderP4,p5:renderP5,p6:renderP6})[p](); setTimeout(()=>Object.values(charts).forEach(c=>{ if(c.getDom().offsetParent) c.resize() }),30) }
+
+function kpiCard({lab,val,cmp,st,bar,drill,muted}){ return `<div class="card kpi ${muted?'muted':''}" ${drill?`data-drill="${drill}"`:''}><div class="lab"><span>${lab}</span>${st?badge(st):''}</div><div class="val">${val}</div><div class="cmp">${cmp||''}</div>${bar!=null?`<div class="bar"><i style="width:${Math.max(0,Math.min(100,bar*100))}%;background:${bar>1.0001&&/cost/i.test(drill||'')?CLR.unf:CLR.act}"></i></div>`:''}</div>` }
+function bindDrill(container){ container.querySelectorAll('[data-drill]').forEach(el=>el.onclick=()=>{ const d=el.dataset.drill; detailState.type=d==='cost'?'DIR':d==='rev'?'REV':'*'; detailState.flag='*'; detailState.page=0; $('dType').value=detailState.type; $('dFlag').value='*'; go('p5') }) }
+
+function renderP1(){
+  const L=clientList(), t=totalOf(L), basis=effBasis();
+  const vGp=t.gpA-t.gpP, vRev=t.revA-t.revP, vDir=t.dirA-t.dirP;
+  const html=[
+    kpiCard({lab:'SAP · Pendapatan',val:rp(t.revP),cmp:`Rencana/SAP · ${L.length} klien`,drill:'rev'}),
+    kpiCard({lab:'Realisasi · Pendapatan',val:rp(t.revA),cmp:`Achievement <b>${pct(ratio(t.revA,t.revP))}</b>`,st:stRev(t.revP,t.revA),bar:ratio(t.revA,t.revP),drill:'rev'}),
+    kpiCard({lab:'Variance Pendapatan',val:`<span class="${vRev>=0?'up':'dn'}">${sgn(vRev)}</span>`,cmp:`${pct(varPct(t.revP,t.revA))} terhadap SAP`,drill:'rev'}),
+    kpiCard({lab:'Direct Cost',val:rp(t.dirA),cmp:`SAP <b>${rp(t.dirP)}</b> · Utilization <b>${pct(ratio(t.dirA,t.dirP))}</b> · Sisa ${rp(t.dirP-t.dirA)}`,st:stCost(t.dirP,t.dirA),bar:ratio(t.dirA,t.dirP),drill:'cost'}),
+    kpiCard({lab:'Gross Profit',val:rp(t.gpA),cmp:`SAP <b>${rp(t.gpP)}</b> · Var <b class="${vGp>=0?'up':'dn'}">${sgn(vGp)}</b> (${pct(varPct(t.gpP,t.gpA))})`,st:stRev(t.gpP,t.gpA),bar:ratio(t.gpA,t.gpP),drill:'all'}),
+    kpiCard({lab:'Gross Profit Margin',val:pct(t.gpmA,2),cmp:`SAP <b>${pct(t.gpmP,2)}</b> · ${pp(t.gpmA!=null&&t.gpmP!=null?t.gpmA-t.gpmP:null)}`,st:(t.gpmA!=null&&t.gpmP!=null)?(t.gpmA>=t.gpmP?'fav':t.gpmA>=t.gpmP-0.02?'warn':'unf'):'na',drill:'all'}),
+    kpiCard({lab:'Depresiasi',val:t.depA==null?'Data Tidak Tersedia':rp(t.depA),cmp:t.depA==null?'Tidak ada di Summary · pilih basis Rekap SAP S3':`SAP <b>${rp(t.depP)}</b> · di luar Gross Profit`,st:t.depA==null?null:stCost(t.depP,t.depA),muted:t.depA==null}),
+    kpiCard({lab:'Forecast Year-End',val:'Data Tidak Tersedia',cmp:'Sumber tidak memuat forecast / asumsi proyeksi',muted:true})
+  ].join('');
+  $('kpiGrid').innerHTML=html; bindDrill($('kpiGrid'));
+
+  // trend (selalu dari rekap)
+  const M=monthly(fRecs(),F.m0,F.m1), labs=D.rekap.months.slice(F.m0,F.m1+1).map(mLabel);
+  const o=baseOpt(); o.tooltip.formatter=ttRp; o.xAxis=axX(labs); o.yAxis=axY();
+  o.series=[
+    {name:'Revenue SAP',type:'bar',data:M.map(a=>a.revP),itemStyle:{color:CLR.plan,borderRadius:[4,4,0,0]},barMaxWidth:22},
+    {name:'Revenue Realisasi',type:'bar',data:M.map(a=>a.revA),itemStyle:{color:CLR.act,borderRadius:[4,4,0,0]},barMaxWidth:22},
+    {name:'GP SAP',type:'line',data:M.map(a=>a.gpP),symbol:'circle',symbolSize:6,lineStyle:{color:'#9FB0D0',width:2,type:'dashed'},itemStyle:{color:'#9FB0D0'}},
+    {name:'GP Realisasi',type:'line',data:M.map(a=>a.gpA),symbol:'circle',symbolSize:6,lineStyle:{color:CLR.teal,width:2.5},itemStyle:{color:CLR.teal},smooth:.2}
+  ];
+  ch('cTrend').setOption(o,true);
+
+  // waterfall
+  const steps=[{n:'GP SAP',v:t.gpP,tot:true},{n:'Δ Pendapatan',v:vRev},{n:'Δ Direct Cost',v:-vDir},{n:'GP Realisasi',v:t.gpA,tot:true}];
+  let run=0; const base=[],val=[];
+  steps.forEach(s=>{ if(s.tot){base.push(0);val.push({value:s.v,itemStyle:{color:s.n==='GP SAP'?CLR.plan:CLR.act}});run=s.v} else { const lo=s.v>=0?run:run+s.v; base.push(lo); val.push({value:Math.abs(s.v),itemStyle:{color:s.v>=0?CLR.fav:CLR.unf},raw:s.v}); run+=s.v } });
+  const w=baseOpt(); w.legend.show=false; w.xAxis=axX(steps.map(s=>s.n)); w.yAxis=axY();
+  w.tooltip.formatter=ps=>{const p=ps.find(x=>x.seriesName!=='_base');const s=steps[p.dataIndex];return `<b>${s.n}</b><br>${s.tot?rp(s.v):sgn(s.v)}<br><span style="color:${CLR.muted}">${s.n==='Δ Direct Cost'?'Biaya realisasi '+(s.v>=0?'lebih rendah':'lebih tinggi')+' dari SAP':''}</span>`};
+  w.series=[{name:'_base',type:'bar',stack:'w',data:base,itemStyle:{color:'transparent'},emphasis:{disabled:true}},
+    {name:'Nilai',type:'bar',stack:'w',data:val,barMaxWidth:56,label:{show:true,position:'top',color:CLR.text,fontSize:11,formatter:p=>{const s=steps[p.dataIndex];return s.tot?rpAxis(s.v):(s.v>=0?'+':'')+rpAxis(s.v)}},itemStyle:{borderRadius:4}}];
+  ch('cWaterfall').setOption(w,true);
+
+  // achievement table
+  const rows=[
+    ['Pendapatan',t.revP,t.revA,stRev(t.revP,t.revA),'Achievement'],
+    ['Direct Cost',t.dirP,t.dirA,stCost(t.dirP,t.dirA),'Utilization'],
+    ['Gross Profit',t.gpP,t.gpA,stRev(t.gpP,t.gpA),'Achievement']
+  ]; if(t.depP!=null) rows.push(['Depresiasi',t.depP,t.depA,stCost(t.depP,t.depA),'Utilization']);
+  $('achieveTbl').innerHTML=`<table><thead><tr><th>Indikator</th><th class="n">SAP</th><th class="n">Realisasi</th><th class="n">%</th><th>Status</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}<div class="mini">${r[4]}</div></td><td class="n">${rp(r[1])}</td><td class="n">${rp(r[2])}</td><td class="n">${pct(ratio(r[2],r[1]))}</td><td>${badge(r[3])}</td></tr>`).join('')}</tbody></table>
+  <div class="mini" style="margin-top:10px">Klien favorable (GP): <b style="color:var(--fav)">${L.filter(c=>stRev(c.gpP,c.gpA)==='fav').length}</b> · warning: <b style="color:var(--warn)">${L.filter(c=>['ok','warn'].includes(stRev(c.gpP,c.gpA))).length}</b> · unfavorable: <b style="color:var(--unf)">${L.filter(c=>stRev(c.gpP,c.gpA)==='unf').length}</b></div>`;
+
+  renderInsights(L,t);
+}
+
+function renderInsights(L,t){
+  const find=[],risk=[];
+  const it=(tag,txt,meta)=>`<div class="it"><span class="tag ${tag}">${tag}</span><div>${txt}${meta?`<div class="meta">${meta}</div>`:''}</div></div>`;
+  const per=`${mLabel(D.rekap.months[F.m0])}–${mLabel(D.rekap.months[F.m1])}`;
+  if(!L.length){ $('insFind').innerHTML=it('fakta','Data Tidak Tersedia untuk filter ini.'); $('insRisk').innerHTML=''; return }
+  find.push(it('fakta',`Realisasi pendapatan <b>${rp(t.revA)}</b> vs SAP <b>${rp(t.revP)}</b> (achievement ${pct(ratio(t.revA,t.revP))}); Gross Profit <b>${rp(t.gpA)}</b>, variance ${sgn(t.gpA-t.gpP)}, GPM ${pct(t.gpmA,2)} (${pp(t.gpmA-t.gpmP)} vs SAP).`,`Basis ${effBasis()==='summary'?'Summary':'Rekap SAP S3, '+per}`));
+  const byVar=L.map(c=>({...c,v:c.gpA-c.gpP})).sort((a,b)=>b.v-a.v);
+  const totPos=byVar.filter(c=>c.v>0).reduce((a,c)=>a+c.v,0);
+  if(byVar[0]&&byVar[0].v>0){ const top=byVar.slice(0,3).filter(c=>c.v>0); find.push(it('fakta',`Kontributor variance GP positif terbesar: ${top.map(c=>`<b>${esc(c.klien)}</b> (${sgn(c.v)})`).join(', ')} — ${pct(top.reduce((a,c)=>a+c.v,0)/totPos)} dari total variance positif.`, 'Komponen: selisih pendapatan & direct cost per klien')) }
+  const gpRank=[...L].sort((a,b)=>b.gpA-a.gpA); const tg=L.reduce((a,c)=>a+Math.max(0,c.gpA),0);
+  if(gpRank[0]) find.push(it('fakta',`Kontribusi GP realisasi tertinggi: <b>${esc(gpRank[0].klien)}</b> ${rp(gpRank[0].gpA)} (${pct(gpRank[0].gpA/tg)} dari GP), disusul ${gpRank.slice(1,3).map(c=>esc(c.klien)).join(' & ')}.`));
+  // risiko
+  const neg=byVar.filter(c=>c.v<0&&Math.abs(c.v)>=F.mat).sort((a,b)=>a.v-b.v);
+  if(neg.length) risk.push(it('risiko',`${neg.length} klien dengan GP di bawah SAP melewati materialitas; terbesar <b>${esc(neg[0].klien)}</b> ${sgn(neg[0].v)} (pendapatan ${sgn(neg[0].revA-neg[0].revP)}, direct cost ${sgn(neg[0].dirA-neg[0].dirP)}).`,'Aksi disarankan: review realisasi pendapatan & biaya · PIC (peran): Account Manager klien + Finance Controller Segmen'));
+  const lowM=L.filter(c=>c.revA>0&&c.gpmA!=null&&c.gpmA<0.25).sort((a,b)=>b.revA-a.revA);
+  if(lowM.length) risk.push(it('risiko',`Margin tipis (&lt;25%) pada klien ber-revenue besar: ${lowM.slice(0,3).map(c=>`<b>${esc(c.klien)}</b> ${pct(c.gpmA)}`).join(', ')}.`,'Aksi disarankan: evaluasi struktur biaya JASNAKER/JARKOM & harga kontrak · PIC (peran): Product/Service Owner + Cost Controller'));
+  const lossM=L.filter(c=>c.gpA<0);
+  if(lossM.length) risk.push(it('risiko',`Klien dengan GP realisasi negatif: ${lossM.map(c=>`<b>${esc(c.klien)}</b> ${rp(c.gpA)}`).join(', ')}.`,'Potensi kerugian · PIC (peran): Account Manager'));
+  // overbudget kategori (rekap)
+  const cat=aggCat(fRecs(true)).filter(c=>c.type!=='REV'&&c.A-c.P>=F.mat).sort((a,b)=>(b.A-b.P)-(a.A-a.P));
+  if(cat.length) risk.push(it('risiko',`Kategori biaya overbudget (Rekap SAP S3): ${cat.slice(0,3).map(c=>`<b>${esc(c.pareto)}</b> ${sgn(c.A-c.P)}`).join(', ')}.`,'PIC (peran): Cost Controller'));
+  // data quality
+  const rc=reconRows(); const bad=rc.filter(r=>r.flag); const swap=rc.filter(r=>r.swap);
+  if(bad.length) risk.push(it('indikasi',`${bad.length} klien memiliki selisih material antara sheet Summary dan Rekap SAP S3${swap.length?`; ${swap.length} di antaranya terindikasi label klien tertukar (mis. ${swap.slice(0,2).map(r=>`<b>${esc(r.klien)}</b> ↔ ${esc(r.swap)}`).join(', ')})`:''}.`,'Bukan kesimpulan final — perlu verifikasi manual · PIC (peran): Finance Controller / Accounting'));
+  if(D.rekap.textNums) risk.push(it('indikasi',`${D.rekap.textNums} sel nilai di Rekap SAP S3 tersimpan sebagai <b>teks</b> (format desimal koma, mis. “119352749,3”), sehingga kolom Grand Total di sheet tidak ikut menjumlahkannya. Dashboard mengonversinya menjadi angka.`,'Perbaiki format sel menjadi Number di sumber · PIC (peran): Finance Analyst / Data Owner'));
+  if(D.catatan.length) risk.push(it('indikasi',`Catatan sumber: ${D.catatan.slice(0,2).map(c=>esc(c.cells.join(' · '))).join(' | ')}.`,'Dari sheet Catatan'));
+  if(L.some(c=>c.revP===0&&c.revA>0)) find.push(it('hipotesis',`Ada klien dengan realisasi pendapatan namun SAP = 0 (${L.filter(c=>c.revP===0&&c.revA>0).map(c=>esc(c.klien)).join(', ')}); kemungkinan pendapatan belum dibukukan di SAP.`,'Hipotesis — perlu konfirmasi Accounting'));
+  $('insFind').innerHTML=find.slice(0,4).join(''); $('insRisk').innerHTML=risk.slice(0,6).join('')||it('fakta','Tidak ada risiko di atas ambang materialitas.');
+}
+
+function aggCat(recs){ const o={}; recs.forEach(r=>{ if(r.src==='X')return; const k=r.pareto; const a=o[k]=o[k]||{pareto:k,type:r.type,P:0,A:0}; a[r.src]+=sumM(r,F.m0,F.m1) }); return Object.values(o) }
+
+function renderP2(){
+  const L=clientList().filter(c=>c.revA||c.revP||c.dirA||c.dirP), t=totalOf(L);
+  const s=[...L].sort((a,b)=>a.gpA-b.gpA);
+  const o=baseOpt(); o.grid.left=8; o.legend.data=['GP Realisasi','GP SAP'];
+  o.yAxis={type:'category',data:s.map(c=>c.klien),axisLabel:{color:CLR.muted,fontSize:10.5,width:150,overflow:'truncate'},axisLine:{lineStyle:{color:CLR.grid}},axisTick:{show:false}};
+  o.xAxis=[axY(),axY(v=>nf0.format(v*100)+'%',{position:'top',splitLine:{show:false},min:-1,max:1,show:false})];
+  o.tooltip.formatter=ps=>{const c=s[ps[0].dataIndex];return `<b>${esc(c.klien)}</b><br>GP Realisasi: <b>${rp(c.gpA)}</b><br>GP SAP: ${rp(c.gpP)}<br>GPM Realisasi: ${pct(c.gpmA)} · SAP ${pct(c.gpmP)}<br><span style="color:${CLR.muted}">Klik untuk drill-down</span>`};
+  o.series=[{name:'GP SAP',type:'bar',data:s.map(c=>c.gpP),itemStyle:{color:CLR.plan,borderRadius:[0,3,3,0]},barMaxWidth:9},
+            {name:'GP Realisasi',type:'bar',data:s.map(c=>({value:c.gpA,itemStyle:{color:c.gpA<0?CLR.unf:CLR.act}})),itemStyle:{color:CLR.act,borderRadius:[0,3,3,0]},barMaxWidth:9,label:{show:true,position:'right',fontSize:10,color:CLR.muted,formatter:p=>'GPM '+pct(s[p.dataIndex].gpmA)}}];
+  o.grid.right=70;
+  const h=Math.max(420,s.length*22+60); $('cGpClient').style.height=h+'px';
+  const c1=ch('cGpClient'); c1.setOption(o,true); c1.resize(); c1.off('click'); c1.on('click',p=>openDrill(s[p.dataIndex].klien));
+
+  // matrix
+  const pos=L.filter(c=>c.revA>0);
+  const maxGp=Math.max(...pos.map(c=>Math.abs(c.gpA)),1);
+  const m=baseOpt(); m.legend.show=false; m.grid.top=20;
+  m.xAxis={type:'log',name:'Revenue',nameTextStyle:{color:CLR.muted},axisLabel:{color:CLR.muted,fontSize:11,formatter:rpAxis},splitLine:{lineStyle:{color:CLR.grid,type:'dashed'}},axisLine:{lineStyle:{color:CLR.grid}}};
+  m.yAxis=axY(v=>nf0.format(v*100)+'%'); m.tooltip={trigger:'item',backgroundColor:'#16223A',borderColor:'#2A3956',textStyle:{color:CLR.text,fontSize:12},formatter:p=>{const c=p.data.c;return `<b>${esc(c.klien)}</b><br>Revenue: ${rp(c.revA)}<br>GP: ${rp(c.gpA)}<br>GPM: ${pct(c.gpmA)}`}};
+  const medRev=median(pos.map(c=>c.revA));
+  m.series=[{type:'scatter',data:pos.map(c=>({value:[c.revA,c.gpmA],c,symbolSize:8+28*Math.sqrt(Math.abs(c.gpA)/maxGp),itemStyle:{color:c.gpmA<t.gpmA?(c.revA>=medRev?CLR.unf:CLR.warn):CLR.teal,opacity:.82,borderColor:'#0A101C'}})),
+    markLine:{silent:true,symbol:'none',lineStyle:{color:CLR.act,type:'dashed'},label:{color:CLR.act,position:'insideEndTop',formatter:'GPM agregat '+pct(t.gpmA)},data:[{yAxis:t.gpmA}]},
+    label:{show:true,formatter:p=>p.data.c.revA>=medRev?p.data.c.klien.slice(0,16):'',position:'top',color:CLR.muted,fontSize:10}}];
+  m.grid.right=40;
+  const c2=ch('cMatrix'); c2.setOption(m,true); c2.off('click'); c2.on('click',p=>p.data&&openDrill(p.data.c.klien));
+
+  // rev vs cost
+  const top=[...L].sort((a,b)=>b.revA-a.revA).slice(0,15);
+  const r=baseOpt(); r.tooltip.formatter=ttRp; r.xAxis=axX(top.map(c=>c.klien)); r.xAxis.axisLabel.rotate=35; r.xAxis.axisLabel.width=90; r.xAxis.axisLabel.overflow='truncate'; r.yAxis=axY();
+  r.series=[{name:'Revenue',type:'bar',data:top.map(c=>c.revA),itemStyle:{color:CLR.act,borderRadius:[3,3,0,0]},barMaxWidth:16},{name:'Direct Cost',type:'bar',data:top.map(c=>c.dirA),itemStyle:{color:CLR.plan,borderRadius:[3,3,0,0]},barMaxWidth:16}];
+  const c3=ch('cRevCost'); c3.setOption(r,true); c3.off('click'); c3.on('click',p=>openDrill(top[p.dataIndex].klien));
+
+  const hl=L.filter(c=>c.revA>=medRev&&c.gpmA!=null&&c.gpmA<t.gpmA).sort((a,b)=>b.revA-a.revA);
+  $('hiLoTbl').innerHTML=hl.length?`<div class="tbl short"><table><thead><tr><th>Klien</th><th class="n">Revenue</th><th class="n">GPM</th><th class="n">vs agregat</th></tr></thead><tbody>${hl.map(c=>`<tr class="click" data-k="${esc(c.klien)}"><td>${esc(c.klien)}</td><td class="n">${rp(c.revA)}</td><td class="n">${pct(c.gpmA)}</td><td class="n dn">${pp(c.gpmA-t.gpmA)}</td></tr>`).join('')}</tbody></table></div><div class="mini" style="margin-top:8px">Median revenue: ${rp(medRev)} · GPM agregat: ${pct(t.gpmA)}</div>`:'<div class="empty">Tidak ada klien pada kriteria ini</div>';
+  bindRows($('hiLoTbl'));
+
+  const rk=[...L].sort((a,b)=>b.gpA-a.gpA);
+  $('rankTbl').innerHTML=`<table><thead><tr><th>#</th><th>Klien</th><th class="n">Revenue SAP</th><th class="n">Revenue Real.</th><th class="n">Direct SAP</th><th class="n">Direct Real.</th><th class="n">GP SAP</th><th class="n">GP Real.</th><th class="n">Var GP</th><th class="n">GPM SAP</th><th class="n">GPM Real.</th><th>Status GP</th></tr></thead><tbody>${rk.map((c,i)=>`<tr class="click" data-k="${esc(c.klien)}"><td>${i+1}</td><td>${esc(c.klien)}</td><td class="n">${rp(c.revP)}</td><td class="n">${rp(c.revA)}</td><td class="n">${rp(c.dirP)}</td><td class="n">${rp(c.dirA)}</td><td class="n">${rp(c.gpP)}</td><td class="n">${rp(c.gpA)}</td><td class="n ${c.gpA-c.gpP>=0?'up':'dn'}">${sgn(c.gpA-c.gpP)}</td><td class="n">${pct(c.gpmP)}</td><td class="n">${pct(c.gpmA)}</td><td>${badge(stRev(c.gpP,c.gpA))}</td></tr>`).join('')}</tbody><tfoot><tr><td></td><td>Total</td><td class="n">${rp(t.revP)}</td><td class="n">${rp(t.revA)}</td><td class="n">${rp(t.dirP)}</td><td class="n">${rp(t.dirA)}</td><td class="n">${rp(t.gpP)}</td><td class="n">${rp(t.gpA)}</td><td class="n">${sgn(t.gpA-t.gpP)}</td><td class="n">${pct(t.gpmP)}</td><td class="n">${pct(t.gpmA)}</td><td>${badge(stRev(t.gpP,t.gpA))}</td></tr></tfoot></table>`;
+  bindRows($('rankTbl'));
+}
+function median(a){ if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y), m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2 }
+function bindRows(el){ el.querySelectorAll('tr[data-k]').forEach(tr=>tr.onclick=()=>openDrill(tr.dataset.k)) }
+
+/* ---------- Drill-down modal ---------- */
+let drillK=null;
+function openDrill(k){
+  drillK=k; const recs=D.rekap.recs.filter(r=>r.klien===k&&(F.layanan==='*'||r.layanan===F.layanan)&&(F.pareto==='*'||r.pareto===F.pareto));
+  const sm=D.summary.clients.find(c=>c.klien===k);
+  const byIo=aggRecs(recs,F.m0,F.m1,r=>r.layanan+' ¦ '+r.io);
+  const t=totalOf(byIo);
+  $('mTitle').textContent=k; $('mSub').textContent=`Drill-down Layanan / IO · ${mLabel(D.rekap.months[F.m0])}–${mLabel(D.rekap.months[F.m1])} · sumber: Rekap SAP S3${sm?' · Summary: Rev SAP '+rp(sm.revP)+' / Real. '+rp(sm.revA)+' · GP Real. '+rp(sm.revA-sm.dirA):''}`;
+  $('mKpi').innerHTML=[kpiCard({lab:'Revenue',val:rp(t.revA),cmp:`SAP ${rp(t.revP)} · ${pct(ratio(t.revA,t.revP))}`,st:stRev(t.revP,t.revA)}),kpiCard({lab:'Direct Cost',val:rp(t.dirA),cmp:`SAP ${rp(t.dirP)} · ${pct(ratio(t.dirA,t.dirP))}`,st:stCost(t.dirP,t.dirA)}),kpiCard({lab:'Gross Profit',val:rp(t.gpA),cmp:`SAP ${rp(t.gpP)} · GPM ${pct(t.gpmA)}`,st:stRev(t.gpP,t.gpA)})].join('');
+  $('ov').classList.add('on');
+  const M=monthly(recs,F.m0,F.m1); const o=baseOpt(); o.tooltip.formatter=ttRp; o.xAxis=axX(D.rekap.months.slice(F.m0,F.m1+1).map(mLabel)); o.yAxis=axY();
+  o.series=[{name:'Revenue SAP',type:'bar',data:M.map(a=>a.revP),itemStyle:{color:CLR.plan},barMaxWidth:18},{name:'Revenue Realisasi',type:'bar',data:M.map(a=>a.revA),itemStyle:{color:CLR.act},barMaxWidth:18},{name:'GP Realisasi',type:'line',data:M.map(a=>a.gpA),itemStyle:{color:CLR.teal},lineStyle:{color:CLR.teal}}];
+  setTimeout(()=>{ const c=ch('mChart'); c.setOption(o,true); c.resize() },20);
+  $('mTbl').innerHTML=`<table><thead><tr><th>Layanan</th><th>Nomor IO</th><th class="n">Rev SAP</th><th class="n">Rev Real.</th><th class="n">Direct SAP</th><th class="n">Direct Real.</th><th class="n">GP Real.</th><th class="n">GPM</th><th>Status</th></tr></thead><tbody>${byIo.sort((a,b)=>b.revA-a.revA).map(a=>{const [l,io]=a.klien.split(' ¦ ');return `<tr><td>${esc(l)}</td><td class="mini">${esc(io)}</td><td class="n">${rp(a.revP)}</td><td class="n">${rp(a.revA)}</td><td class="n">${rp(a.dirP)}</td><td class="n">${rp(a.dirA)}</td><td class="n">${rp(a.gpA)}</td><td class="n">${pct(a.gpmA)}</td><td>${badge(stRev(a.gpP,a.gpA))}</td></tr>`}).join('')}</tbody></table>`;
+}
+$('mClose').onclick=()=>$('ov').classList.remove('on');
+$('ov').addEventListener('click',e=>{ if(e.target.id==='ov') $('ov').classList.remove('on') });
+$('mToDetail').onclick=()=>{ $('ov').classList.remove('on'); detailState.q=drillK; $('dSearch').value=drillK; detailState.page=0; go('p5') };
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') $('ov').classList.remove('on') });
+
+function renderP3(){
+  const recs=fRecs(), M=monthly(recs,F.m0,F.m1), labs=D.rekap.months.slice(F.m0,F.m1+1).map(mLabel);
+  const mk=(id,kP,kA,lineName,lineFn)=>{ const o=baseOpt(); o.tooltip.formatter=ttRp; o.xAxis=axX(labs); o.yAxis=[axY(),axY(v=>nf0.format(v)+'%',{splitLine:{show:false}})];
+    o.series=[{name:'SAP',type:'bar',data:M.map(a=>a[kP]),itemStyle:{color:CLR.plan,borderRadius:[4,4,0,0]},barMaxWidth:22},{name:'Realisasi',type:'bar',data:M.map(a=>a[kA]),itemStyle:{color:CLR.act,borderRadius:[4,4,0,0]},barMaxWidth:22},
+      {name:lineName,type:'line',yAxisIndex:1,data:M.map(lineFn),symbol:'circle',symbolSize:6,itemStyle:{color:CLR.teal},lineStyle:{color:CLR.teal,width:2}}]; ch(id).setOption(o,true) };
+  mk('cMonRev','revP','revA','Variance %',a=>{const v=varPct(a.revP,a.revA);return v==null?null:+(v*100).toFixed(2)});
+  mk('cMonCost','dirP','dirA','Utilization %',a=>{const v=ratio(a.dirA,a.dirP);return v==null?null:+(v*100).toFixed(2)});
+  let cp=0,ca=0,gp=0,ga=0; const y=baseOpt(); y.tooltip.formatter=ttRp; y.xAxis=axX(labs); y.xAxis.boundaryGap=false; y.yAxis=axY();
+  const C=M.map(a=>{cp+=a.revP;ca+=a.revA;gp+=a.gpP;ga+=a.gpA;return [cp,ca,gp,ga]});
+  y.series=[{name:'Revenue SAP (YTD)',type:'line',data:C.map(x=>x[0]),lineStyle:{color:CLR.plan,type:'dashed'},itemStyle:{color:CLR.plan},symbol:'none'},
+    {name:'Revenue Real. (YTD)',type:'line',data:C.map(x=>x[1]),lineStyle:{color:CLR.act,width:2.5},itemStyle:{color:CLR.act},areaStyle:{color:'rgba(201,169,98,.08)'},symbol:'none'},
+    {name:'GP SAP (YTD)',type:'line',data:C.map(x=>x[2]),lineStyle:{color:'#9FB0D0',type:'dashed'},itemStyle:{color:'#9FB0D0'},symbol:'none'},
+    {name:'GP Real. (YTD)',type:'line',data:C.map(x=>x[3]),lineStyle:{color:CLR.teal,width:2.5},itemStyle:{color:CLR.teal},symbol:'none'}];
+  ch('cYtd').setOption(y,true);
+
+  const L=clientList().map(c=>({...c,v:c.gpA-c.gpP})).filter(c=>c.v!==0).sort((a,b)=>a.v-b.v);
+  const v=baseOpt(); v.legend.show=false; v.yAxis={type:'category',data:L.map(c=>c.klien),axisLabel:{color:CLR.muted,fontSize:10.5,width:140,overflow:'truncate'},axisTick:{show:false},axisLine:{lineStyle:{color:CLR.grid}}}; v.xAxis=axY();
+  v.tooltip.formatter=ps=>{const c=L[ps[0].dataIndex];return `<b>${esc(c.klien)}</b><br>Var GP: <b>${sgn(c.v)}</b><br>Δ Pendapatan: ${sgn(c.revA-c.revP)}<br>Δ Direct Cost: ${sgn(c.dirA-c.dirP)}`};
+  v.series=[{type:'bar',data:L.map(c=>({value:c.v,itemStyle:{color:c.v>=0?CLR.fav:CLR.unf,borderRadius:c.v>=0?[0,3,3,0]:[3,0,0,3]}})),barMaxWidth:10}];
+  $('cVarRank').style.height=Math.max(320,L.length*18+40)+'px'; const cv=ch('cVarRank'); cv.setOption(v,true); cv.resize(); cv.off('click'); cv.on('click',p=>openDrill(L[p.dataIndex].klien));
+
+  const all=clientList().sort((a,b)=>b.revP-a.revP);
+  const pairs=D.rekap.pairList; const inc=new Set(pairs.filter(p=>p.nomap).map(p=>p.klien));
+  $('utilTbl').innerHTML=`<table><thead><tr><th>Klien</th><th class="n">Rev SAP</th><th class="n">Rev Real.</th><th class="n">Variance</th><th class="n">Var %</th><th class="n">Achievement</th><th>Status Rev</th><th class="n">Cost SAP</th><th class="n">Cost Real.</th><th class="n">Utilization</th><th class="n">Sisa Anggaran</th><th>Status Cost</th><th>Penanda</th></tr></thead><tbody>${all.map(c=>{const u=ratio(c.dirA,c.dirP);const fl=[];if(c.dirA>c.dirP&&c.dirP)fl.push('<span class="flag r">Overbudget</span>');if(u!=null&&u<.8)fl.push('<span class="flag b">Underspend</span>');if(!c.dirP&&c.dirA)fl.push('<span class="flag r">Tanpa anggaran</span>');if(!c.revP&&c.revA)fl.push('<span class="flag">SAP = 0</span>');if(inc.has(c.klien))fl.push('<span class="flag">Data belum lengkap</span>');
+    return `<tr class="click" data-k="${esc(c.klien)}"><td>${esc(c.klien)}</td><td class="n">${rp(c.revP)}</td><td class="n">${rp(c.revA)}</td><td class="n ${c.revA-c.revP>=0?'up':'dn'}">${sgn(c.revA-c.revP)}</td><td class="n">${pct(varPct(c.revP,c.revA))}</td><td class="n">${pct(ratio(c.revA,c.revP))}</td><td>${badge(stRev(c.revP,c.revA))}</td><td class="n">${rp(c.dirP)}</td><td class="n">${rp(c.dirA)}</td><td class="n">${pct(u)}</td><td class="n ${c.dirP-c.dirA>=0?'':'dn'}">${rp(c.dirP-c.dirA)}</td><td>${badge(stCost(c.dirP,c.dirA))}</td><td>${fl.join('')}</td></tr>`}).join('')}</tbody></table>`;
+  bindRows($('utilTbl'));
+}
+
+function renderP4(){
+  const recs=fRecs(true).filter(r=>r.type==='DIR'||r.type==='DEP');
+  const cats=aggCat(recs).sort((a,b)=>b.A-a.A);
+  const tp=cats.reduce((a,c)=>a+c.P,0), ta=cats.reduce((a,c)=>a+c.A,0);
+  const over=cats.filter(c=>c.A>c.P);
+  $('costKpi').innerHTML=[kpiCard({lab:'Anggaran Biaya (SAP)',val:rp(tp),cmp:'Direct + Depresiasi · Rekap SAP S3'}),kpiCard({lab:'Biaya Aktual',val:rp(ta),cmp:`Utilization <b>${pct(ratio(ta,tp))}</b>`,st:stCost(tp,ta),bar:ratio(ta,tp),drill:'cost'}),kpiCard({lab:'Sisa Anggaran',val:`<span class="${tp-ta>=0?'up':'dn'}">${rp(tp-ta)}</span>`,cmp:tp-ta>=0?'Di bawah anggaran':'Melebihi anggaran'}),kpiCard({lab:'Kategori Overbudget',val:String(over.length),cmp:over.length?over.map(c=>esc(c.pareto)).slice(0,3).join(', '):'Tidak ada'})].join('');
+  bindDrill($('costKpi'));
+  const o=baseOpt(); o.tooltip.formatter=ttRp; o.xAxis=axX(cats.map(c=>c.pareto.replace('BEBAN ',''))); o.xAxis.axisLabel.rotate=20; o.yAxis=axY();
+  o.series=[{name:'SAP',type:'bar',data:cats.map(c=>c.P),itemStyle:{color:CLR.plan,borderRadius:[4,4,0,0]},barMaxWidth:24},{name:'Realisasi',type:'bar',data:cats.map(c=>({value:c.A,itemStyle:{color:c.A>c.P?CLR.unf:CLR.act}})),itemStyle:{color:CLR.act,borderRadius:[4,4,0,0]},barMaxWidth:24}];
+  ch('cCostCat').setOption(o,true);
+  const d=baseOpt(); d.tooltip={trigger:'item',backgroundColor:'#16223A',borderColor:'#2A3956',textStyle:{color:CLR.text},formatter:p=>`<b>${esc(p.name)}</b><br>${rp(p.value)} (${nf1.format(p.percent)}%)`}; d.legend={orient:'vertical',right:0,top:'middle',textStyle:{color:CLR.muted,fontSize:11},itemWidth:10,itemHeight:10};
+  d.series=[{type:'pie',radius:['52%','78%'],center:['36%','50%'],data:cats.filter(c=>c.A>0).map((c,i)=>({name:c.pareto,value:c.A,itemStyle:{color:CAT_CLR[i%CAT_CLR.length],borderColor:'#111B2E',borderWidth:2}})),label:{show:false},emphasis:{scale:true,scaleSize:5}}];
+  d.title={text:rpAxis(ta),subtext:'Total realisasi',left:'36%',top:'43%',textAlign:'center',textStyle:{color:CLR.text,fontSize:15,fontWeight:600},subtextStyle:{color:CLR.muted,fontSize:11},itemGap:4};
+  ch('cCostMix').setOption(d,true);
+  const labs=D.rekap.months.slice(F.m0,F.m1+1).map(mLabel);
+  const st=baseOpt(); st.tooltip.formatter=ttRp; st.xAxis=axX(labs); st.yAxis=axY(); st.legend.type='scroll'; st.legend.left=0; st.grid.top=44;
+  st.series=cats.map((c,i)=>({name:c.pareto.replace('BEBAN ',''),type:'bar',stack:'c',barMaxWidth:28,itemStyle:{color:CAT_CLR[i%CAT_CLR.length]},data:labs.map((_,j)=>recs.filter(r=>r.pareto===c.pareto&&r.src==='A').reduce((a,r)=>a+(r.m[F.m0+j]||0),0))}));
+  ch('cCostTrend').setOption(st,true);
+  const ck={}; recs.forEach(r=>{ if(r.src==='X')return; const k=r.klien+' · '+r.pareto.replace('BEBAN ',''); const a=ck[k]=ck[k]||{k,klien:r.klien,pareto:r.pareto,P:0,A:0}; a[r.src]+=sumM(r,F.m0,F.m1) });
+  const cl=Object.values(ck).map(c=>({...c,v:c.A-c.P}));
+  const top=[...cl].sort((a,b)=>Math.abs(b.v)-Math.abs(a.v)).slice(0,10).reverse();
+  const tb=baseOpt(); tb.legend.show=false; tb.yAxis={type:'category',data:top.map(c=>c.k),axisLabel:{color:CLR.muted,fontSize:10.5,width:190,overflow:'truncate'},axisTick:{show:false}}; tb.xAxis=axY();
+  tb.tooltip.formatter=ps=>{const c=top[ps[0].dataIndex];return `<b>${esc(c.k)}</b><br>SAP: ${rp(c.P)}<br>Realisasi: ${rp(c.A)}<br>Variance: <b>${sgn(c.v)}</b> ${c.v>0?'(overbudget)':'(di bawah anggaran)'}`};
+  tb.series=[{type:'bar',data:top.map(c=>({value:c.v,itemStyle:{color:c.v>0?CLR.unf:CLR.fav}})),barMaxWidth:12}];
+  const ct=ch('cTopCost'); ct.setOption(tb,true); ct.off('click'); ct.on('click',p=>openDrill(top[p.dataIndex].klien));
+  const mat=cl.filter(c=>c.v>=F.mat||(c.P>0&&c.v/c.P>=0.1&&c.v>=F.mat/5)).sort((a,b)=>b.v-a.v);
+  $('matHint').textContent=`Overbudget ≥ ${rp(F.mat)} atau ≥ 10% dari anggaran (minimal ${rp(F.mat/5)}) · ubah ambang di filter “Materialitas”`;
+  $('matTbl').innerHTML=mat.length?`<table><thead><tr><th>Klien</th><th>Kategori</th><th class="n">SAP</th><th class="n">Realisasi</th><th class="n">Overbudget</th><th class="n">Utilization</th><th>Status</th></tr></thead><tbody>${mat.map(c=>`<tr class="click" data-k="${esc(c.klien)}"><td>${esc(c.klien)}</td><td>${esc(c.pareto)}</td><td class="n">${rp(c.P)}</td><td class="n">${rp(c.A)}</td><td class="n dn">${sgn(c.v)}</td><td class="n">${pct(ratio(c.A,c.P))}</td><td>${badge(stCost(c.P,c.A))}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">Tidak ada pos biaya melewati ambang materialitas</div>';
+  bindRows($('matTbl'));
+}
+
+/* ---------- Detail & audit ---------- */
+function detailRows(){
+  return D.rekap.pairList.filter(p=>(F.klien==='*'||p.klien===F.klien)&&(F.pareto==='*'||p.pareto===F.pareto)&&(F.layanan==='*'||p.layanan.split(' / ').includes(F.layanan))).map(p=>{
+    const P=p.P.reduce((a,r)=>a+sumM(r,F.m0,F.m1),0), A=p.A.reduce((a,r)=>a+sumM(r,F.m0,F.m1),0);
+    const rs=[...p.P,...p.A,...p.X]; const fl=[];
+    if(p.nomap) fl.push(['nomap','Missing mapping',p.P.length?'Tidak ada pasangan OPS':'Tidak ada pasangan SAP']);
+    if(rs.some(r=>r.gtMismatch)) fl.push(['gt','GT ≠ Σ bulan','Kolom Grand Total berbeda dari jumlah bulan']);
+    if(rs.some(r=>r.dup)) fl.push(['dup','Duplikat','Baris identik muncul lebih dari sekali']);
+    if(rs.some(r=>r.txtNum)) fl.push(['txt','Angka teks','Nilai tersimpan sebagai teks berformat desimal koma (mis. 119352749,3) — Grand Total sheet mengabaikannya']);
+    if(rs.some(r=>r.plInferred)) fl.push(['pl','PL kosong','Kolom PL kosong di sumber — diisi otomatis dari PARETO']);
+    if(p.X.length) fl.push(['src','Source tak dikenal','']);
+    if(p.type!=='REV'&&(P<0||A<0)) fl.push(['neg','Biaya negatif','Kemungkinan jurnal koreksi/reklas']);
+    if(p.type==='REV'&&(P<0||A<0)) fl.push(['neg','Pendapatan negatif','Kemungkinan jurnal koreksi']);
+    const st=p.type==='REV'?stRev(P,A):stCost(P,A);
+    return {...p,Pv:P,Av:A,var:A-P,vp:varPct(P,A),absVar:Math.abs(A-P),st,flags:fl,refs:rs.map(r=>(r.src==='P'?'SAP':'OPS')+' r'+r.row).join(', ')};
+  });
+}
+function renderP5(){
+  const q=detailState.q.toLowerCase();
+  let rows=detailRows().filter(r=>(detailState.type==='*'||r.type===detailState.type)&&(!q||[r.klien,r.io,r.namaIo,r.layanan,r.pareto].join(' ').toLowerCase().includes(q)));
+  if(detailState.flag==='flag') rows=rows.filter(r=>r.flags.length); else if(detailState.flag!=='*') rows=rows.filter(r=>r.flags.some(f=>f[0]===detailState.flag));
+  const k=detailState.sort,d=detailState.dir; rows.sort((a,b)=>{const x=a[k],y=b[k]; return (typeof x==='string'?x.localeCompare(y):(x??-Infinity)-(y??-Infinity))*d});
+  const pages=Math.max(1,Math.ceil(rows.length/detailState.size)); detailState.page=Math.min(detailState.page,pages-1);
+  const slice=rows.slice(detailState.page*detailState.size,(detailState.page+1)*detailState.size);
+  const TY={REV:'Pendapatan',DIR:'Direct',DEP:'Depresiasi',OTH:'Lainnya'};
+  const th=(key,lab,n)=>`<th class="s ${n?'n':''}" data-s="${key}">${lab}${detailState.sort===key?(detailState.dir>0?' ▲':' ▼'):''}</th>`;
+  const tot=rows.reduce((a,r)=>{a.P+=r.type==='REV'?r.Pv:0;a.A+=r.type==='REV'?r.Av:0;a.cP+=r.type!=='REV'?r.Pv:0;a.cA+=r.type!=='REV'?r.Av:0;return a},{P:0,A:0,cP:0,cA:0});
+  $('detailTbl').innerHTML=rows.length?`<table><thead><tr>${th('klien','Klien')}${th('io','Nomor IO')}${th('layanan','Layanan')}${th('pareto','Kategori')}<th>Jenis</th>${th('Pv','SAP',1)}${th('Av','Realisasi',1)}${th('var','Variance',1)}${th('vp','Var %',1)}<th>Status</th><th>Penanda</th><th>Baris sumber</th></tr></thead><tbody>${slice.map(r=>`<tr><td>${esc(r.klien)}</td><td class="mini" title="${esc(r.namaIo)}">${esc(r.io)}</td><td class="mini">${esc(r.layanan)}</td><td>${esc(r.pareto)}</td><td class="mini">${TY[r.type]}</td><td class="n">${rp(r.Pv)}</td><td class="n">${rp(r.Av)}</td><td class="n ${(r.type==='REV'?r.var>=0:r.var<=0)?'up':'dn'}">${sgn(r.var)}</td><td class="n">${pct(r.vp)}</td><td>${badge(r.st)}</td><td>${r.flags.map(f=>`<span class="flag ${f[0]==='nomap'||f[0]==='dup'?'r':''}" title="${esc(f[2])}">${f[1]}</span>`).join('')}</td><td class="mini" title="Sheet Rekap SAP S3, nomor baris">${esc(r.refs)}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="5">Total terfilter (${rows.length} baris) — Pendapatan</td><td class="n">${rp(tot.P)}</td><td class="n">${rp(tot.A)}</td><td class="n">${sgn(tot.A-tot.P)}</td><td colspan="4"></td></tr><tr><td colspan="5">Total terfilter — Biaya (Direct + Depresiasi)</td><td class="n">${rp(tot.cP)}</td><td class="n">${rp(tot.cA)}</td><td class="n">${sgn(tot.cA-tot.cP)}</td><td colspan="4"></td></tr></tfoot></table>`:'<div class="empty">Data Tidak Tersedia untuk filter ini</div>';
+  $('detailTbl').querySelectorAll('th[data-s]').forEach(t=>t.onclick=()=>{ const s=t.dataset.s; if(detailState.sort===s) detailState.dir*=-1; else {detailState.sort=s;detailState.dir=['klien','io','layanan','pareto'].includes(s)?1:-1} renderP5() });
+  $('pager').innerHTML=`<span>${rows.length} baris · halaman ${detailState.page+1}/${pages}</span><select id="pgSize">${[15,30,50,100].map(n=>`<option ${n===detailState.size?'selected':''}>${n}</option>`).join('')}</select><button class="btn" id="pgPrev" ${detailState.page?'':'disabled'}>‹ Sebelumnya</button><button class="btn" id="pgNext" ${detailState.page<pages-1?'':'disabled'}>Berikutnya ›</button>`;
+  $('pgPrev').onclick=()=>{detailState.page--;renderP5()}; $('pgNext').onclick=()=>{detailState.page++;renderP5()}; $('pgSize').onchange=e=>{detailState.size=+e.target.value;detailState.page=0;renderP5()};
+  window._detailRows=rows;
+
+  // rekonsiliasi total
+  const S=D.summary, sc=totalOf(S.clients.map(c=>finish({...c,depP:null,depA:null})));
+  const RA=aggRecs(D.rekap.recs,0,D.rekap.months.length-1,()=>'all')[0]||finish(emptyAgg('all'));
+  const gtR=D.rekap.recs.reduce((a,r)=>{ if(r.type==='REV'&&r.src==='P')a.rp+=r.gt||0; if(r.type==='REV'&&r.src==='A')a.ra+=r.gt||0; if(r.type==='DIR'&&r.src==='P')a.dp+=r.gt||0; if(r.type==='DIR'&&r.src==='A')a.da+=r.gt||0; return a},{rp:0,ra:0,dp:0,da:0});
+  const chk=(a,b)=>Math.abs(a-b)<=10?'<span class="st fav">Cocok</span>':`<span class="st unf">Selisih ${rp(a-b)}</span>`;
+  const row=(l,a,b,c,e)=>`<tr><td>${l}</td><td class="n">${rp(a)}</td><td class="n">${rp(b)}</td><td>${c}</td>${e!=null?`<td class="n">${rp(e)}</td>`:'<td></td>'}</tr>`;
+  $('reconTot').innerHTML=`<table><thead><tr><th>Pemeriksaan</th><th class="n">Nilai A</th><th class="n">Nilai B</th><th>Hasil</th><th class="n">Ref</th></tr></thead><tbody>
+  ${S.total?row('Summary: Σ klien vs baris Grand Total · Pendapatan SAP',sc.revP,S.total.revP,chk(sc.revP,S.total.revP)):''}
+  ${S.total?row('Summary: Σ klien vs Grand Total · Pendapatan OPS',sc.revA,S.total.revA,chk(sc.revA,S.total.revA)):''}
+  ${S.total?row('Summary: Σ klien vs Grand Total · Direct SAP',sc.dirP,S.total.dirP,chk(sc.dirP,S.total.dirP)):''}
+  ${S.total?row('Summary: Σ klien vs Grand Total · Direct OPS',sc.dirA,S.total.dirA,chk(sc.dirA,S.total.dirA)):''}
+  ${row('Rekap: Σ bulan vs kolom Grand Total · Pendapatan SAP',RA.revP,gtR.rp,chk(RA.revP,gtR.rp))}
+  ${row('Rekap: Σ bulan vs kolom Grand Total · Pendapatan OPS',RA.revA,gtR.ra,chk(RA.revA,gtR.ra))}
+  ${row('Rekap: Σ bulan vs kolom Grand Total · Direct SAP',RA.dirP,gtR.dp,chk(RA.dirP,gtR.dp))}
+  ${row('Rekap: Σ bulan vs kolom Grand Total · Direct OPS',RA.dirA,gtR.da,chk(RA.dirA,gtR.da))}
+  ${row('Summary vs Rekap · Pendapatan SAP',sc.revP,RA.revP,chk(sc.revP,RA.revP))}
+  ${row('Summary vs Rekap · Pendapatan OPS',sc.revA,RA.revA,chk(sc.revA,RA.revA))}
+  ${row('Summary vs Rekap · Direct SAP',sc.dirP,RA.dirP,chk(sc.dirP,RA.dirP))}
+  ${row('Summary vs Rekap · Direct OPS',sc.dirA,RA.dirA,chk(sc.dirA,RA.dirA))}
+  </tbody></table><div class="mini" style="margin-top:8px">Rekap dihitung dari ${D.rekap.recs.length} baris detail (baris subtotal “Total” dikecualikan: ${D.rekap.skippedTotal}). Baris GT ≠ Σ bulan: ${D.rekap.recs.filter(r=>r.gtMismatch).length} · Duplikat: ${D.rekap.recs.filter(r=>r.dup).length} · Angka teks: ${D.rekap.textNums} sel · PL kosong: ${D.rekap.recs.filter(r=>r.plInferred).length} · Missing mapping: ${D.rekap.pairList.filter(p=>p.nomap).length} pasangan.</div>`;
+  $('notesBox').innerHTML=D.catatan.length?`<table><tbody>${D.catatan.map(c=>`<tr><td class="mini">r${c.row}</td><td>${c.cells.map(esc).join(' · ')}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">Tidak ada catatan</div>';
+
+  const rc=reconRows();
+  $('reconTbl').innerHTML=`<table><thead><tr><th>Klien</th><th class="n">Rev SAP · Summary</th><th class="n">Rev SAP · Rekap</th><th class="n">Δ</th><th class="n">Rev OPS · Summary</th><th class="n">Rev OPS · Rekap</th><th class="n">Δ</th><th class="n">Direct SAP Δ</th><th class="n">Direct OPS Δ</th><th>Penanda</th></tr></thead><tbody>${rc.map(r=>`<tr><td>${esc(r.klien)}</td><td class="n">${rp(r.s.revP)}</td><td class="n">${rp(r.k.revP)}</td><td class="n ${Math.abs(r.k.revP-r.s.revP)>1?'dn':''}">${rp(r.s.revP-r.k.revP)}</td><td class="n">${rp(r.s.revA)}</td><td class="n">${rp(r.k.revA)}</td><td class="n ${Math.abs(r.k.revA-r.s.revA)>1?'dn':''}">${rp(r.s.revA-r.k.revA)}</td><td class="n">${rp(r.s.dirP-r.k.dirP)}</td><td class="n">${rp(r.s.dirA-r.k.dirA)}</td><td>${r.flag?'<span class="flag r">Selisih material</span>':'<span class="st fav">OK</span>'}${r.swap?`<span class="flag" title="Nilai Summary klien ini sama persis dengan nilai Rekap klien lain">Indikasi tertukar ↔ ${esc(r.swap)}</span>`:''}${r.onlyOne?`<span class="flag b">${r.onlyOne}</span>`:''}</td></tr>`).join('')}</tbody></table>`;
+}
+function reconRows(){
+  const kr={}; aggRecs(D.rekap.recs,0,D.rekap.months.length-1,r=>r.klien).forEach(a=>kr[a.klien]=a);
+  const names=[...new Set([...D.summary.clients.map(c=>c.klien),...Object.keys(kr)])];
+  const sm={}; D.summary.clients.forEach(c=>sm[c.klien]=c);
+  const valIdx={}; Object.values(kr).forEach(a=>['revP','revA','dirP','dirA'].forEach(f=>{ const v=Math.round(a[f]); if(v) (valIdx[v]=valIdx[v]||new Set()).add(a.klien) }));
+  return names.map(n=>{
+    const s=sm[n]||emptyAgg(n), k=kr[n]||emptyAgg(n);
+    const d=['revP','revA','dirP','dirA'].map(f=>Math.abs(s[f]-k[f]));
+    const flag=d.some((x,i)=>x>CONFIG.reconTolAbs&&x>CONFIG.reconTolPct*Math.max(1,Math.abs(k[['revP','revA','dirP','dirA'][i]])));
+    let swap=null;
+    if(flag){ for(const f of ['revP','revA','dirP','dirA']){ const v=Math.round(s[f]); if(v&&Math.abs(s[f]-k[f])>1&&valIdx[v]){ const o=[...valIdx[v]].filter(x=>x!==n); if(o.length){swap=o[0];break} } } }
+    return {klien:n,s,k,flag,swap,onlyOne:!sm[n]?'Tidak ada di Summary':!kr[n]?'Tidak ada di Rekap':null};
+  }).filter(r=>F.klien==='*'||r.klien===F.klien).sort((a,b)=>(b.flag-a.flag)||a.klien.localeCompare(b.klien));
+}
+$('dSearch').addEventListener('input',e=>{detailState.q=e.target.value;detailState.page=0;renderP5()});
+$('dType').addEventListener('change',e=>{detailState.type=e.target.value;detailState.page=0;renderP5()});
+$('dFlag').addEventListener('change',e=>{detailState.flag=e.target.value;detailState.page=0;renderP5()});
+$('dExport').addEventListener('click',()=>{
+  const rows=window._detailRows||[]; const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv=['Klien,Nomor IO,Nama IO,Layanan,Kategori,Jenis,SAP,Realisasi,Variance,Variance %,Status,Penanda,Baris sumber'].concat(rows.map(r=>[r.klien,r.io,r.namaIo,r.layanan,r.pareto,r.type,Math.round(r.Pv),Math.round(r.Av),Math.round(r.var),r.vp==null?'N/A':(r.vp*100).toFixed(2),ST_LABEL[r.st],r.flags.map(f=>f[1]).join('; '),r.refs].map(q).join(','))).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'})); a.download='detail_sap_vs_realisasi.csv'; a.click();
+});
+
+function renderP6(){
+  const R=D.rekap,S=D.summary;
+  $('dictSheets').innerHTML=`<table><thead><tr><th>Sheet</th><th>Peran</th><th>Status</th></tr></thead><tbody>
+  <tr><td><b>Summary</b></td><td>Angka rekonsiliasi per klien (Pendapatan, Direct, Gross Profit; SAP vs OPS) — header di baris ${S.headerRow}, ${S.clients.length} klien</td><td><span class="st fav">Dipakai</span></td></tr>
+  <tr><td><b>Rekap SAP S3</b></td><td>Data detail: Klien × Nomor IO × Layanan × Source × PL × PARETO × ${R.months.length} bulan (${esc(R.months[0])}–${esc(R.months[R.months.length-1])}) — ${R.recs.length} baris detail, ${R.skippedTotal} baris subtotal dikecualikan</td><td><span class="st fav">Dipakai</span></td></tr>
+  <tr><td><b>Catatan</b></td><td>${D.catatan.length?`Catatan koreksi/reklas (${D.catatan.length} baris)`:'Sheet tidak ditemukan / tidak dipublikasikan — Data Tidak Tersedia'}</td><td>${D.catatan.length?'<span class="st fav">Dipakai</span>':'<span class="st na">N/A</span>'}</td></tr>
+  ${CONFIG.otherSheets.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.role)}</td><td><span class="st na">Tidak dipakai</span></td></tr>`).join('')}
+  </tbody></table><div class="mini" style="margin-top:10px">Pivot turunan tidak dipakai agar tidak terjadi penghitungan ganda; semua agregasi dihitung ulang dari Summary &amp; Rekap SAP S3.</div>
+  <h3 style="margin:18px 0 8px;font-size:13px">Kolom Rekap SAP S3</h3>
+  <table><thead><tr><th>Kolom</th><th>Tipe</th><th>Makna</th></tr></thead><tbody>
+  ${[['No','teks/angka','Nomor urut (kosong pada sebagian baris OPS)'],['Klien','teks','Entitas/klien — dimensi utama (unit bisnis)'],['Nomor IO','teks','Internal Order SAP; bisa berisi beberapa IO dalam satu sel'],['Nama IO','teks','Nama Internal Order'],['Layanan','teks','Layanan/proyek'],['Source','kategori','SAP = rencana/pembukuan SAP · OPS = realisasi operasional'],['PL','kategori','1.PENDAPATAN, 2.DIRECT, 4.DEPRESIASI (baris “… Total” = subtotal)'],['PARETO','kategori','REVENUE / kategori beban'],[R.months.join(', '),'angka (teks berformat)','Nilai bulanan (Rp)'],['Grand Total','angka','Total baris dari sheet — hanya untuk rekonsiliasi']].map(r=>`<tr><td>${esc(r[0])}</td><td class="mini">${r[1]}</td><td>${r[2]}</td></tr>`).join('')}
+  </tbody></table>`;
+  const sg=s=>s===-1?'dibalik (× −1)':'apa adanya';
+  $('dictMap').innerHTML=`<div class="kv">
+   <div>SAP / Rencana</div><div>Source = <code>${CONFIG.planSource}</code> (Rekap) · kolom “SAP” (Summary)</div>
+   <div>Realisasi</div><div>Source = <code>${CONFIG.actualSource}</code> (Rekap) · kolom “OPS” (Summary)</div>
+   <div>Pendapatan</div><div>PL “1.PENDAPATAN” / PARETO “REVENUE” · grup Summary “${esc(S.groups.rev.name)}”</div>
+   <div>Direct Cost</div><div>PL “2.DIRECT” (BEBAN JARKOM, JASNAKER, KERJASAMA PIHAK KETIGA, LAIN-LAIN, MANDATORY GEDUNG, MARKETING) · grup “${esc(S.groups.dir.name)}”</div>
+   <div>Depresiasi</div><div>PL “4.DEPRESIASI” — ditampilkan terpisah, tidak masuk Gross Profit (mengikuti definisi Summary)</div>
+   <div>Konvensi tanda</div><div>Pendapatan SAP tercatat kredit (negatif) → ${sg(R.sign.P)}; pendapatan OPS → ${sg(R.sign.A)}. Biaya apa adanya. Nilai negatif tersisa ditandai sebagai kemungkinan jurnal koreksi.</div>
+   <div>Kunci pasangan</div><div>Klien × Nomor IO × PARETO (${R.pairList.length} pasangan, ${R.pairList.filter(p=>p.nomap).length} tanpa pasangan)</div>
+   <div>Grain</div><div>Baris detail per IO per kategori per Source, nilai bulanan; subtotal dikecualikan untuk mencegah penggandaan</div>
+   <div>Periode</div><div>${R.months.length} bulan tersedia (${esc(R.months.join(', '))}); Summary = YTD tanpa rincian bulan</div>
+   <div>Mata uang</div><div>IDR (satu mata uang; filter mata uang tidak diperlukan)</div>
+   <div>Tidak tersedia</div><div>Forecast, versi anggaran, periode pembukuan terpisah, cost/profit center, akun GL → “Data Tidak Tersedia”</div>
+  </div>
+  ${S.issues.length?`<h3 style="margin:16px 0 8px;font-size:13px">Temuan validasi Summary</h3>${S.issues.map(i=>`<div class="mini">• ${esc(i.klien)}: ${esc(i.msg)}</div>`).join('')}`:''}`;
+  $('dictKpi').innerHTML=`<table><tbody>${[
+   ['Variance','Realisasi − SAP'],['Variance %','(Realisasi − SAP) / |SAP| × 100%; SAP = 0 → N/A'],['Achievement','Realisasi / SAP × 100% (pendapatan & profit)'],['Utilization','Biaya aktual / Anggaran (SAP) × 100%'],['Sisa Anggaran','SAP − Biaya aktual'],['Gross Profit','Pendapatan − Direct Cost'],['GPM','Σ Gross Profit / Σ Pendapatan (agregat, bukan rata-rata margin)'],['YTD','Akumulasi bulan awal filter s.d. bulan akhir filter, cakupan sama untuk SAP & Realisasi'],['Basis Summary','Angka resmi hasil rekonsiliasi di sheet Summary (level klien, YTD)'],['Basis Rekap','Dihitung ulang dari baris detail Rekap SAP S3 (mendukung filter bulan/layanan/kategori)']].map(r=>`<tr><td style="width:150px;color:var(--muted)">${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</tbody></table>`;
+  $('dictRule').innerHTML=`<table><thead><tr><th>Indikator</th><th>Favorable</th><th>On Track</th><th>Warning</th><th>Unfavorable</th></tr></thead><tbody>
+  <tr><td>Pendapatan / GP</td><td>≥ 100%</td><td>95–100%</td><td>90–95%</td><td>&lt; 90%</td></tr>
+  <tr><td>Biaya</td><td>&lt; 95%</td><td>95–100%</td><td>100–105%</td><td>&gt; 105%</td></tr>
+  <tr><td>GPM</td><td>≥ SAP</td><td>–</td><td>turun ≤ 2 pp</td><td>turun &gt; 2 pp</td></tr></tbody></table>
+  <div class="kv" style="margin-top:14px"><div>Satuan</div><div>Rp · rb = ribu, jt = juta, M = miliar, T = triliun · pemisah ribuan format Indonesia</div><div>Materialitas</div><div>Default Rp 50 jt (dapat diubah)</div><div>Pembaruan</div><div>Data diambil langsung dari link “Publish to web” setiap ${$('refreshSel').value||'–'} menit (Google menyimpan cache publikasi ± 5 menit). Terakhir diambil: ${fmtTime(D.fetched)}</div><div>Keamanan</div><div>Tanpa kredensial/API key di halaman; hanya membaca data yang sudah dipublikasikan pemilik sheet.</div></div>`;
+}
+
+let SRC_MODE='excel'; try{ SRC_MODE=localStorage.getItem('s3dash_src')||'excel' }catch(_){}
+const EMB=(()=>{ try{ const el=$('embedded'); return el?JSON.parse(el.textContent):null }catch(e){ return null } })();
+function loadEmbedded(){
+  if(!EMB){ showNotice('err','<b>Data Excel tertanam tidak ditemukan.</b> Gunakan ⇪ Upload atau pilih sumber Google Sheets (live).'); $('loader').classList.add('hide'); if(!D) renderEmpty(); return false }
+  try{ ingest({summary:EMB.summary,rekap:EMB.rekap,catatan:EMB.catatan||''},'Excel: '+EMB.file); setLive('ok','Data Excel · '+EMB.date); return true }
+  catch(e){ showNotice('err','<b>Gagal membaca data Excel tertanam:</b> '+esc(e.message)); $('loader').classList.add('hide'); return false }
+}
+function boot(){
+  $('srcSel').value=SRC_MODE;
+  $('refreshSel').disabled=SRC_MODE!=='live';
+  if(SRC_MODE==='live'){ if(!D&&EMB) loadEmbedded(); load(false) }
+  else { loadEmbedded(); schedule(); $('countdown').textContent='' }
+}
+boot();
+</script>
+</body>
+</html>
