@@ -1,5 +1,11 @@
-<title>Profitabilitas Segmen 3</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Profitability Command · Segment 3</title>
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -178,15 +184,122 @@ dialog::backdrop{background:#0b0f18aa}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
-<div class="app">
+<style>
+/* Portal: login screen, account states, admin modules */
+.gate{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);background:var(--bg)}
+.gate-art{background:var(--side);color:#DDE2EB;padding-block:48px;padding-left:max(48px,env(safe-area-inset-left,0px));padding-right:48px;display:flex;flex-direction:column;justify-content:space-between;gap:32px;position:relative;overflow:hidden}
+.gate-art::after{content:"";position:absolute;right:-120px;bottom:-120px;width:420px;height:420px;border-radius:50%;border:1px solid #D6B26A33;box-shadow:0 0 0 60px #D6B26A0a,0 0 0 120px #D6B26A07}
+.gate-art .eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:#D6B26A}
+.gate-art h1{margin:10px 0 0;font:600 clamp(30px,3.4vw,44px)/1.08 var(--f-display);color:#F3F5F9;text-wrap:balance;max-width:16ch}
+.gate-art p{margin:0;color:#A9B1C1;max-width:46ch;font-size:15px}
+.gate-art ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.gate-art li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;font-size:13.5px;color:#C9CFDA}
+.gate-art li b{display:block;color:#F1F3F7;font-weight:500}
+.gate-art li span.k{font:500 11px var(--f-mono);color:#D6B26A;padding-top:2px}
+.gate-art .small{font:400 11.5px var(--f-mono);color:#7F889A;position:relative;z-index:1}
+.gate-form{display:flex;align-items:center;justify-content:center;padding-block:40px;padding-left:24px;padding-right:max(24px,env(safe-area-inset-right,0px))}
+.card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:18px}
+.card h2{margin:0;font:600 26px/1.15 var(--f-display)}
+.card .lead{margin:0;color:var(--muted)}
+.card form{display:flex;flex-direction:column;gap:14px}
+.card .f{display:flex;flex-direction:column;gap:6px}
+.card .f label{font:500 10.5px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.card input[type=email],.card input[type=password],.card input[type=text]{font:inherit;font-size:15px;padding:11px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);width:100%}
+.pw{position:relative}
+.pw input{padding-right:78px!important}
+.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);font:500 12px var(--f-body);border:0;background:transparent;color:var(--navy);cursor:pointer;padding:6px 8px}
+.row-b{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
+.row-b label{display:flex;gap:7px;align-items:center;color:var(--muted)}
+.linkbtn{border:0;background:none;color:var(--navy);font:500 13px var(--f-body);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+.btn-lg{font:600 15px var(--f-body);padding:12px 14px;border-radius:8px;border:0;background:var(--navy);color:var(--surface);cursor:pointer}
+.btn-lg[disabled]{opacity:.6;cursor:progress}
+.msg{font-size:13px;padding:10px 12px;border-radius:8px}
+.msg.err{background:var(--neg-soft);color:var(--neg)}
+.msg.ok{background:var(--pos-soft);color:var(--pos)}
+.msg.info{background:var(--navy-soft);color:var(--navy)}
+.secnote{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.center-state{min-height:100vh;display:flex;align-items:center;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--bg)}
+.center-state .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:28px}
+.spinner{width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--gold);animation:spin 0.9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.user-box{display:flex;flex-direction:column;gap:6px;padding:12px 10px;border-radius:8px;background:#ffffff08}
+.user-box .nm{color:#F1F3F7;font-weight:500;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-box .em{color:var(--side-dim);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-box .rl{font:500 10.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:#D6B26A}
+.user-box button{margin-top:4px;font:500 12.5px var(--f-body);border:1px solid #ffffff22;background:transparent;color:#DDE2EB;border-radius:6px;padding:6px 10px;cursor:pointer;text-align:left}
+.user-box button:hover{border-color:#D6B26A}
+.tb-user{display:none}
+@media (max-width:980px){.tb-user{display:inline-flex}}
+@media (max-width:860px){.gate{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr}.gate-form{align-items:flex-start;padding-top:28px}.gate-art{padding:28px max(16px,env(safe-area-inset-left,0px)) 28px max(16px,env(safe-area-inset-right,0px))}.gate-art ul,.gate-art .small{display:none}.gate-art::after{display:none}}
+</style>
+
+</head>
+<body>
+
+<div id="stLoading" class="center-state"><div class="card" style="align-items:center;text-align:center"><div class="spinner" role="status" aria-label="Memuat"></div><p class="lead" id="stLoadingMsg">Memeriksa sesi login…</p></div></div>
+
+<div id="stLogin" class="gate" hidden>
+  <section class="gate-art">
+    <div>
+      <span class="eyebrow">Segment 3 · Government Services</span>
+      <h1>Profitability Command</h1>
+      <p style="margin-top:14px">Portal internal untuk memantau pendapatan, biaya langsung, dan margin kontrak Segmen 3. Akses hanya untuk pengguna yang terdaftar.</p>
+    </div>
+    <ul>
+      <li><span class="k">01</span><span><b>Angka SAP dan OPS berdampingan</b>Rekonsiliasi per pelanggan dan per kategori biaya.</span></li>
+      <li><span class="k">02</span><span><b>Akses berbasis peran</b>Director, Finance, BU Head, Project Manager, Analyst.</span></li>
+      <li><span class="k">03</span><span><b>Jejak audit</b>Setiap login dan perubahan data tercatat.</span></li>
+    </ul>
+    <span class="small">project: profitability-gov3</span>
+  </section>
+  <section class="gate-form">
+    <div class="card">
+      <div><h2 id="loginTitle">Masuk</h2><p class="lead" id="loginLead">Gunakan email dan password akun Anda.</p></div>
+      <div id="loginMsg" class="msg" hidden></div>
+      <form id="loginForm" novalidate>
+        <div class="f"><label for="lgEmail">Email</label><input id="lgEmail" type="email" autocomplete="username" required placeholder="nama@perusahaan.co.id"></div>
+        <div class="f" id="pwWrap"><label for="lgPass">Password</label><div class="pw"><input id="lgPass" type="password" autocomplete="current-password" required><button type="button" id="pwToggle" aria-label="Tampilkan password">Tampilkan</button></div></div>
+        <div class="row-b" id="rememberRow"><label><input type="checkbox" id="lgRemember" checked> Tetap masuk di perangkat ini</label><button type="button" class="linkbtn" id="toForgot">Lupa password?</button></div>
+        <button class="btn-lg" id="lgSubmit" type="submit">Masuk</button>
+        <button type="button" class="linkbtn" id="toLogin" hidden>Kembali ke halaman masuk</button>
+      </form>
+      <p class="secnote">Akun dibuat oleh administrator (role Director). Sesi otomatis berakhir setelah 30 menit tanpa aktivitas.</p>
+    </div>
+  </section>
+</div>
+
+<div id="stBlocked" class="center-state" hidden><div class="card">
+  <h2>Akun belum diaktifkan</h2>
+  <p class="lead" id="blockedMsg">Login berhasil, tetapi akun Anda belum memiliki peran aktif di portal ini.</p>
+  <p class="lead">Minta administrator menambahkan profil Anda di koleksi <code>users</code> dengan <code>active: true</code>.</p>
+  <p class="secnote" id="blockedUid"></p>
+  <button class="btn-lg" id="blockedOut" type="button">Keluar</button></div></div>
+
+<div id="stNoData" class="center-state" hidden><div class="card">
+  <h2>Dataset belum tersedia</h2>
+  <p class="lead">Dokumen <code>datasets/segment3-ytd2026</code> belum ada di Firestore.</p>
+  <div id="noDataAdmin" hidden><p class="lead">Sebagai <span class="roleName"></span>: buka Google Sheets → menu <b>Profitability Sync → Sinkronkan sekarang</b>. Dashboard ini akan terbuka otomatis begitu data masuk. Alternatif: unggah file dataset JSON.</p>
+    <input type="file" id="seedFile" accept=".json,application/json" style="margin-top:6px"><div id="seedMsg" class="msg" hidden style="margin-top:10px"></div></div>
+  <p class="lead" id="noDataUser">Hubungi tim Finance untuk mengunggah dataset.</p>
+  <button class="btn" id="noDataOut" type="button">Keluar</button></div></div>
+
+<div id="stConfig" class="center-state" hidden><div class="card">
+  <h2>Konfigurasi Firebase tidak ditemukan</h2>
+  <p class="lead">Halaman ini dibuka di luar Firebase Hosting, dan konfigurasi cadangan masih kosong.</p>
+  <p class="lead">Isi file <code>firebase-config.js</code> (di folder yang sama dengan halaman ini) dengan nilai dari Firebase Console → Project settings → Your apps → Web app → Config, lalu muat ulang halaman.</p></div></div>
+
+
+
+<div class="app" id="appShell" hidden>
   <aside class="side" aria-label="Navigasi modul">
     <div class="brand">
       <span class="eyebrow">Segment 3 · YTD 2026</span>
       <span class="name">Profitability Command</span>
-      <span class="sub">Rekap SAP vs OPS · Jan–Sep 2026</span>
+      <span class="sub" id="periodSub">Rekap SAP vs OPS</span>
     </div>
     <nav class="nav" id="nav"></nav>
-    <div class="foot">Sumber: <i>Rekap Profitability Segment 3 Ytd 2026</i>. Prototype tanpa backend; data dari file yang diunggah, bukan koneksi langsung ke SAP.</div>
+    <div class="user-box" id="userBox"></div>
+    <div class="foot" style="margin-top:0">Sumber: <i>Rekap Profitability Segment 3 Ytd 2026</i>, disimpan di Firestore. Bukan koneksi langsung ke SAP.</div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -194,7 +307,8 @@ dialog::backdrop{background:#0b0f18aa}
         <div class="tb-title">
           <h1 id="pgTitle">Executive Summary</h1>
           <div class="meta">
-            <span class="chip gold">YTD Jan–Sep 2026</span>
+            <span class="chip gold" id="periodChip">YTD</span>
+            <span class="chip pos" id="liveChip" hidden></span>
             <span class="chip" id="srcChip">Sumber: SAP (aktual buku)</span>
             <span class="chip" id="scopeChip">31 pelanggan</span>
             <span class="chip" id="dsChip">Dataset: file Excel</span>
@@ -209,6 +323,7 @@ dialog::backdrop{background:#0b0f18aa}
           <div class="fld"><label for="fM0">Bulan (tren)</label>
             <div style="display:flex;gap:4px"><select id="fM0"></select><select id="fM1"></select></div></div>
           <button class="btn sm" id="fReset" type="button">Reset</button>
+          <button class="btn sm tb-user" id="tbOut" type="button">Keluar</button>
         </div>
       </div>
       <nav class="mobile-nav" id="mnav" aria-label="Navigasi modul"></nav>
@@ -221,9 +336,17 @@ dialog::backdrop{background:#0b0f18aa}
 <div class="toast" id="toast" hidden></div>
 
 <script>
-const D = {"clients":[{"n":"LKPP","lbl":"LKPP","rs":3805790598,"ro":3864240380,"ds":3114347568,"do":3135141498,"sl":"Contact Center Managed Service","svc":["CC SPSE","Resolution Center LKPP (Zendesk)"],"cat":{"gedung":[1924222914,1924222914],"jasnaker":[1205354810,1180409784],"lain":[1745768,1745768],"kpk":[0,0],"jarkom":[-16975924,28763032]},"dep":[0,0],"mr":[1002572485,831363309,-177832774,552034340,526936000,807249238,263468000,0,0],"md":[271661304,161936836,689158895,256414282,872509162,701012519,161654570,0,0]},{"n":"BKPM","lbl":"BKPM","rs":3162710286,"ro":3162710286,"ds":1969697513,"do":1953019671,"sl":"Contact Center Managed Service","svc":["CC BKPM","OTA BKPM"],"cat":{"jasnaker":[1613568971,1517949817],"kpk":[105332992,137054410],"jarkom":[205736559,252956453],"lain":[11610580,11610580],"gedung":[26501018,26501018]},"dep":[0,0],"mr":[0,1054318274,36942145,444142255,444142255,548285850,634879507,507769507,507769507],"md":[0,216206616,395168319,349296814,739295905,-85277708,355007567,503613763,341954746]},{"n":"Kemendikti","lbl":"Kemendikti","rs":2463927919,"ro":2875716892,"ds":1409273123,"do":1550041151,"sl":"Contact Center Managed Service","svc":["CC ULT"],"cat":{"jasnaker":[1133927592,1322568113],"lain":[50924500,50924500],"gedung":[57735000,42000000],"jarkom":[79643826,63296333],"kpk":[78400,-15711600]},"dep":[0,18624991],"mr":[839429096,-143055096,348187000,595788973,411788973,411788973,411788973,417750702,417750702],"md":[165842937,160342257,224643875,211114746,354951915,149421609,210768468,225669137,208270380]},{"n":"Dewan Perwakilan Rakyat","lbl":"Dewan Perwakilan Rakyat","rs":1254000000,"ro":1463000000,"ds":695888958,"do":557832129,"sl":"Contact Center Managed Service","svc":["CC 139 DPR"],"cat":{"lain":[220350669,220350669],"gedung":[97593400,91268965],"jarkom":[81207329,106238322],"kpk":[18854818,18854818],"jasnaker":[446645242,442591585]},"dep":[0,0],"mr":[0,0,627000000,209000000,209000000,209000000,0,0,0],"md":[176331216,63933600,168437479,90373960,95068451,95738821,113617474,-129630602,-168329725]},{"n":"Badan Meteorologi dan Geofisika","lbl":"Badan Meteorologi dan Geofisika","rs":1340090048,"ro":1340090089,"ds":727611847,"do":677914281,"sl":"Contact Center Managed Service","svc":["CC BMKG"],"cat":{"jasnaker":[650902899,596614349],"lain":[2331220,2331220],"gedung":[32663500,32663500],"kpk":[2740859,2740859],"jarkom":[36955098,41546082]},"dep":[0,1374999],"mr":[0,378675378,195648945,191441442,191441441,191441441,191441401,191441483,191441442],"md":[38958414,103212961,172322196,92882265,96994939,106334416,116906656,84871784,94716534]},{"n":"Kementerian HAM","lbl":"Dirjen Pajak","rs":1103462500,"ro":1103462500,"ds":393331091,"do":288132682,"sl":"Contact Center Managed Service","svc":["CC KemenHAM"],"cat":{"gedung":[72027591,51320092],"kpk":[2959960,2959960],"lain":[2171700,2171700],"jasnaker":[287131966,202783479],"jarkom":[27977841,27835418]},"dep":[11150000,3716667],"mr":[157637500,155905220,159369780,157637500,157637500,157637500,157637500,157637500,157637500],"md":[32296345,43674927,50413504,45874804,82847319,35741447,102482745,67068216,93766824]},{"n":"Dirjen Pajak","lbl":"Kementerian HAM","rs":1147455917,"ro":954682231,"ds":665554467,"do":532502924,"sl":"Nomor Akses / SIP Trunk","svc":["1500200 Dirjen Pajak"],"cat":{"jarkom":[665554467,532502924]},"dep":[0,0],"mr":[142887401,273005186,137602260,171255693,157765573,127055083,137884721,0,0],"md":[133104508,98290165,72884442,127140556,85017214,84521045,64596537,0,0]},{"n":"Kementerian Luar Negeri","lbl":"Kementerian Luar Negeri","rs":1076250000,"ro":922500000,"ds":861295036,"do":716768849,"sl":"Helpdesk & IT Services","svc":["Helpdesk TIK","Programer Kemenlu"],"cat":{"jasnaker":[858811504,814860459],"gedung":[25100000,25100000],"lain":[852500,852500]},"dep":[0,0],"mr":[0,1230000000,-307500000,307500000,307500000,307500000,441500000,441500000,461250000],"md":[0,240213368,133818774,122911376,121313053,132503543,134003890,182917346,226307500]},{"n":"Kemenhub","lbl":"Kemenhub","rs":624425000,"ro":894345045,"ds":283749885,"do":271972181,"sl":"Contact Center Managed Service","svc":["SDM CC 151","System CC 151"],"cat":{"jasnaker":[254663628,240790370],"kpk":[679554,679554],"gedung":[3020000,3020000],"lain":[35000,35000],"jarkom":[23511000,25606554]},"dep":[13066667,0],"mr":[0,102889157,135235843,501350000,6625000,-218250000,96575000,96575000,96575000],"md":[31423810,31202424,45310440,50952213,51365337,35799997,37695664,41642053,42130440]},{"n":"Direktorat Jenderal Mineral & Batubara","lbl":"Kejagung","rs":823334257,"ro":861261261,"ds":266855899,"do":243246338,"sl":"Contact Center Managed Service","svc":["CC Minerba"],"cat":{"lain":[2365380,2365380],"jasnaker":[255698749,232089188],"gedung":[6400000,6400000]},"dep":[0,0],"mr":[107900000,0,-107900000,0,0,0,0,0,0],"md":[32378740,2457970,3934202,-2705772,7752886,-2705772,13335400,54447654,0]},{"n":"Kejagung","lbl":"Direktorat Jenderal Mineral & Batubara","rs":694862000,"ro":694862000,"ds":412431306,"do":390953858,"sl":"Contact Center Managed Service","svc":["CC Kejagung"],"cat":{"kpk":[6927750,657750],"gedung":[45282000,45282000],"jasnaker":[318754443,288919794],"jarkom":[40390613,55017814],"lain":[174500,174500]},"dep":[55466662,45354167],"mr":[99266000,196891240,-820380,98445620,102547520,99266000,99266000,99266000,63442400],"md":[42277378,34121102,74194671,103807768,56130230,63308765,38591392,110712081,78827732]},{"n":"Kementerian Koperasi","lbl":"Kementerian Koperasi","rs":587786667,"ro":668122972,"ds":201009059,"do":213756406,"sl":"Contact Center Managed Service","svc":["CC KDKMP","CC Kemenkop"],"cat":{"lain":[1610100,1610100],"gedung":[7224800,7224800],"jasnaker":[176738477,167507868],"jarkom":[14585682,36563638]},"dep":[3616667,0],"mr":[0,108806560,93174803,51985355,186416920,54574230,92828799,131858799,147903873],"md":[0,23714980,43267833,30853504,35575628,37721333,29875781,54681256,34779909]},{"n":"Direkorat Bea & Cukai","lbl":"Direkorat Bea & Cukai","rs":175549347,"ro":175175000,"ds":70426582,"do":78114007,"sl":"Nomor Akses / SIP Trunk","svc":["1500225 Bea dan Cukai"],"cat":{"jarkom":[70426582,78114007]},"dep":[0,0],"mr":[0,0,0,0,0,150460771,25088576,0,0],"md":[12070146,14003149,11453552,5969450,8291501,19168511,-529727,0,0]},{"n":"IDP Education","lbl":"IDP Education","rs":120911600,"ro":125740367,"ds":75576037,"do":74344339,"sl":"Nomor Akses / SIP Trunk","svc":["1500400 IDP Education"],"cat":{"jarkom":[75576037,74344339]},"dep":[0,0],"mr":[17914593,16224633,13200000,22676774,16733600,3879200,30282800,0,0],"md":[10972082,15110465,11048087,8175578,8766147,10211362,11292316,0,0]},{"n":"Kemendesa","lbl":"Kemendesa","rs":123304053,"ro":121396394,"ds":10560796,"do":10500000,"sl":"Nomor Akses / SIP Trunk","svc":["1500040 Kemendesa"],"cat":{"jarkom":[10560796,10500000]},"dep":[0,0],"mr":[19250000,19250000,15434684,19250000,15434685,-19250000,53934684,0,0],"md":[1500000,3060581,1500000,0,1500000,1500000,1500215,0,0]},{"n":"BP Tapera","lbl":"Universitas Terbuka","rs":131349731,"ro":115727640,"ds":94541379,"do":103370295,"sl":"WhatsApp Business (WABA)","svc":["1500156 BP Tapera","WABA Tapera"],"cat":{"kpk":[18794090,49632793],"jarkom":[75645261,53688086],"jasnaker":[102028,49417]},"dep":[0,0],"mr":[26615167,30133900,31562067,35716600,-10797683,1872820,16246860,10616410,5785450],"md":[8461565,15404764,8790365,10646708,9754969,10462605,31020403,3116388,8710132]},{"n":"Universitas Terbuka","lbl":"BP Tapera","rs":121907084,"ro":112541685,"ds":86633020,"do":70409887,"sl":"Nomor Akses / SIP Trunk","svc":["1500024 Universitas Terbuka"],"cat":{"jarkom":[86633020,70409887]},"dep":[0,0],"mr":[20526216,29598850,18850117,11205000,12431567,11241467,18053867,0,0],"md":[11865302,16257833,12435469,12892144,8679667,9870803,14631802,0,0]},{"n":"LPSK","lbl":"LPSK","rs":31500000,"ro":104708333,"ds":8089713,"do":8089713,"sl":"Omnichannel","svc":["Omni LPSK","WABA LPSK"],"cat":{"kpk":[722664,722664],"gedung":[5300000,5300000],"jasnaker":[296925,296925],"lain":[431000,431000]},"dep":[0,0],"mr":[0,0,3098361,0,6196722,22204917,0,0,0],"md":[0,0,539332,1883442,5370347,173997,122595,0,0]},{"n":"Kemnaker","lbl":"Kemnaker","rs":103130000,"ro":103880000,"ds":51824796,"do":54797054,"sl":"Nomor Akses / SIP Trunk","svc":["1500630 Kemnaker 2026"],"cat":{"lain":[28740000,28740000],"jarkom":[23084796,26057054]},"dep":[0,0],"mr":[14950000,14590000,14590000,14590000,15230000,14590000,14590000,0,0],"md":[4348033,2632053,3772079,2672380,31596621,3491507,3312123,0,0]},{"n":"BSSN","lbl":"BSSN","rs":102243750,"ro":100450000,"ds":30540000,"do":30540000,"sl":"Nomor Akses / SIP Trunk","svc":["Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026"],"cat":{"jarkom":[28840000,28840000],"gedung":[1700000,1700000]},"dep":[0,0],"mr":[13085000,14350000,14350000,14350000,44843750,-11291250,12556250,0,0],"md":[4120000,4120000,4120000,5820000,4120000,4120000,4120000,0,0]},{"n":"BPOM RI","lbl":"BPOM RI","rs":86187696,"ro":86478799,"ds":20479302,"do":18769562,"sl":"Nomor Akses / SIP Trunk","svc":["1500533 BPOM RI"],"cat":{"jarkom":[20479302,18769562]},"dep":[0,0],"mr":[12359415,12340656,12327290,12257376,12309237,12281821,12311901,0,0],"md":[2864988,4765015,2743065,468291,2803848,3533584,3300511,0,0]},{"n":"Kementerian Perdagangan","lbl":"Kementerian Perdagangan","rs":83580000,"ro":83580000,"ds":25678385,"do":24662059,"sl":"Nomor Akses / SIP Trunk","svc":["1500067 Kementerian Perdagangan 2025"],"cat":{"jarkom":[25678385,24662059]},"dep":[0,0],"mr":[11940000,11940000,0,23880000,11940000,11940000,11940000,0,0],"md":[4033781,3521941,0,6726181,3278635,4384035,3733812,0,0]},{"n":"PT Inggris Prima Indonesia","lbl":"PT Inggris Prima Indonesia","rs":73850000,"ro":73850000,"ds":10904797,"do":10832171,"sl":"Nomor Akses / SIP Trunk","svc":["1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia"],"cat":{"jarkom":[10904797,10832171]},"dep":[0,0],"mr":[10550000,10550000,10550000,10550000,10550000,10550000,10550000,0,0],"md":[1530321,3129093,1559466,39181,1540023,1540023,1566690,0,0]},{"n":"Universitas Indonesia","lbl":"Al Azhar Al-Muhajirin","rs":50000000,"ro":70000000,"ds":18858673,"do":18911701,"sl":"Nomor Akses / SIP Trunk","svc":["1500002 Universitas Indonesia 2025"],"cat":{"jarkom":[18858673,18911701]},"dep":[0,0],"mr":[10000000,10000000,10000000,10000000,10000000,0,0,0,0],"md":[2492306,2513464,2747439,2522617,2702937,2702937,3176973,0,0]},{"n":"Kementerian Komunikasi & Digital","lbl":"Kementerian Komunikasi & Digital","rs":57000000,"ro":66500000,"ds":9874152,"do":26804293,"sl":"Nomor Akses / SIP Trunk","svc":["1500876 BAKTI"],"cat":{"gedung":[1372208,1372208],"jarkom":[8501944,25432085]},"dep":[0,0],"mr":[0,0,0,0,38000000,9500000,9500000,0,0],"md":[915,2164002,0,229204,4986758,2514660,2372734,0,0]},{"n":"Al Azhar Al-Muhajirin","lbl":"Universitas Indonesia","rs":59850000,"ro":59850000,"ds":2074882,"do":2074882,"sl":"CRM Platform","svc":["CRM Al-muhajirin"],"cat":{"lain":[980000,980000],"gedung":[1094882,1094882]},"dep":[0,0],"mr":[29925000,29925000,0,0,0,0,0,0,0],"md":[346075,386327,7711,354769,980000,0,0,0,0]},{"n":"Universitas Gunadarma","lbl":"Universitas Gunadarma","rs":49000000,"ro":49000000,"ds":28112985,"do":26662364,"sl":"Nomor Akses / SIP Trunk","svc":["1500158 UNIVERSITAS GUNADARMA"],"cat":{"jarkom":[28112985,26662364]},"dep":[0,0],"mr":[7000000,7000000,7000000,7000000,7000000,7000000,7000000,0,0],"md":[3775556,3775556,3799625,3796226,3860022,5360022,3745978,0,0]},{"n":"Bappenda NTB","lbl":"Bappenda NTB","rs":35000000,"ro":35000000,"ds":1970,"do":10535104,"sl":"Nomor Akses / SIP Trunk","svc":["1500186 Bappenda NTB"],"cat":{"jarkom":[1970,10535104]},"dep":[0,0],"mr":[5000000,5000000,5000000,5000000,5000000,5000000,5000000,0,0],"md":[0,0,0,0,0,0,1970,0,0]},{"n":"Universitas Dipenogero","lbl":"Universitas Dipenogero","rs":18225000,"ro":24300000,"ds":0,"do":4362240,"sl":"WhatsApp Business (WABA)","svc":["WABA FK Undip"],"cat":{"jarkom":[0,4362240]},"dep":[0,0],"mr":[0,0,0,0,6075000,6075000,6075000,0,0],"md":[0,0,0,0,0,0,0,0,0]},{"n":"ARS University","lbl":"ARS University","rs":39712112,"ro":19400060,"ds":3767277,"do":3573821,"sl":"WhatsApp Business (WABA)","svc":["WABA & Omnix Ars"],"cat":{"kpk":[3573821,3573821],"jasnaker":[193456,93696]},"dep":[0,0],"mr":[0,0,6659689,0,26860746,-13208383,19400060,0,0],"md":[0,0,0,1545566,2028255,93696,99760,0,0]},{"n":"KUMKM","lbl":"KUMKM","rs":0,"ro":8929730,"ds":10500000,"do":10500000,"sl":"Nomor Akses / SIP Trunk","svc":["1500856 Lembaga Pengelola Dana Bergulir KUMKM "],"cat":{"jarkom":[10500000,10500000]},"dep":[0,0],"mr":[0,0,0,0,0,0,0,0,0],"md":[1500000,1500000,1500000,1500000,0,3000000,1500000,0,0]}],"tot":{"BEBAN JARKOM":[1653730163,1664286354],"BEBAN JASNAKER":[7202790690,7007524843],"BEBAN KERJASAMA PIHAK KETIGA":[160664908,201165029],"BEBAN LAIN - LAIN":[324322917,324322917],"BEBAN MANDATORY GEDUNG":[2307237313,2264470379],"BEBAN MARKETING":[-65786525,102975975],"DEPRESIASI":[92666652,69070824],"REVENUE":[19680395565,20207501665]},"notes":[["Kemenhub","SDM CC 151","SAP","BEBAN JASNAKER","Ada nilai seragam dan BPJS TK dan Kes nyasar ke IO"],["Badan Meteorologi dan Geofisika","CC BMKG","SAP","BEBAN JARKOM","Masih terdapat cost di IO 2025 nya"],["Kementerian HAM","CC KemenHAM","SAP","BEBAN MANDATORY GEDUNG","masih ada catatan Gedung di IO di 2025 Block"],["Dewan Perwakilan Rakyat","CC 139 DPR","OPS","BEBAN JARKOM","Anomali data , peningkatan tagihan metro e dibandingkan bulan sebelumnya"],["Kementerian Komunikasi & Digital","1500876 BAKTI","OPS","BEBAN JARKOM","double cost, karena IO 2024 masih ada cost Metro e"]],"negops":[["BPOM RI","1500533 BPOM RI",-110768691],["Direkorat Bea & Cukai","1500225 Bea dan Cukai",-225725986],["PT Inggris Prima Indonesia","1500003 dan Aktivasi SIP Trunk untuk PT Inggris Prima Indonesia",-94950000],["Dirjen Pajak","1500200 Dirjen Pajak",-1425405832],["Universitas Gunadarma","1500158 UNIVERSITAS GUNADARMA",-63000000],["Universitas Terbuka","1500024 Universitas Terbuka",-156030301],["Kementerian Perdagangan","1500067 Kementerian Perdagangan 2025",-107460000],["IDP Education","1500400 IDP Education",-153559600],["Universitas Indonesia","1500002 Universitas Indonesia 2025",-50000000],["Kemendesa","1500040 Kemendesa",-157988737],["Kemnaker","1500630 Kemnaker 2026",-133310000],["Kementerian Komunikasi & Digital","1500876 BAKTI",-76000000],["BSSN","Nomor Akses Call Center 183 BSrE BSSN RI Januari - Desember 2026",-134531250],["LPSK","Omni LPSK",-22050000],["ARS University","WABA & Omnix Ars",-59425212],["Kementerian Luar Negeri","Programer Kemenlu",-421750000]],"mcat":{"BEBAN JARKOM":{"BKPM":[0,25424000,25424000,28809558,145248091,-76727091,57558001,139579073,16354321],"Kemendikti":[0,0,0,0,36196397,-36196397,0,18084666,9042333],"Kejagung":[7787873,0,5050547,2501421,2504840,20034078,2511854,8953851,19861576],"Kemenhub":[2145000,-2145000,3561000,9267000,3561000,3561000,3561000,5100148,3561000],"Badan Meteorologi dan Geofisika":[0,4200042,6801079,6488671,4183420,4325789,10956097,4515586,4325870],"Kementerian Koperasi":[0,0,34241,0,4820436,5036788,4694217,24340897,4981698],"Kementerian HAM":[3947749,4062964,4019212,3967915,3995140,3995140,3989721,6705240,4229155],"Dewan Perwakilan Rakyat":[0,-11786732,10114338,31719102,2112843,17886929,31161243,-11192644,0],"BP Tapera":[6832712,10263371,6164193,9444150,7254862,7248773,28437200,-421881,7254861],"LKPP":[35500000,-2043896,2187957,16662332,16827877,-94187648,8077454,0,0],"BPOM RI":[2864988,4765015,2743065,468291,2803848,3533584,3300511,0,0],"Direkorat Bea & Cukai":[12070146,14003149,11453552,5969450,8291501,19168511,-529727,0,0],"PT Inggris Prima Indonesia":[1530321,3129093,1559466,39181,1540023,1540023,1566690,0,0],"Dirjen Pajak":[133104508,98290165,72884442,127140556,85017214,84521045,64596537,0,0],"Bappenda NTB":[0,0,0,0,0,0,1970,0,0],"Universitas Gunadarma":[3775556,3775556,3799625,3796226,3860022,5360022,3745978,0,0],"Universitas Terbuka":[11865302,16257833,12435469,12892144,8679667,9870803,14631802,0,0],"Kementerian Perdagangan":[4033781,3521941,0,6726181,3278635,4384035,3733812,0,0],"IDP Education":[10972082,15110465,11048087,8175578,8766147,10211362,11292316,0,0],"Universitas Indonesia":[2492306,2513464,2747439,2522617,2702937,2702937,3176973,0,0],"Kemendesa":[1500000,3060581,1500000,0,1500000,1500000,1500215,0,0],"Kemnaker":[4348033,2632053,3772079,2672380,2856621,3491507,3312123,0,0],"Kementerian Komunikasi & Digital":[915,2164002,0,229204,3614550,2514660,2372734,0,0],"BSSN":[4120000,4120000,4120000,4120000,4120000,4120000,4120000,0,0],"KUMKM":[1500000,1500000,1500000,1500000,0,3000000,1500000,0,0],"LPSK":[0,0,0,110,1240373,72067,26574,0,0],"Universitas Dipenogero":[0,0,0,0,0,0,0,0,0]},"BEBAN JASNAKER":{"BKPM":[0,181383759,332358306,295155992,455204995,74984885,274481034,292969748,321082333],"Kemendikti":[165842937,160342257,204353875,191114746,301520518,163118006,185013968,207584471,198564047],"Kejagung":[34486661,34121102,68909321,51273772,50847412,43160939,35955236,39983342,58838922],"Kemenhub":[29278810,33347424,40072736,39662363,46866337,31301294,34134664,36541905,38569440],"Badan Meteorologi dan Geofisika":[38958414,97512919,164246117,86393594,90845660,98957103,73989092,80356198,89904402],"Kementerian Koperasi":[0,22252380,43233592,27533704,28255192,30282045,25181564,28164359,29798211],"Kementerian HAM":[26866504,31376512,37190402,34699244,35473666,30327726,91197912,42443474,44339526],"Direktorat Jenderal Mineral & Batubara":[32378740,-2299180,3934202,-2705772,1352886,-2705772,0,29955104,0],"Dewan Perwakilan Rakyat":[19613636,62366408,102428492,52552021,80102333,60282497,14980940,3168409,3168409],"Kementerian Luar Negeri":[0,430226736,267637548,244720752,242626106,264404086,244538812,304443783,328558135],"BP Tapera":[0,0,0,0,0,49417,52611,131114,144834],"LKPP":[236161304,163980732,154437550,146242906,213655035,137300167,153577116,0,0],"LPSK":[0,0,0,0,98974,101930,96021,0,0],"ARS University":[0,0,0,0,0,93696,99760,0,0]},"BEBAN KERJASAMA PIHAK KETIGA":{"BKPM":[0,2852581,26490494,16306884,22758812,26054961,10869260,700000,0],"Kemendikti":[0,0,15790000,0,0,0,0,0,0],"Kejagung":[2844,0,80303,6382575,223978,113748,124302,124888,127234],"Kemenhub":[0,0,398704,280850,0,0,0,0,0],"Badan Meteorologi dan Geofisika":[0,0,1275000,0,1465859,0,0,0,0],"Kementerian HAM":[0,0,2959960,0,0,0,0,0,0],"Dewan Perwakilan Rakyat":[0,1187818,16317000,0,0,1350000,0,0,-16317000],"BP Tapera":[1628853,5141393,2626172,1202558,2500107,3164415,2530592,3407155,1310437],"LKPP":[0,0,0,0,0,0,0,0,0],"LPSK":[0,0,539332,183332,0,0,0,0,0],"ARS University":[0,0,0,1545566,2028255,0,0,0,0]},"BEBAN LAIN - LAIN":{"BKPM":[0,1210354,1105193,303000,1952607,501892,6537534,1156284,2709792],"Kemendikti":[0,0,0,20000000,0,28500000,1754500,0,664000],"Kejagung":[0,0,154500,0,20000,0,0,61650000,0],"Kemenhub":[0,0,0,0,0,35000,0,0,0],"Badan Meteorologi dan Geofisika":[0,0,0,0,0,716553,1614667,0,313262],"Kementerian Koperasi":[0,480600,0,227000,0,902500,0,1746000,0],"Kementerian HAM":[0,100000,0,0,538000,0,1533700,1833400,1202391],"Direktorat Jenderal Mineral & Batubara":[0,2365380,0,0,0,0,0,2365380,0],"Dewan Perwakilan Rakyat":[153697500,0,663000,0,275000,0,65715169,-122131784,-153697500],"Kementerian Luar Negeri":[0,0,0,551000,0,301500,0,0,0],"LKPP":[0,0,0,1745768,0,0,0,0,0],"Al Azhar Al-Muhajirin":[0,0,0,0,980000,0,0,0,0],"Kemnaker":[0,0,0,0,28740000,0,0,0,0],"LPSK":[0,0,0,0,431000,0,0,0,0]},"BEBAN MANDATORY GEDUNG":{"BKPM":[0,2002032,9790326,8721380,112047485,-109883845,3823640,68470658,1119000],"Kemendikti":[0,0,4500000,0,17235000,-6000000,24000000,0,0],"Kejagung":[0,0,0,43650000,1632000,0,0,0,0],"Kemenhub":[0,0,1278000,1742000,938000,-938000,0,0,0],"Badan Meteorologi dan Geofisika":[0,1500000,0,0,0,1450000,29713500,0,0],"Kementerian Koperasi":[0,132000,0,3092800,2500000,1500000,0,430000,0],"Kementerian HAM":[1482092,8135451,6243930,7207645,42580013,1418581,4959879,15972912,43995752],"Direktorat Jenderal Mineral & Batubara":[0,0,0,0,6400000,0,0,6400000,0],"Dewan Perwakilan Rakyat":[3020080,12166106,38914649,6102837,12578275,16219395,1760122,525417,-1483634],"Kementerian Luar Negeri":[0,25100000,0,0,0,0,0,0,26148886],"LKPP":[0,0,532533388,91763276,642026250,657900000,0,0,0],"Al Azhar Al-Muhajirin":[346075,386327,7711,354769,0,0,0,0,0],"Kementerian Komunikasi & Digital":[0,0,0,0,1372208,0,0,0,0],"BSSN":[0,0,0,1700000,0,0,0,0,0],"LPSK":[0,0,0,1700000,3600000,0,0,0,0]},"BEBAN MARKETING":{"BKPM":[0,3333890,0,0,2083915,-208510,1738098,738000,689300],"Kejagung":[0,0,0,0,902000,0,0,0,0],"Kemenhub":[0,0,0,0,0,1840703,0,0,0],"Badan Meteorologi dan Geofisika":[0,0,0,0,500000,884971,633300,0,173000],"Kementerian Koperasi":[0,850000,0,0,0,0,0,0,0],"Kementerian HAM":[0,0,0,0,260500,0,801533,113190,0],"Direktorat Jenderal Mineral & Batubara":[0,2391770,0,0,0,0,13335400,15727170,0]}},"swap":[["Kementerian HAM","Dirjen Pajak"],["Kejagung","Direktorat Jenderal Mineral & Batubara"],["Universitas Terbuka","BP Tapera"],["Al Azhar Al-Muhajirin","Universitas Indonesia"]],"raw":{"sapRev":24449071556,"sapDir":13708613617}};
+let D=null;
 const content=document.getElementById('content');
-const MONTHS=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep'];
+const MONTHS_ALL=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+let MONTHS=MONTHS_ALL.slice(0,9),NM=9,YEAR=2026;
+function periodLabel(){return `${MONTHS[0]}–${MONTHS[NM-1]} ${YEAR}`}
+function applyMonths(){const wasEnd=st.m1===NM-1;
+  const n=(D.months&&D.months.length)||((D.clients[0]&&D.clients[0].mr||[]).length)||9;
+  NM=n;MONTHS=D.months&&D.months.length?D.months.slice():MONTHS_ALL.slice(0,n);YEAR=D.year||2026;
+  if(wasEnd||st.m1>NM-1)st.m1=NM-1;if(st.m0>st.m1)st.m0=0;
+  const pc=document.getElementById('periodChip'),ps=document.getElementById('periodSub');
+  if(pc)pc.textContent='YTD '+periodLabel();if(ps)ps.textContent='Rekap SAP vs OPS · '+periodLabel()}
 const CATS=[['jasnaker','Jasa Tenaga Kerja (Direct Labor)'],['jarkom','Jaringan & Telekomunikasi'],['gedung','Mandatory Gedung (Fasilitas)'],['kpk','Kerja Sama Pihak Ketiga (Vendor)'],['lain','Beban Lain-lain'],['other','Marketing & selisih rekonsiliasi']];
 const RAWCAT={jasnaker:'BEBAN JASNAKER',jarkom:'BEBAN JARKOM',gedung:'BEBAN MANDATORY GEDUNG',kpk:'BEBAN KERJASAMA PIHAK KETIGA',lain:'BEBAN LAIN - LAIN',other:'BEBAN MARKETING'};
 const PAGES=[
@@ -242,7 +365,7 @@ const PAGES=[
 if(window.Chart){Chart.defaults.font.family='"IBM Plex Sans",system-ui,sans-serif';}
 const LS={get(k,d){try{const v=localStorage.getItem('ps3:'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('ps3:'+k,JSON.stringify(v))}catch(e){}}};
 const st={src:'sap',sl:'all',cust:'all',target:40,m0:0,m1:8,hb:15,bb:15,page:'ringkasan',sort:{k:'gp',d:-1},q:''};
-let DATA={clients:D.clients.map(c=>({...c})),origin:'file'};
+let DATA={clients:[],origin:'file'};
 const charts={};
 /* ---------- formatting ---------- */
 const nf0=new Intl.NumberFormat('id-ID',{maximumFractionDigits:0});
@@ -278,11 +401,11 @@ function pstatus(x){const T=st.target/100,hb=st.hb/100,bb=st.bb/100;
   if(x.gpm>=T)return['Profitable','st-pr'];
   if(x.gpm>=T-bb)return['Below Target','st-bt'];
   return['Low Margin','st-lo']}
-function monthly(F){const rev=Array(9).fill(0),dir=Array(9).fill(0);
+function monthly(F){const rev=Array(NM).fill(0),dir=Array(NM).fill(0);
   F.forEach(x=>{const c=x.raw;(c.mr||[]).forEach((v,i)=>rev[i]+=v);(c.md||[]).forEach((v,i)=>dir[i]+=v)});
   return{rev,dir,gp:rev.map((v,i)=>v-dir[i])}}
 function monthCats(F){const names=new Set(F.map(x=>x.n));const out={};
-  for(const[k]of CATS){const raw=D.mcat[RAWCAT[k]]||{};const arr=Array(9).fill(0);for(const n in raw)if(names.has(n))raw[n].forEach((v,i)=>arr[i]+=v);out[k]=arr}return out}
+  for(const[k]of CATS){const raw=D.mcat[RAWCAT[k]]||{};const arr=Array(NM).fill(0);for(const n in raw)if(names.has(n))raw[n].forEach((v,i)=>arr[i]+=v);out[k]=arr}return out}
 /* ---------- charts ---------- */
 function palette(){return[css('--c1'),css('--c2'),css('--c3'),css('--c4'),css('--c5'),css('--c6'),css('--c7')]}
 function baseOpts(extra){const ink=css('--muted'),line=css('--line');
@@ -310,12 +433,13 @@ function buildFilters(){
 }
 function route(){const h=(location.hash||'').slice(1);st.page=PAGES.some(p=>p[0]===h)?h:'ringkasan';LS.set('page',st.page);render()}
 function render(){
+  if(!D)return;
   destroyAll();
   document.querySelectorAll('[data-p]').forEach(a=>a.classList.toggle('on',a.dataset.p===st.page));
   const p=PAGES.find(x=>x[0]===st.page);pgTitle.textContent=p[2];
   srcChip.textContent=st.src==='sap'?'Sumber: SAP (aktual buku)':'Sumber: OPS (perhitungan operasional)';
   const F=filtered();scopeChip.textContent=F.length+' pelanggan'+(st.sl!=='all'?' · '+st.sl:'');
-  dsChip.textContent=DATA.origin==='file'?'Dataset: Rekap Profitability S3 (xlsx)':'Dataset: upload pengguna';
+  dsChip.textContent=DATA.origin==='file'?(D.source==='gsheet'?'Dataset: Google Sheets · Rekap Profitability S3':'Dataset: Firebase · Rekap Profitability S3'):'Dataset: upload pribadi (belum resmi)';
   dsChip.className='chip '+(DATA.origin==='file'?'neu':'warn');
   const fn=VIEWS[st.page];content.innerHTML='<div class="page">'+fn.html(F)+'</div>';fn.after&&fn.after(F);
   content.scrollTop=0;
@@ -385,7 +509,7 @@ function insights(F){
       impact:'Bauran layanan menentukan margin portofolio; tiap pergeseran 10% pendapatan ke service line bermargin tinggi menaikkan GPM portofolio.',
       rec:'Tawarkan add-on bermargin tinggi (WABA, nomor akses, omnichannel) ke pelanggan managed service yang ada.',pic:'Product & Sales Segmen 3',due:'31 Jan 2027'})}
   // 7 monthly cost spikes (SAP ledger)
-  const M=monthly(F);const spikes=[];for(let i=1;i<9;i++){const gr=M.rev[i-1]?M.rev[i]/M.rev[i-1]-1:null,gc=M.dir[i-1]?M.dir[i]/M.dir[i-1]-1:null;if(gr!=null&&gc!=null&&gc>gr+.1&&gc>0)spikes.push(`${MONTHS[i]} (biaya ${pc(gc,1)}, pendapatan ${pc(gr,1)})`)}
+  const M=monthly(F);const spikes=[];for(let i=1;i<NM;i++){const gr=M.rev[i-1]?M.rev[i]/M.rev[i-1]-1:null,gc=M.dir[i-1]?M.dir[i]/M.dir[i-1]-1:null;if(gr!=null&&gc!=null&&gc>gr+.1&&gc>0)spikes.push(`${MONTHS[i]} (biaya ${pc(gc,1)}, pendapatan ${pc(gr,1)})`)}
   if(spikes.length)out.push({sev:'md',title:`Biaya naik lebih cepat dari pendapatan pada ${spikes.length} bulan`,data:spikes.join(' · ')+'. Basis: ledger SAP bulanan.',
       hyp:'Ledger bulanan memuat koreksi/reversal (nilai negatif) dan biaya yang ditagihkan sekaligus; lonjakan bisa berasal dari timing posting, bukan kenaikan biaya riil.',
       impact:'Distorsi margin bulanan menyulitkan pemantauan; perlu normalisasi accrual.',rec:'Terapkan accrual bulanan untuk gedung dan jaringan agar beban tersebar merata, dan beri penanda pada transaksi reversal.',pic:'Finance Accounting',due:'31 Des 2026'});
@@ -411,7 +535,7 @@ document.addEventListener('change',e=>{if(e.target.dataset.ins){LS.set(e.target.
 /* ---------- VIEWS ---------- */
 const VIEWS={};
 VIEWS.ringkasan={html(F){const A=agg(F),O=agg(filtered(st.src==='sap'?'ops':'sap'));const T=st.target/100;
-  const proj=A.rev/9*12, lossN=F.filter(x=>pstatus(x)[0]==='Loss Making').length,belowN=F.filter(x=>x.gpm!=null&&x.gpm<T).length;
+  const proj=A.rev/NM*12, lossN=F.filter(x=>pstatus(x)[0]==='Loss Making').length,belowN=F.filter(x=>x.gpm!=null&&x.gpm<T).length;
   const bud=LS.get('budget',null);
   return `
   <section class="kpis">
@@ -422,14 +546,14 @@ VIEWS.ringkasan={html(F){const A=agg(F),O=agg(filtered(st.src==='sap'?'ops':'sap
     ${kpi('Depresiasi (D&A)',rc(A.dep),'dari ledger per IO','<span class="chip">Amortisasi: tidak ada di data</span>')}
     ${kpi('Laba setelah D&A',rc(A.contrib),'Gross Profit − D&A, sebelum OPEX',`<span class="chip">Margin ${pc(A.rev?A.contrib/A.rev:null)}</span>`)}
     ${kpi('EBITDA & Net Profit','Belum tersedia','OPEX, bunga & pajak tidak ada di file','<span class="chip warn">Isi OPEX di Simulator</span>','na')}
-    ${kpi('Budget Achievement',bud&&bud.rev?pc(A.rev/(bud.rev*9/12)):'Belum ada anggaran',bud&&bud.rev?'Revenue vs anggaran prorata 9 bulan':'Masukkan anggaran di modul 07','<span class="chip">'+lossN+' rugi · '+belowN+' di bawah target</span>',bud&&bud.rev?'':'na')}
+    ${kpi('Budget Achievement',bud&&bud.rev?pc(A.rev/(bud.rev*NM/12)):'Belum ada anggaran',bud&&bud.rev?'Revenue vs anggaran prorata '+NM+' bulan':'Masukkan anggaran di modul 07','<span class="chip">'+lossN+' rugi · '+belowN+' di bawah target</span>',bud&&bud.rev?'':'na')}
   </section>
   <div class="grid g-75">
     <section class="panel"><div class="ph"><div><h3>Laba kotor per pelanggan</h3><p class="hint">10 teratas berdasarkan laba kotor, warna menunjukkan status terhadap target GPM.</p></div><a class="btn sm" href="#kontrak">Lihat semua kontrak</a></div><div class="cv h340"><canvas id="cTopGp"></canvas></div></section>
     <section class="panel"><h3>Komposisi biaya langsung</h3><div class="cv h260"><canvas id="cDonut"></canvas></div><div class="kv-list" id="donutList"></div></section>
   </div>
   <div class="grid g2">
-    <section class="panel"><h3>Revenue, biaya & GPM bulanan</h3><p class="hint">Ledger SAP Jan–Sep 2026. Nilai bulanan memuat koreksi/reversal, sehingga totalnya tidak sama dengan Summary.</p><div class="cv h260"><canvas id="cMini"></canvas></div></section>
+    <section class="panel"><h3>Revenue, biaya & GPM bulanan</h3><p class="hint">Ledger SAP ${periodLabel()}. Nilai bulanan memuat koreksi/reversal, sehingga totalnya tidak sama dengan Summary.</p><div class="cv h260"><canvas id="cMini"></canvas></div></section>
     <section class="panel"><div class="ph"><h3>Insight utama</h3><a class="btn sm" href="#insight">Semua insight</a></div><div id="miniIns" style="display:flex;flex-direction:column;gap:10px"></div></section>
   </div>`},
  after(F){const P=palette();const top=[...F].sort((a,b)=>b.gp-a.gp).slice(0,10);
@@ -496,7 +620,7 @@ VIEWS['pendapatan-biaya']={html(F){const A=agg(F);
       <div class="kv-list"><span>Biaya tetap</span><span class="v">${rc(fixed)} · ${pc((fixed)/(A.dir+A.dep))}</span><span>Biaya variabel</span><span class="v">${rc(variable)} · ${pc(variable/(A.dir+A.dep))}</span></div></section>
     <section class="panel"><h3>Cost per Agent & per Interaction</h3><div class="empty"><h3>Data operasional belum tersedia</h3><p>File tidak memuat jumlah FTE, jam produktif, atau volume interaksi. Isi sheet <b>Operational Metrics</b> pada template upload, atau gunakan kalkulator di modul 08.</p><a class="btn sm" href="#contact-center">Buka kalkulator</a></div></section>
     <section class="panel"><h3>Rata-rata per bulan</h3><div class="kv-list">
-      <span>Revenue / bulan</span><span class="v">${rc(A.rev/9)}</span><span>Direct cost / bulan</span><span class="v">${rc(A.dir/9)}</span><span>Gross profit / bulan</span><span class="v">${rc(A.gp/9)}</span>
+      <span>Revenue / bulan</span><span class="v">${rc(A.rev/NM)}</span><span>Direct cost / bulan</span><span class="v">${rc(A.dir/NM)}</span><span>Gross profit / bulan</span><span class="v">${rc(A.gp/NM)}</span>
       <span>Revenue / pelanggan</span><span class="v">${rc(F.length?A.rev/F.length:0)}</span><span>Direct cost / pelanggan</span><span class="v">${rc(F.length?A.dir/F.length:0)}</span><span>Biaya tenaga kerja / revenue</span><span class="v">${pc(A.rev?A.cats.jasnaker/A.rev:null)}</span><span>Biaya jaringan / revenue</span><span class="v">${pc(A.rev?A.cats.jarkom/A.rev:null)}</span></div></section>
   </div>`},
  after(F){const P=palette();const A=agg(F);
@@ -513,7 +637,7 @@ VIEWS['pendapatan-biaya']={html(F){const A=agg(F);
  }};
 
 VIEWS.kontrak={html(F){const T=st.target/100;
-  const rows=F.map(x=>{const o=cv(x.raw,st.src==='sap'?'ops':'sap');return{...x,var:x.gpm!=null?x.gpm-T:null,ogpm:o.gpm,gapGpm:x.gpm!=null&&o.gpm!=null?x.gpm-o.gpm:null,st:pstatus(x)[0],mrev:x.rev/9}});
+  const rows=F.map(x=>{const o=cv(x.raw,st.src==='sap'?'ops':'sap');return{...x,var:x.gpm!=null?x.gpm-T:null,ogpm:o.gpm,gapGpm:x.gpm!=null&&o.gpm!=null?x.gpm-o.gpm:null,st:pstatus(x)[0],mrev:x.rev/NM}});
   const q=st.q.toLowerCase();const R=rows.filter(r=>!q||r.n.toLowerCase().includes(q)||r.svc.join(' ').toLowerCase().includes(q));
   const k=st.sort.k,d=st.sort.d;R.sort((a,b)=>{const va=a[k],vb=b[k];if(typeof va==='string')return d*va.localeCompare(vb);return d*((va??-1e18)-(vb??-1e18))});
   const counts={};rows.forEach(r=>counts[r.st]=(counts[r.st]||0)+1);
@@ -527,7 +651,7 @@ VIEWS.kontrak={html(F){const T=st.target/100;
     <div style="display:flex;gap:8px;flex-wrap:wrap"><input type="search" id="q" placeholder="Cari pelanggan / layanan" value="${esc(st.q)}" style="width:220px">${exportBtn('kontrak')}</div></div>
   <div class="tw" style="max-height:620px"><table><thead><tr>${H('n','Pelanggan')}${H('sl','Service line')}${H('rev','Revenue',1)}${H('mrev','Rev / bln',1)}${H('dir','Direct Cost',1)}${H('dep','D&A',1)}${H('gp','Gross Profit',1)}${H('contrib','Laba stlh D&A',1)}${H('gpm','GPM',1)}<th class="n">Target</th>${H('var','Variance',1)}${H('gapGpm','Δ vs '+(st.src==='sap'?'OPS':'SAP'),1)}${H('st','Status')}</tr></thead>
   <tbody>${R.map(r=>`<tr class="click" data-cl="${esc(r.n)}" tabindex="0"><td class="wrap" style="min-width:160px;max-width:220px"><b>${esc(r.n)}</b><br><span class="mut" style="font-size:11.5px">${r.svc.length} layanan/IO</span></td><td>${esc(r.sl)}</td><td class="n" title="${rp(r.rev)}">${rc(r.rev)}</td><td class="n">${rc(r.mrev)}</td><td class="n" title="${rp(r.dir)}">${rc(r.dir)}</td><td class="n">${r.dep?rc(r.dep):'–'}</td><td class="n ${r.gp<0?'neg':''}" title="${rp(r.gp)}">${rc(r.gp)}</td><td class="n">${rc(r.contrib)}</td><td class="n">${pc(r.gpm)}</td><td class="n mut">${pc(T)}</td><td class="n ${r.var==null?'':r.var>=0?'pos':'neg'}">${pp(r.var)}</td><td class="n ${r.gapGpm==null?'':r.gapGpm>=0?'pos':'neg'}">${pp(r.gapGpm)}</td><td>${statusPill(r)}</td></tr>`).join('')||'<tr><td colspan="13" class="mut">Tidak ada data untuk filter ini.</td></tr>'}</tbody>
-  <tfoot><tr><td>Total (${R.length})</td><td></td><td class="n">${rc(A.rev)}</td><td class="n">${rc(A.rev/9)}</td><td class="n">${rc(A.dir)}</td><td class="n">${rc(A.dep)}</td><td class="n">${rc(A.gp)}</td><td class="n">${rc(A.contrib)}</td><td class="n">${pc(A.gpm)}</td><td class="n">${pc(T)}</td><td class="n">${pp(A.gpm!=null?A.gpm-T:null)}</td><td></td><td></td></tr></tfoot></table></div></section>`},
+  <tfoot><tr><td>Total (${R.length})</td><td></td><td class="n">${rc(A.rev)}</td><td class="n">${rc(A.rev/NM)}</td><td class="n">${rc(A.dir)}</td><td class="n">${rc(A.dep)}</td><td class="n">${rc(A.gp)}</td><td class="n">${rc(A.contrib)}</td><td class="n">${pc(A.gpm)}</td><td class="n">${pc(T)}</td><td class="n">${pp(A.gpm!=null?A.gpm-T:null)}</td><td></td><td></td></tr></tfoot></table></div></section>`},
  after(){q.addEventListener('input',e=>{st.q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('q');n.focus();n.setSelectionRange(pos,pos)});
   document.querySelectorAll('[data-sort]').forEach(th=>th.addEventListener('click',()=>{const k=th.dataset.sort;st.sort=st.sort.k===k?{k,d:-st.sort.d}:{k,d:-1};render()}));
   hb.addEventListener('change',e=>{st.hb=+e.target.value||0;render()});bb.addEventListener('change',e=>{st.bb=+e.target.value||0;render()});
@@ -615,29 +739,29 @@ VIEWS.biaya={html(F){const A=agg(F);
  }};
 
 VIEWS.anggaran={html(F){const A=agg(F);const S=agg(filtered('sap')),O=agg(filtered('ops'));const b=LS.get('budget',{rev:'',dir:'',gp:''});
-  const pr=9/12;const hasB=+b.rev>0;
+  const pr=NM/12;const hasB=+b.rev>0;
   const row=(l,act,bud,goodUp)=>{if(!(+bud))return `<tr><td>${l}</td><td class="n">${rp(act)}</td><td class="n mut">–</td><td class="n mut">–</td><td class="n mut">–</td><td class="n mut">–</td><td></td></tr>`;
     const bp=bud*pr,v=act-bp,fav=goodUp?v>=0:v<=0;return `<tr><td>${l}</td><td class="n">${rp(act)}</td><td class="n">${rp(bp)}</td><td class="n ${fav?'pos':'neg'}">${rp(v)}</td><td class="n">${pc(bp?v/bp:null,1)}</td><td class="n">${pc(bp?act/bp:null)}</td><td><span class="pill ${fav?'st-hi':'st-ls'}">${fav?'Favorable':'Unfavorable'}</span></td></tr>`};
   const vr=(l,a,o,goodUp)=>{const v=a-o,fav=goodUp?v>=0:v<=0;return `<tr><td>${l}</td><td class="n">${rp(a)}</td><td class="n">${rp(o)}</td><td class="n ${Math.abs(v)<1?'':fav?'pos':'neg'}">${rp(v)}</td><td class="n">${pc(o?v/o:null,1)}</td><td>${Math.abs(v)<1?'<span class="pill st-pr">Sama</span>':`<span class="pill ${fav?'st-hi':'st-ls'}">${fav?'Favorable':'Unfavorable'}</span>`}</td></tr>`};
-  return `<div class="empty"><h3>Data anggaran tidak ada di file sumber</h3><p>Masukkan anggaran setahun (FY 2026) untuk cakupan filter saat ini. Angka disimpan di browser ini saja dan diprorata 9/12 untuk dibandingkan dengan aktual YTD September.</p>
+  return `<div class="empty"><h3>Data anggaran tidak ada di file sumber</h3><p>Masukkan anggaran setahun (FY ${YEAR}) untuk cakupan filter saat ini. Angka disimpan di browser ini saja dan diprorata ${NM}/12 untuk dibandingkan dengan aktual YTD ${MONTHS[NM-1]} ${YEAR}.</p>
     <div class="filters"><div class="fld"><label for="bRev">Anggaran revenue FY (Rp)</label><input id="bRev" type="number" value="${b.rev}" placeholder="mis. 28000000000"></div>
     <div class="fld"><label for="bDir">Anggaran direct cost FY (Rp)</label><input id="bDir" type="number" value="${b.dir}"></div>
     <div class="fld"><label for="bGp">Target gross profit FY (Rp)</label><input id="bGp" type="number" value="${b.gp}"></div><button class="btn pri" id="bSave" type="button">Simpan anggaran</button><button class="btn" id="bClr" type="button">Hapus</button></div></div>
-  <section class="panel"><h3>Budget vs Actual (YTD Sep, anggaran prorata)</h3><div class="tw"><table><thead><tr><th>Komponen</th><th class="n">Actual (${st.src.toUpperCase()})</th><th class="n">Budget YTD</th><th class="n">Variance</th><th class="n">Variance %</th><th class="n">Achievement</th><th>Konteks</th></tr></thead>
+  <section class="panel"><h3>Budget vs Actual (YTD ${MONTHS[NM-1]}, anggaran prorata)</h3><div class="tw"><table><thead><tr><th>Komponen</th><th class="n">Actual (${st.src.toUpperCase()})</th><th class="n">Budget YTD</th><th class="n">Variance</th><th class="n">Variance %</th><th class="n">Achievement</th><th>Konteks</th></tr></thead>
    <tbody>${row('Revenue',A.rev,b.rev,true)}${row('Direct Cost',A.dir,b.dir,false)}${row('Gross Profit',A.gp,b.gp,true)}</tbody></table></div>
    ${hasB?'':'<p class="hint">Isi anggaran di atas untuk mengaktifkan perbandingan.</p>'}</section>
   <div class="grid g2">
   <section class="panel"><h3>SAP vs OPS (dari file)</h3><p class="hint">OPS dipakai sebagai acuan operasional; variance = SAP − OPS. Revenue lebih tinggi = favorable, biaya lebih tinggi = unfavorable.</p>
   <div class="tw"><table><thead><tr><th>Komponen</th><th class="n">SAP</th><th class="n">OPS</th><th class="n">Variance</th><th class="n">%</th><th>Konteks</th></tr></thead><tbody>${vr('Revenue',S.rev,O.rev,true)}${vr('Direct Cost',S.dir,O.dir,false)}${vr('Gross Profit',S.gp,O.gp,true)}
   <tr><td>GPM</td><td class="n">${pc(S.gpm)}</td><td class="n">${pc(O.gpm)}</td><td class="n">${pp(S.gpm!=null&&O.gpm!=null?S.gpm-O.gpm:null)}</td><td></td><td></td></tr></tbody></table></div></section>
-  <section class="panel"><h3>Forecast akhir tahun (run-rate)</h3><p class="hint">Proyeksi FY = YTD ÷ 9 × 12. Metode sederhana; tidak memperhitungkan kontrak yang berakhir atau baru.</p>
+  <section class="panel"><h3>Forecast akhir tahun (run-rate)</h3><p class="hint">Proyeksi FY = YTD ÷ ${NM} bulan × 12. Metode sederhana; tidak memperhitungkan kontrak yang berakhir atau baru.</p>
    <div class="cv h260"><canvas id="cFc"></canvas></div>
-   <div class="kv-list"><span>Revenue FY proyeksi</span><span class="v">${rc(A.rev/9*12)}</span><span>Direct cost FY proyeksi</span><span class="v">${rc(A.dir/9*12)}</span><span>Gross profit FY proyeksi</span><span class="v">${rc(A.gp/9*12)}</span>${hasB?`<span>Proyeksi vs anggaran revenue</span><span class="v">${pc(A.rev/9*12/b.rev)}</span>`:''}</div>
+   <div class="kv-list"><span>Revenue FY proyeksi</span><span class="v">${rc(A.rev/NM*12)}</span><span>Direct cost FY proyeksi</span><span class="v">${rc(A.dir/NM*12)}</span><span>Gross profit FY proyeksi</span><span class="v">${rc(A.gp/NM*12)}</span>${hasB?`<span>Proyeksi vs anggaran revenue</span><span class="v">${pc(A.rev/NM*12/b.rev)}</span>`:''}</div>
    <a class="btn sm" href="#simulasi">Simulasikan perubahan revenue, biaya SDM & volume</a></section></div>`},
  after(F){const A=agg(F);const P=palette();const b=LS.get('budget',{});
   bSave.addEventListener('click',()=>{LS.set('budget',{rev:+bRev.value||0,dir:+bDir.value||0,gp:+bGp.value||0});toast('Anggaran disimpan di browser ini.');render()});
   bClr.addEventListener('click',()=>{LS.set('budget',null);render()});
-  const ds=[{label:'Actual YTD',data:[A.rev,A.dir,A.gp],backgroundColor:P[0],borderRadius:3},{label:'Proyeksi Q4',data:[A.rev/3,A.dir/3,A.gp/3],backgroundColor:P[1]+'99',borderRadius:3}];
+  const ds=[{label:'Actual YTD',data:[A.rev,A.dir,A.gp],backgroundColor:P[0],borderRadius:3},{label:'Proyeksi sisa tahun',data:[A.rev/NM*(12-NM),A.dir/NM*(12-NM),A.gp/NM*(12-NM)],backgroundColor:P[1]+'99',borderRadius:3}];
   if(+b.rev>0)ds.push({type:'line',label:'Anggaran FY',data:[+b.rev,+b.dir||null,+b.gp||null],borderColor:css('--neg'),backgroundColor:css('--neg'),pointRadius:6,pointStyle:'line',showLine:false,borderWidth:3});
   mk('cFc',{type:'bar',data:{labels:['Revenue','Direct Cost','Gross Profit'],datasets:ds},options:baseOpts({plugins:{legend:{position:'bottom',labels:{color:css('--muted'),usePointStyle:true,boxWidth:8}},tooltip:{callbacks:{label:tipRp}}},scales:{x:{stacked:true,ticks:{color:css('--ink')},grid:{display:false}},y:{stacked:true,ticks:{color:css('--muted'),callback:v=>rc(v).replace('Rp ','')},grid:{color:css('--line')}}}})});
  }};
@@ -656,9 +780,9 @@ VIEWS['contact-center']={html(F){const A=agg(F);const o=LS.get('ops',{fte:'',hrs
    <div class="filters"><div class="fld"><label for="oFte">Total agent / FTE</label><input id="oFte" type="number" value="${o.fte}" style="width:130px"></div>
    <div class="fld"><label for="oHrs">Productive hours / bln</label><input id="oHrs" type="number" value="${o.hrs}" style="width:150px"></div>
    <div class="fld"><label for="oVol">Interaksi ditangani / bln</label><input id="oVol" type="number" value="${o.vol}" style="width:160px"></div><button class="btn pri" id="oSave" type="button">Hitung</button></div>
-   <div class="kv-list"><span>Revenue per agent / bln</span><span class="v">${m(A.rev/9,fte)}</span><span>Cost per agent / bln</span><span class="v">${m(A.dir/9,fte)}</span><span>Labor cost per agent / bln</span><span class="v">${m(A.cats.jasnaker/9,fte)}</span>
-   <span>Revenue per productive hour</span><span class="v">${m(A.rev/9,hrs)}</span><span>Cost per productive hour</span><span class="v">${m(A.dir/9,hrs)}</span>
-   <span>Cost per interaction</span><span class="v">${m(A.dir/9,vol)}</span><span>Technology (jaringan) cost per interaction</span><span class="v">${m(A.cats.jarkom/9,vol)}</span><span>Profit per interaction</span><span class="v">${m(A.gp/9,vol)}</span></div></section>
+   <div class="kv-list"><span>Revenue per agent / bln</span><span class="v">${m(A.rev/NM,fte)}</span><span>Cost per agent / bln</span><span class="v">${m(A.dir/NM,fte)}</span><span>Labor cost per agent / bln</span><span class="v">${m(A.cats.jasnaker/NM,fte)}</span>
+   <span>Revenue per productive hour</span><span class="v">${m(A.rev/NM,hrs)}</span><span>Cost per productive hour</span><span class="v">${m(A.dir/NM,hrs)}</span>
+   <span>Cost per interaction</span><span class="v">${m(A.dir/NM,vol)}</span><span>Technology (jaringan) cost per interaction</span><span class="v">${m(A.cats.jarkom/NM,vol)}</span><span>Profit per interaction</span><span class="v">${m(A.gp/NM,vol)}</span></div></section>
   <section class="panel"><h3>Apakah volume menaikkan profit?</h3><p>Analisis ini butuh volume interaksi bulanan per kontrak. Setelah sheet <b>Operational Metrics</b> diunggah, bandingkan pertumbuhan volume dengan pertumbuhan biaya tenaga kerja per bulan: bila biaya tumbuh lebih cepat dari volume, efisiensi menurun.</p>
    <div class="callout">Dari data keuangan saja: biaya tenaga kerja = ${pc(A.rev?A.cats.jasnaker/A.rev:null)} dari revenue dan ${pc(A.dir?A.cats.jasnaker/A.dir:null)} dari direct cost. Overtime cost dan shrinkage cost tidak dipisahkan di file.</div></section></div>`},
  after(F){const P=palette();oSave.addEventListener('click',()=>{LS.set('ops',{fte:oFte.value,hrs:oHrs.value,vol:oVol.value});render()});
@@ -679,7 +803,7 @@ VIEWS.simulasi={html(F){const s=LS.get('sim',null)||SIMDEF();const ex=new Set(s.
    <div class="filters">${num('fteD','Tambah/kurang FTE',110)}${num('fteCost','Biaya per FTE / bln (asumsi)',170)}${num('aiInv','Investasi AI & otomasi (Rp)',170)}${num('aiSave','Efisiensi labor dari AI (%)',150)}${num('opex','OPEX / overhead YTD (Rp)',170)}${num('tax','Pajak (%)',80)}</div>
    <details><summary style="cursor:pointer;font-weight:500">Tambah atau kurangi proyek (${ex.size} dikecualikan)</summary><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px 12px;margin-top:8px;font-size:12.5px">
    ${DATA.clients.map((c,i)=>`<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="exc${i}" data-ex="${esc(c.n)}" ${ex.has(c.n)?'':'checked'}>${esc(c.n)}</label>`).join('')}</div></details>
-   <p class="hint">Basis simulasi = data terfilter (${st.src.toUpperCase()}, YTD Sep). AHT memengaruhi biaya tenaga kerja secara proporsional (asumsi kebutuhan agen sebanding AHT). Investasi AI diamortisasi 36 bulan; 9 bulan dibebankan ke periode ini. Biaya per FTE adalah asumsi; sesuaikan dengan data HR.</p>
+   <p class="hint">Basis simulasi = data terfilter (${st.src.toUpperCase()}, YTD ${MONTHS[NM-1]}). AHT memengaruhi biaya tenaga kerja secara proporsional (asumsi kebutuhan agen sebanding AHT). Investasi AI diamortisasi 36 bulan; ${NM} bulan dibebankan ke periode ini. Biaya per FTE adalah asumsi; sesuaikan dengan data HR.</p>
    <button class="btn" id="simReset" type="button">Reset ke base case</button></section>
   <section class="panel"><h3>Dampak terhadap laba</h3><div class="tw"><table id="simT"></table></div><div class="cv h300"><canvas id="cSim"></canvas></div><div id="simBe"></div></section></div>`},
  after(F){const P=palette();
@@ -687,11 +811,11 @@ VIEWS.simulasi={html(F){const s=LS.get('sim',null)||SIMDEF();const ex=new Set(s.
     s.ex=[...document.querySelectorAll('[data-ex]')].filter(x=>!x.checked).map(x=>x.dataset.ex);return s};
   const calc=(s,Fx)=>{const G=Fx.filter(x=>!(s.ex||[]).includes(x.n));const A=agg(G);
     const rev=A.rev*(1+s.vol/100)*(1+s.tariff/100);
-    const lab=A.cats.jasnaker*(1+s.vol/100)*(1+s.labor/100)*(1+s.aht/100)*(1-s.aiSave/100)+s.fteD*s.fteCost*9;
+    const lab=A.cats.jasnaker*(1+s.vol/100)*(1+s.labor/100)*(1+s.aht/100)*(1-s.aiSave/100)+s.fteD*s.fteCost*NM;
     const net=A.cats.jarkom*(1+s.vol/100)*(1+s.net/100);
     const ged=A.cats.gedung;const oth=(A.cats.kpk+A.cats.lain+A.cats.other)*(1+s.vol/100)*(1+s.oth/100);
-    const ai=s.aiInv/36*9;const dir=lab+net+ged+oth+ai;const gp=rev-dir;const ebitda=gp-s.opex;const ebit=ebitda-A.dep;const np=ebit>0?ebit*(1-s.tax/100):ebit;
-    const fixed=ged+ai+s.opex+A.dep+s.fteD*s.fteCost*9;const varr=rev>0?(lab+net+oth-s.fteD*s.fteCost*9)/rev:0;const be=varr<1?fixed/(1-varr):null;
+    const ai=s.aiInv/36*NM;const dir=lab+net+ged+oth+ai;const gp=rev-dir;const ebitda=gp-s.opex;const ebit=ebitda-A.dep;const np=ebit>0?ebit*(1-s.tax/100):ebit;
+    const fixed=ged+ai+s.opex+A.dep+s.fteD*s.fteCost*NM;const varr=rev>0?(lab+net+oth-s.fteD*s.fteCost*NM)/rev:0;const be=varr<1?fixed/(1-varr):null;
     return{rev,dir:dir,total:dir+s.opex+A.dep,gp,ebitda,np,gpm:rev?gp/rev:null,npm:rev?np/rev:null,be}};
   const upd=()=>{const s=read();LS.set('sim',s);document.querySelectorAll('input[type=range]').forEach(r=>{document.getElementById(r.id+'V').textContent=(+r.value>0?'+':'')+r.value+r.dataset.unit});
     const b=calc({...SIMDEF(),opex:s.opex,tax:s.tax,fteCost:s.fteCost},F),x=calc(s,F);
@@ -723,19 +847,19 @@ VIEWS.data={html(F){const sumS=sum(D.clients,c=>c.rs),sumO=sum(D.clients,c=>c.ro
    <tr><td>Revenue: jumlah baris pelanggan vs Grand Total Summary</td><td class="n">${rp(sumS)}</td><td class="n">${rp(sumO)}</td><td><span class="pill st-hi">Cocok</span></td></tr>
    <tr><td>Revenue di Breakdown Pareto</td><td class="n">${rp(t.REVENUE[0])}</td><td class="n">${rp(t.REVENUE[1])}</td><td><span class="pill st-bt">Selisih ${rc(t.REVENUE[0]-sumS)} / ${rc(t.REVENUE[1]-sumO)}</span></td></tr>
    <tr><td>Direct cost: Pareto (6 kategori) vs Summary</td><td class="n">${rp(['BEBAN JARKOM','BEBAN JASNAKER','BEBAN KERJASAMA PIHAK KETIGA','BEBAN LAIN - LAIN','BEBAN MANDATORY GEDUNG','BEBAN MARKETING'].reduce((s,k)=>s+t[k][0],0))}</td><td class="n">${rp(['BEBAN JARKOM','BEBAN JASNAKER','BEBAN KERJASAMA PIHAK KETIGA','BEBAN LAIN - LAIN','BEBAN MANDATORY GEDUNG','BEBAN MARKETING'].reduce((s,k)=>s+t[k][1],0))}</td><td><span class="pill st-bt">Summary: ${rc(sum(D.clients,c=>c.ds))} / ${rc(sum(D.clients,c=>c.do))}. Selisih tampil sebagai "Marketing & selisih rekonsiliasi"</span></td></tr>
-   <tr><td>Ledger SAP bulanan (Jan–Sep) vs Summary</td><td class="n">${rp(D.raw.sapRev)}</td><td class="n mut">–</td><td><span class="pill st-ls">Tidak cocok: ledger memuat IO tambahan (mis. Programer Kemenlu) dan koreksi</span></td></tr>
+   <tr><td>Ledger SAP bulanan (${MONTHS[0]}–${MONTHS[NM-1]}) vs Summary</td><td class="n">${rp(D.raw.sapRev)}</td><td class="n mut">–</td><td><span class="pill st-ls">Tidak cocok: ledger memuat IO tambahan (mis. Programer Kemenlu) dan koreksi</span></td></tr>
    <tr><td>Depresiasi: ledger per IO vs Pareto</td><td class="n">${rp(sum(D.clients,c=>c.dep[0]))}</td><td class="n">${rp(sum(D.clients,c=>c.dep[1]))}</td><td><span class="pill st-bt">Pareto: ${rc(t.DEPRESIASI[0])} / ${rc(t.DEPRESIASI[1])}</span></td></tr>
    </tbody></table></div></section>
   <section class="panel"><h3>Temuan kualitas data</h3>
-   <div class="callout neg"><b>Label pelanggan tertukar di sheet Summary (sudah dikoreksi di dashboard).</b> Angka pada ${D.swap.length} pasang baris cocok dengan pelanggan pasangannya menurut Breakdown Pareto dan Rekap SAP S3: ${D.swap.map(p=>esc(p[0])+' ↔ '+esc(p[1])).join(' · ')}. Contoh: baris "Kementerian HAM" di Summary berisi direct cost SAP Rp 665.554.467, yang di Pareto tercatat sebagai Beban Jarkom Dirjen Pajak. Mohon dikonfirmasi ke penyusun file.</div>
+   ${D.swap&&D.swap.length?`<div class="callout neg"><b>Label pelanggan tertukar di sheet Summary (sudah dikoreksi di dashboard).</b> Angka pada ${D.swap.length} pasang baris cocok dengan pelanggan pasangannya menurut Breakdown Pareto dan Rekap SAP S3: ${D.swap.map(p=>esc(p[0])+' ↔ '+esc(p[1])).join(' · ')}. Deteksi otomatis: angka revenue/biaya baris tersebut cocok dengan ledger dan Pareto milik pelanggan pasangannya. Mohon perbaiki label di sheet Summary.</div>`:'<div class="callout">Tidak ada label pelanggan tertukar yang terdeteksi di sheet Summary.</div>'}
    <div class="tw"><table><thead><tr><th>Jenis</th><th>Detail</th></tr></thead><tbody>
-   <tr><td>Tanda negatif pada revenue OPS</td><td class="wrap">${D.negops.length} baris OPS "1.PENDAPATAN Total" bernilai negatif di Rekap SAP S3 (mis. ${D.negops.slice(0,4).map(n=>esc(n[0])+' '+rc(n[2])).join(', ')}). Summary memakai nilai positif.</td></tr>
-   <tr><td>Angka berformat teks</td><td class="wrap">Beberapa baris Beban Jasnaker OPS (mis. BKPM, Kemendikti) disimpan sebagai teks dengan koma desimal dan Grand Total 0.</td></tr>
-   <tr><td>Revenue nol dengan biaya</td><td class="wrap">KUMKM: revenue SAP Rp 0, direct cost Rp 10,5 Jt.</td></tr>
+   ${D.negops.length?`<tr><td>Tanda negatif pada revenue OPS</td><td class="wrap">${D.negops.length} baris OPS "1.PENDAPATAN Total" bernilai negatif di Rekap SAP S3 (mis. ${D.negops.slice(0,4).map(n=>esc(n[0])+' '+rc(n[2])).join(', ')}). Summary memakai nilai positif.</td></tr>`:''}
+   ${(()=>{const tr=D.textRows||['BKPM','Kemendikti'];return tr.length?`<tr><td>Angka berformat teks</td><td class="wrap">Baris di Rekap SAP S3 untuk ${tr.map(esc).join(', ')} berisi angka yang disimpan sebagai teks (mis. koma desimal). Angka tetap dibaca, tetapi sebaiknya diubah ke format angka.</td></tr>`:''})()}
+   ${D.clients.filter(c=>c.rs<=0&&c.ds>0).map(c=>`<tr><td>Revenue nol dengan biaya</td><td class="wrap">${esc(c.n)}: revenue SAP ${rc(c.rs)}, direct cost ${rc(c.ds)}.</td></tr>`).join('')}
    ${D.notes.map(n=>`<tr><td>Catatan file · ${esc(n[0])}</td><td class="wrap">${esc(n[1])} · ${esc(n[2])} · ${esc(n[3])}: ${esc(n[4])}</td></tr>`).join('')}
    </tbody></table></div></section>`},
  after(){tpl.addEventListener('click',()=>{try{XLSX.writeFile(templateWb(),'Template_Upload_Profitability.xlsx');toast('Template dibuat. Bila unduhan tidak muncul, gunakan file template yang dikirim bersama dashboard.')}catch(e){toast('Unduhan diblokir di tampilan ini. Gunakan file template yang dikirim bersama dashboard.')}});
-  const restore=document.getElementById('restore');if(restore)restore.addEventListener('click',()=>{DATA={clients:D.clients.map(c=>({...c})),origin:'file'};st.cust='all';st.sl='all';buildFilters();render()});
+  const restore=document.getElementById('restore');if(restore)restore.addEventListener('click',()=>{DATA={clients:D.clients.map(c=>({...c})),origin:'file'};st.cust='all';st.sl='all';applyMonths();buildFilters();render()});
   const drop=document.getElementById('drop');['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));
   drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f)});up.addEventListener('change',e=>{const f=e.target.files[0];if(f)handleFile(f)});
  }};
@@ -761,10 +885,10 @@ function handleFile(f){const rd=new FileReader();upRes.innerHTML='<p class="hint
       chk(rev,'Revenue','R');chk(cost,'Total Cost','C');
       log.push(`Revenue: ${rev.length} baris · Cost: ${cost.length} baris`);if(dup)log.push(`Duplikat terdeteksi: ${dup} baris (diabaikan)`);if(blank)log.push(`Nilai kosong (Customer/nilai): ${blank} baris (diabaikan)`);if(bad)err.push(`${bad} nilai bukan angka.`);if(negv)log.push(`${negv} nilai negatif (koreksi/reversal), tetap dihitung`);
       if(periods.size>1)err.push(`Data berisi beberapa tahun (${[...periods].join(', ')}). Pisahkan per periode sebelum diunggah.`);
-      if(!err.length){const C={};const add=n=>C[n]=C[n]||{n,rs:0,ds:0,cat:{},dep:[0,0],mr:Array(9).fill(0),md:Array(9).fill(0),svc:new Set(),sl:'Lainnya'};const seen2=new Set();
-        rev.forEach(r=>{const k=JSON.stringify(r);if(seen2.has('R'+k)||!r.Customer||r.Revenue==null)return;seen2.add('R'+k);const c=add(String(r.Customer).trim());c.rs+=+r.Revenue;if(r['Service Line'])c.sl=String(r['Service Line']);if(r.Project)c.svc.add(String(r.Project));const d=r.Date instanceof Date?r.Date:new Date(r.Date);if(!isNaN(d)&&d.getMonth()<9)c.mr[d.getMonth()]+=+r.Revenue});
+      if(!err.length){const C={};const add=n=>C[n]=C[n]||{n,rs:0,ds:0,cat:{},dep:[0,0],mr:Array(NM).fill(0),md:Array(NM).fill(0),svc:new Set(),sl:'Lainnya'};const seen2=new Set();
+        rev.forEach(r=>{const k=JSON.stringify(r);if(seen2.has('R'+k)||!r.Customer||r.Revenue==null)return;seen2.add('R'+k);const c=add(String(r.Customer).trim());c.rs+=+r.Revenue;if(r['Service Line'])c.sl=String(r['Service Line']);if(r.Project)c.svc.add(String(r.Project));const d=r.Date instanceof Date?r.Date:new Date(r.Date);if(!isNaN(d)&&d.getMonth()<NM)c.mr[d.getMonth()]+=+r.Revenue});
         cost.forEach(r=>{const k=JSON.stringify(r);if(seen2.has('C'+k)||!r.Customer||r['Total Cost']==null)return;seen2.add('C'+k);const c=add(String(r.Customer).trim());const cat=CATMAP(r['Cost Category']);const v=+r['Total Cost'];
-          if(cat==='dep'){c.dep[0]+=v;c.dep[1]+=v;return}c.ds+=v;c.cat[cat]=c.cat[cat]||[0,0];c.cat[cat][0]+=v;c.cat[cat][1]+=v;const d=r.Date instanceof Date?r.Date:new Date(r.Date);if(!isNaN(d)&&d.getMonth()<9)c.md[d.getMonth()]+=v});
+          if(cat==='dep'){c.dep[0]+=v;c.dep[1]+=v;return}c.ds+=v;c.cat[cat]=c.cat[cat]||[0,0];c.cat[cat][0]+=v;c.cat[cat][1]+=v;const d=r.Date instanceof Date?r.Date:new Date(r.Date);if(!isNaN(d)&&d.getMonth()<NM)c.md[d.getMonth()]+=v});
         const list=Object.values(C).map(c=>({...c,ro:c.rs,do:c.ds,svc:[...c.svc]}));
         const tr=sum(list,c=>c.rs),tc=sum(list,c=>c.ds);log.push(`Rekonsiliasi: total revenue ${rp(tr)} · total direct cost ${rp(tc)} · ${list.length} pelanggan`);
         DATA={clients:list,origin:'upload'};st.sl='all';st.cust='all';buildFilters();
@@ -787,9 +911,9 @@ VIEWS.kamus={html(){const K=[
  ['Net Profit','EBITDA − D&A − Bunga − Pajak','Simulator','Parsial'],
  ['Net Profit Margin','Net Profit ÷ Revenue × 100%','Simulator','Parsial'],
  ['ROI','(Return − Investment Cost) ÷ Investment Cost × 100%','—','Butuh data investasi'],
- ['Budget Achievement','Actual ÷ Budget × 100% (budget diprorata 9/12)','Input pengguna','Input manual'],
+ ['Budget Achievement','Actual ÷ Budget × 100% (budget diprorata bulan berjalan/12)','Input pengguna','Input manual'],
  ['Revenue / Cost / Profit Variance','Actual − Budget (atau SAP − OPS)','Dihitung','Tersedia'],
- ['Run-rate FY','YTD ÷ 9 × 12','Dihitung','Tersedia'],
+ ['Run-rate FY','YTD ÷ jumlah bulan berjalan × 12','Dihitung','Tersedia'],
  ['Cost to Serve','Direct Cost ÷ Revenue','Dihitung','Tersedia'],
  ['Customer Profit Contribution','GP pelanggan ÷ Σ GP','Dihitung','Tersedia'],
  ['Cost per Interaction','Direct Cost per bulan ÷ interaksi per bulan','Input pengguna','Input manual'],
@@ -805,7 +929,7 @@ VIEWS.kamus={html(){const K=[
   <li><b>Isi anggaran</b> di modul 07 dan angka operasional di modul 08 untuk mengaktifkan achievement dan unit economics.</li>
   <li><b>Uji keputusan</b> di simulator: tarif, volume, biaya SDM, AHT, FTE, investasi AI, OPEX, dan penambahan/pengurangan proyek.</li>
   <li><b>Unggah data baru</b> lewat template di modul 11 untuk periode berikutnya.</li></ol>
-  <p class="hint">Export menyalin tabel ke clipboard (CSV) dan mengunduh .xlsx bila browser mengizinkan. Login, RBAC, audit trail, dan backend API belum termasuk karena prototipe ini berjalan tanpa server.</p></section>
+  <p class="hint">Export menyalin tabel ke clipboard (CSV) dan mengunduh .xlsx bila browser mengizinkan. Akses diatur lewat Firebase Authentication dan peran di Firestore; aktivitas login dan perubahan data tercatat di Audit Trail (Director & Finance).</p></section>
  <section class="panel"><h3>Rekomendasi tindakan periode berikutnya</h3><ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
   <li>Konfirmasi dan perbaiki 4 pasang label tertukar di sheet Summary sebelum laporan diedarkan.</li>
   <li>Rekonsiliasi SAP–OPS bulanan per IO; tutup IO 2025 yang masih menerima biaya.</li>
@@ -826,7 +950,218 @@ fReset.addEventListener('click',()=>{Object.assign(st,{src:'sap',sl:'all',cust:'
 window.addEventListener('hashchange',route);
 const mq=window.matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',()=>render());
 new MutationObserver(()=>render()).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-buildNav();buildFilters();
-route();
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>render());
+function bootDashboard(data){D=data;DATA={clients:D.clients.map(c=>({...c})),origin:'file'};
+  st.sl='all';st.cust='all';applyMonths();buildNav();buildFilters();route();
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>render());}
+function refreshData(data){D=data;if(DATA.origin!=='file')return false;
+  const dlg=document.getElementById('dlg');if(dlg&&dlg.open)dlg.close();
+  DATA={clients:D.clients.map(c=>({...c})),origin:'file'};applyMonths();buildFilters();
+  const y=window.scrollY;render();window.scrollTo(0,y);return true}
 </script>
+
+
+<script>
+/* ===================== Firebase portal ===================== */
+const FB_VER='10.12.2';
+const DATASET_ID='segment3-ytd2026';
+// Isi hanya jika halaman TIDAK di-host di Firebase Hosting (nilai dari Project settings → Your apps → Web app).
+// Konfigurasi Web App Firebase (bukan rahasia; keamanan data dijaga oleh login + firestore.rules).
+const FIREBASE_WEB_CONFIG={apiKey:'AIzaSyB5vIHMuj_3evzavtOg2FCb9or3XbbQiMU',authDomain:'profitability-gov3.firebaseapp.com',projectId:'profitability-gov3',storageBucket:'profitability-gov3.firebasestorage.app',messagingSenderId:'480272996319',appId:'1:480272996319:web:4f935e14a6f0496923166a',measurementId:'G-YZBD6VK6ZG'};
+const FALLBACK_CONFIG=FIREBASE_WEB_CONFIG;
+const ROLES=['Director','Finance','Business Unit Head','Project Manager','Analyst'];
+const ROLE_PAGES={
+  'Director':null,
+  'Finance':null,
+  'Business Unit Head':['ringkasan','kinerja','pendapatan-biaya','kontrak','pelanggan','biaya','anggaran','contact-center','insight','simulasi','kamus'],
+  'Project Manager':['ringkasan','kontrak','pelanggan','biaya','contact-center','insight','kamus'],
+  'Analyst':['ringkasan','kinerja','pendapatan-biaya','kontrak','pelanggan','biaya','anggaran','contact-center','insight','simulasi','kamus']};
+const PAGES_ALL=PAGES.slice();
+const PORTAL={user:null,profile:null,db:null,auth:null,canWrite:false,isAdmin:false,datasetMeta:null};
+const $=id=>document.getElementById(id);
+const STATES=['stLoading','stLogin','stBlocked','stNoData','stConfig','appShell'];
+function show(id){STATES.forEach(s=>{const el=$(s);if(el)el.hidden=(s!==id)})}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load '+src));document.head.appendChild(s)})}
+async function initFirebase(){
+  const C=window.FIREBASE_CONFIG||FIREBASE_WEB_CONFIG;
+  if(C&&C.apiKey&&C.appId){
+    for(const m of ['app','auth','firestore'])await loadScript(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-${m}-compat.js`);
+    if(!firebase.apps.length)firebase.initializeApp(C);return'config-file';
+  }
+  if(/^https?:/.test(location.protocol)&&!/github\.io$/.test(location.hostname)){
+    try{
+      await loadScript(`/__/firebase/${FB_VER}/firebase-app-compat.js`);
+      await loadScript(`/__/firebase/${FB_VER}/firebase-auth-compat.js`);
+      await loadScript(`/__/firebase/${FB_VER}/firebase-firestore-compat.js`);
+      await loadScript('/__/firebase/init.js');
+      if(window.firebase&&firebase.apps.length)return'hosting';
+    }catch(e){}
+  }
+  if(!window.firebase||!firebase.auth||!firebase.firestore){
+    for(const m of ['app','auth','firestore'])await loadScript(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-${m}-compat.js`);
+  }
+  if(!FALLBACK_CONFIG.apiKey||!FALLBACK_CONFIG.appId)throw new Error('NO_CONFIG');
+  if(!firebase.apps.length)firebase.initializeApp(FALLBACK_CONFIG);
+  return'manual';
+}
+const AUTH_ERR={
+  'auth/invalid-email':'Format email tidak valid.',
+  'auth/missing-password':'Password wajib diisi.',
+  'auth/invalid-credential':'Email atau password salah.',
+  'auth/invalid-login-credentials':'Email atau password salah.',
+  'auth/wrong-password':'Email atau password salah.',
+  'auth/user-not-found':'Email atau password salah.',
+  'auth/user-disabled':'Akun ini dinonaktifkan. Hubungi administrator.',
+  'auth/too-many-requests':'Terlalu banyak percobaan gagal. Coba lagi beberapa menit lagi atau reset password.',
+  'auth/network-request-failed':'Tidak dapat terhubung ke server. Periksa koneksi internet.',
+  'auth/operation-not-allowed':'Login email/password belum diaktifkan di Firebase Authentication.',
+  'auth/email-already-in-use':'Email ini sudah terdaftar.',
+  'auth/weak-password':'Password minimal 6 karakter.',
+  'permission-denied':'Akses ditolak oleh aturan keamanan Firestore.'};
+const errText=e=>AUTH_ERR[e&&e.code]||((e&&e.message)||'Terjadi kesalahan.');
+function lmsg(text,kind){const m=$('loginMsg');m.textContent=text;m.className='msg '+(kind||'err');m.hidden=!text}
+async function audit(action,detail){try{if(!PORTAL.db||!PORTAL.user)return;await PORTAL.db.collection('audit').add({uid:PORTAL.user.uid,email:PORTAL.user.email||'',action,detail:detail||'',at:firebase.firestore.FieldValue.serverTimestamp(),ua:navigator.userAgent.slice(0,160)})}catch(e){}}
+
+/* ---------- login form ---------- */
+let forgotMode=false;
+function setForgot(on){forgotMode=on;$('pwWrap').hidden=on;$('rememberRow').hidden=on;$('toLogin').hidden=!on;
+  $('loginTitle').textContent=on?'Reset password':'Masuk';$('loginLead').textContent=on?'Kami akan mengirim tautan reset ke email Anda.':'Gunakan email dan password akun Anda.';
+  $('lgSubmit').textContent=on?'Kirim tautan reset':'Masuk';lmsg('')}
+$('toForgot').addEventListener('click',()=>setForgot(true));
+$('toLogin').addEventListener('click',()=>setForgot(false));
+$('pwToggle').addEventListener('click',()=>{const i=$('lgPass');const on=i.type==='password';i.type=on?'text':'password';$('pwToggle').textContent=on?'Sembunyikan':'Tampilkan'});
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('lgEmail').value.trim(),pass=$('lgPass').value;const b=$('lgSubmit');
+  if(!email){lmsg('Email wajib diisi.');return}
+  b.disabled=true;
+  try{
+    if(forgotMode){await PORTAL.auth.sendPasswordResetEmail(email);lmsg('Jika email terdaftar, tautan reset sudah dikirim. Periksa inbox dan folder spam.','ok')}
+    else{if(!pass){lmsg('Password wajib diisi.');return}
+      await PORTAL.auth.setPersistence($('lgRemember').checked?firebase.auth.Auth.Persistence.LOCAL:firebase.auth.Auth.Persistence.SESSION);
+      b.textContent='Memeriksa…';await PORTAL.auth.signInWithEmailAndPassword(email,pass);sessionStorage.setItem('ps3:justLogged','1')}
+  }catch(err){lmsg(errText(err))}
+  finally{b.disabled=false;b.textContent=forgotMode?'Kirim tautan reset':'Masuk'}});
+async function signOut(reason){try{await audit('logout',reason||'manual')}catch(e){}await PORTAL.auth.signOut();if(reason==='idle')setTimeout(()=>lmsg('Sesi berakhir karena tidak ada aktivitas selama 30 menit.','info'),50)}
+['blockedOut','noDataOut'].forEach(id=>$(id).addEventListener('click',()=>signOut()));
+
+/* ---------- idle timeout ---------- */
+let idleT;const IDLE_MS=30*60*1000;
+function bumpIdle(){clearTimeout(idleT);if(PORTAL.user)idleT=setTimeout(()=>signOut('idle'),IDLE_MS)}
+['click','keydown','mousemove','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,bumpIdle,{passive:true}));
+
+/* ---------- data ---------- */
+function validDataset(d){return d&&Array.isArray(d.clients)&&d.clients.length&&d.tot&&d.mcat&&d.raw&&d.clients.every(c=>typeof c.n==='string'&&typeof c.rs==='number')}
+let unsubDS=null;
+function stopLive(){if(unsubDS){try{unsubDS()}catch(e){}unsubDS=null}const c=$('liveChip');if(c)c.hidden=true}
+const tsDate=t=>t&&t.toDate?t.toDate():null;
+function fmtTime(d){return d?d.toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'–'}
+function setLive(state,meta){const c=$('liveChip');if(!c)return;c.hidden=false;
+  if(state==='ok'){c.className='chip pos';c.textContent='● Live · '+fmtTime(tsDate(meta&&meta.updatedAt))}
+  else if(state==='off'){c.className='chip warn';c.textContent='○ Koneksi realtime terputus'}
+  else{c.className='chip neg';c.textContent='○ Realtime ditolak'}}
+function accessFilter(data){const allowed=PORTAL.profile.customers;
+  return Array.isArray(allowed)&&allowed.length?{...data,clients:data.clients.filter(c=>allowed.includes(c.n))}:data}
+function setupPages(){PAGES.splice(0,PAGES.length,...PAGES_ALL.map(p=>p.slice()));
+  const pages=ROLE_PAGES[PORTAL.profile.role];
+  for(let i=PAGES.length-1;i>=0;i--){const id=PAGES[i][0];if(pages&&!pages.includes(id))PAGES.splice(i,1)}
+  if(PORTAL.canWrite)PAGES.push(['audit','13','Audit Trail','Administrasi']);
+  if(PORTAL.isAdmin)PAGES.push(['pengguna','14','Kelola Pengguna','Administrasi'])}
+async function saveDataset(obj,source){if(!validDataset(obj))throw new Error('Struktur file tidak sesuai (butuh clients, tot, mcat, raw).');
+  const json=JSON.stringify(obj);if(json.length>900000)throw new Error('Ukuran dataset melebihi batas dokumen Firestore (±1 MB).');
+  await PORTAL.db.collection('datasets').doc(DATASET_ID).set({json,source:source||'',clients:obj.clients.length,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:PORTAL.user.email});
+  await audit('dataset_update',`${source||'json'} · ${obj.clients.length} pelanggan`)}
+function readJsonFile(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{try{res(JSON.parse(r.result))}catch(e){rej(new Error('File bukan JSON yang valid.'))}};r.onerror=()=>rej(r.error);r.readAsText(f)})}
+$('seedFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const m=$('seedMsg');m.hidden=false;m.className='msg info';m.textContent='Mengunggah…';
+  try{const obj=await readJsonFile(f);await saveDataset(obj,f.name);m.className='msg ok';m.textContent='Dataset tersimpan. Memuat dashboard…'}catch(err){m.className='msg err';m.textContent=errText(err)}});
+
+/* ---------- session flow ---------- */
+function enterApp(){
+  stopLive();show('stLoading');$('stLoadingMsg').textContent='Memuat dataset…';
+  let booted=false;
+  unsubDS=PORTAL.db.collection('datasets').doc(DATASET_ID).onSnapshot({includeMetadataChanges:false},snap=>{
+    if(snap.metadata&&snap.metadata.hasPendingWrites)return;
+    if(!snap.exists){
+      if(!booted){show('stNoData');$('noDataAdmin').hidden=!PORTAL.canWrite;$('noDataUser').hidden=PORTAL.canWrite;document.querySelectorAll('.roleName').forEach(x=>x.textContent=PORTAL.profile.role)}
+      return}
+    const v=snap.data();let data;
+    try{data=JSON.parse(v.json)}catch(e){data=null}
+    if(!validDataset(data)){if(!booted){show('stBlocked');$('blockedMsg').textContent='Dataset di Firestore tidak dapat dibaca (format tidak valid). Hubungi tim Finance.'}else toast('Pembaruan data diabaikan karena formatnya tidak valid.');return}
+    PORTAL.datasetMeta=v;data=accessFilter(data);
+    if(!booted){booted=true;setupPages();renderUserBox();show('appShell');bootDashboard(data);setLive('ok',v);return}
+    const applied=refreshData(data);renderUserBox();setLive('ok',v);
+    toast(applied?`Data diperbarui otomatis (${v.source||'Firestore'}) · ${fmtTime(tsDate(v.updatedAt))}`:'Data resmi baru tersedia. Buka modul 11 → "Kembali ke data file asli" untuk memuatnya.');
+  },err=>{
+    if(!booted){show('stBlocked');$('blockedMsg').textContent='Gagal membaca dataset: '+errText(err);return}
+    setLive(err&&err.code==='permission-denied'?'denied':'off');
+  });
+}
+function renderUserBox(){const p=PORTAL.profile,u=PORTAL.user;
+  $('userBox').innerHTML=`<span class="rl">${esc(p.role)}</span><span class="nm">${esc(p.name||u.email)}</span><span class="em">${esc(u.email)}</span>${PORTAL.datasetMeta&&PORTAL.datasetMeta.updatedAt?`<span class="em">Data diperbarui ${fmtTime(tsDate(PORTAL.datasetMeta.updatedAt))}</span>`:''}<button type="button" id="sideOut">Keluar</button>`;
+  $('sideOut').addEventListener('click',()=>signOut())}
+$('tbOut').addEventListener('click',()=>signOut());
+async function onUser(user){
+  PORTAL.user=user;clearTimeout(idleT);
+  if(!user){stopLive();PORTAL.profile=null;show('stLogin');setForgot(false);$('lgPass').value='';return}
+  show('stLoading');$('stLoadingMsg').textContent='Memeriksa hak akses…';
+  let prof=null;
+  try{const s=await PORTAL.db.collection('users').doc(user.uid).get();prof=s.exists?s.data():null}catch(err){prof=null}
+  if(!prof||prof.active!==true||!ROLES.includes(prof.role)){show('stBlocked');$('blockedUid').innerHTML=`Email: <b>${esc(user.email)}</b><br>UID: <code>${esc(user.uid)}</code>`;return}
+  PORTAL.profile=prof;PORTAL.canWrite=['Director','Finance'].includes(prof.role);PORTAL.isAdmin=prof.role==='Director';
+  if(sessionStorage.getItem('ps3:justLogged')){sessionStorage.removeItem('ps3:justLogged');audit('login','')}
+  bumpIdle();enterApp();
+}
+
+/* ---------- extra views ---------- */
+VIEWS.audit={html(){return `<section class="panel"><div class="ph"><div><h3>Audit trail</h3><p class="hint">100 aktivitas terakhir: login, logout, pembaruan dataset, perubahan pengguna. Catatan tidak dapat diubah atau dihapus dari portal.</p></div><button class="btn sm" id="auRefresh" type="button">Muat ulang</button></div><div class="tw" style="max-height:640px"><table><thead><tr><th>Waktu</th><th>Pengguna</th><th>Aktivitas</th><th>Detail</th></tr></thead><tbody id="auBody"><tr><td colspan="4" class="mut">Memuat…</td></tr></tbody></table></div></section>`},
+ async after(){const load=async()=>{try{const q=await PORTAL.db.collection('audit').orderBy('at','desc').limit(100).get();const L={login:'Masuk',logout:'Keluar',dataset_update:'Perbarui dataset',user_create:'Tambah pengguna',user_update:'Ubah pengguna',password_reset:'Kirim reset password'};
+    $('auBody').innerHTML=q.docs.map(d=>{const x=d.data();return `<tr><td>${x.at?x.at.toDate().toLocaleString('id-ID'):'–'}</td><td>${esc(x.email)}</td><td>${esc(L[x.action]||x.action)}</td><td class="wrap">${esc(x.detail)}</td></tr>`}).join('')||'<tr><td colspan="4" class="mut">Belum ada aktivitas.</td></tr>'}catch(err){$('auBody').innerHTML=`<tr><td colspan="4" class="neg">${esc(errText(err))}</td></tr>`}};
+  $('auRefresh').addEventListener('click',load);load()}};
+
+VIEWS.pengguna={html(){const custs=(D&&D.clients||[]).map(c=>c.n).sort();
+ return `<div class="grid g-75"><section class="panel"><div class="ph"><div><h3>Daftar pengguna</h3><p class="hint">Ubah peran atau status langsung dari tabel. Pengguna nonaktif tetap bisa login ke Firebase, tetapi tidak dapat membuka data.</p></div><button class="btn sm" id="usRefresh" type="button">Muat ulang</button></div>
+  <div class="tw"><table><thead><tr><th>Nama</th><th>Email</th><th>Peran</th><th>Status</th><th>Batas pelanggan</th><th></th></tr></thead><tbody id="usBody"><tr><td colspan="6" class="mut">Memuat…</td></tr></tbody></table></div></section>
+ <section class="panel"><h3>Tambah pengguna</h3><p class="hint">Membuat akun Firebase Authentication beserta profil peran. Bagikan password awal secara terpisah dan minta pengguna menggantinya lewat "Lupa password?".</p>
+  <form id="usForm" style="display:flex;flex-direction:column;gap:10px">
+   <div class="fld"><label for="nuName">Nama</label><input id="nuName" type="text" required></div>
+   <div class="fld"><label for="nuEmail">Email</label><input id="nuEmail" type="text" inputmode="email" required></div>
+   <div class="fld"><label for="nuPass">Password awal (min. 8 karakter)</label><input id="nuPass" type="text" required minlength="8"></div>
+   <div class="fld"><label for="nuRole">Peran (pilih "Sync" untuk akun Google Sheets)</label><select id="nuRole">${[...ROLES,'Sync'].map(r=>`<option ${r==='Analyst'?'selected':''}>${r}</option>`).join('')}</select></div>
+   <div class="fld"><label for="nuCust">Batasi ke pelanggan (opsional, Ctrl/Cmd untuk pilih banyak)</label><select id="nuCust" multiple size="6">${custs.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div>
+   <button class="btn pri" type="submit" id="nuBtn">Buat akun</button><div id="nuMsg" class="msg" hidden></div></form>
+  <div class="callout">Pembatasan pelanggan menyaring tampilan. Seluruh dataset tetap tersimpan dalam satu dokumen, jadi untuk isolasi data yang ketat, dataset perlu dipecah per pelanggan.</div></section></div>`},
+ after(){const load=async()=>{try{const q=await PORTAL.db.collection('users').get();
+   $('usBody').innerHTML=q.docs.map(d=>{const u=d.data();const me=d.id===PORTAL.user.uid;return `<tr data-uid="${d.id}"><td>${esc(u.name||'–')}</td><td>${esc(u.email||'')}</td><td><select data-f="role" ${me?'disabled':''} aria-label="Peran">${[...ROLES,'Sync'].map(r=>`<option ${r===u.role?'selected':''}>${r}</option>`).join('')}</select></td>
+    <td><select data-f="active" ${me?'disabled':''} aria-label="Status"><option value="1" ${u.active?'selected':''}>Aktif</option><option value="0" ${!u.active?'selected':''}>Nonaktif</option></select></td><td class="wrap">${(u.customers||[]).length?esc(u.customers.join(', ')):'<span class="mut">Semua</span>'}</td><td><button class="btn sm" data-reset="${esc(u.email||'')}" type="button">Kirim reset password</button></td></tr>`}).join('')||'<tr><td colspan="6" class="mut">Belum ada profil.</td></tr>';
+   document.querySelectorAll('#usBody select').forEach(s=>s.addEventListener('change',async()=>{const uid=s.closest('tr').dataset.uid;const val=s.dataset.f==='active'?s.value==='1':s.value;
+     try{await PORTAL.db.collection('users').doc(uid).update({[s.dataset.f]:val,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});await audit('user_update',`${uid} ${s.dataset.f}=${val}`);toast('Perubahan disimpan.')}catch(err){toast(errText(err))}}));
+   document.querySelectorAll('[data-reset]').forEach(b=>b.addEventListener('click',async()=>{try{await PORTAL.auth.sendPasswordResetEmail(b.dataset.reset);await audit('password_reset',b.dataset.reset);toast('Tautan reset dikirim ke '+b.dataset.reset)}catch(err){toast(errText(err))}}));
+  }catch(err){$('usBody').innerHTML=`<tr><td colspan="6" class="neg">${esc(errText(err))}</td></tr>`}};
+  $('usRefresh').addEventListener('click',load);load();
+  $('usForm').addEventListener('submit',async e=>{e.preventDefault();const m=$('nuMsg');const name=$('nuName').value.trim(),email=$('nuEmail').value.trim(),pass=$('nuPass').value,role=$('nuRole').value;const customers=[...$('nuCust').selectedOptions].map(o=>o.value);
+   if(!name||!email||pass.length<8){m.hidden=false;m.className='msg err';m.textContent='Lengkapi nama, email, dan password minimal 8 karakter.';return}
+   $('nuBtn').disabled=true;m.hidden=false;m.className='msg info';m.textContent='Membuat akun…';
+   let sec;try{sec=firebase.apps.find(a=>a.name==='admin-create')||firebase.initializeApp(firebase.app().options,'admin-create');
+     const cred=await sec.auth().createUserWithEmailAndPassword(email,pass);const uid=cred.user.uid;await sec.auth().signOut();
+     await PORTAL.db.collection('users').doc(uid).set({name,email,role,active:true,customers,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:PORTAL.user.email});
+     await audit('user_create',`${email} · ${role}`);m.className='msg ok';m.textContent=`Akun ${email} dibuat dengan peran ${role}.`;$('usForm').reset();load()}
+   catch(err){m.className='msg err';m.textContent=errText(err)}finally{$('nuBtn').disabled=false}});
+ }};
+
+/* dataset replacement panel inside module 11 */
+const _dataAfter=VIEWS.data.after;
+VIEWS.data.after=function(F){_dataAfter.call(this,F);if(!PORTAL.canWrite)return;
+  const meta=PORTAL.datasetMeta||{};meta.updatedAt=meta.updatedAt||null;const sec=document.createElement('section');sec.className='panel';
+  sec.innerHTML=`<div class="ph"><div><h3>Dataset resmi di Firebase</h3><p class="hint">Dataset yang dilihat semua pengguna. Terakhir diperbarui ${fmtTime(tsDate(meta.updatedAt))} oleh ${esc(meta.updatedBy||'–')} (${esc(meta.source||'–')}).</p></div></div>
+   <div class="filters"><div class="fld"><label for="dsFile">Ganti dengan file dataset JSON</label><input type="file" id="dsFile" accept=".json,application/json"></div></div><div id="dsMsg" class="msg" hidden></div>
+   <p class="hint">Upload Excel di atas hanya mengubah tampilan Anda sendiri. Penggantian dataset resmi memakai file JSON dengan struktur yang sama seperti dataset awal, dan tercatat di audit trail.</p>`;
+  document.querySelector('.page').prepend(sec);
+  $('dsFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const m=$('dsMsg');m.hidden=false;m.className='msg info';m.textContent='Menyimpan…';
+    try{const obj=await readJsonFile(f);await saveDataset(obj,f.name);m.className='msg ok';m.textContent='Dataset resmi diperbarui. Semua dashboard yang terbuka ikut ter-update.'}catch(err){m.className='msg err';m.textContent=errText(err)}});
+};
+
+/* ---------- start ---------- */
+(async()=>{try{await initFirebase()}catch(e){show('stConfig');return}
+  PORTAL.auth=firebase.auth();PORTAL.db=firebase.firestore();PORTAL.auth.languageCode='id';
+  PORTAL.auth.onAuthStateChanged(u=>{onUser(u).catch(err=>{show('stBlocked');$('blockedMsg').textContent=errText(err)})})})();
+</script>
+
+</body>
+</html>
