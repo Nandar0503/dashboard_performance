@@ -4,10 +4,17 @@ service cloud.firestore {
 
     // ---------- Helper ----------
     function signedIn() { return request.auth != null; }
+
+    // Pemilik / Director utama. Selalu aktif sebagai Director, walau profilnya belum ada.
+    // UID tidak bisa dipalsukan (diterbitkan Firebase Authentication).
+    // nandar.supriatna05@gmail.com
+    function isOwner() { return signedIn() && request.auth.uid in ['MYiFVZbiLuTdR6yxNfLjLUgxjNv1']; }
+
     function profilePath() { return /databases/$(database)/documents/users/$(request.auth.uid); }
     function profile() { return get(profilePath()).data; }
-    function active() { return signedIn() && exists(profilePath()) && profile().active == true; }
-    function hasRole(roles) { return active() && profile().role in roles; }
+    function hasProfile() { return signedIn() && exists(profilePath()) && profile().active == true; }
+    function active() { return isOwner() || hasProfile(); }
+    function hasRole(roles) { return (isOwner() && 'Director' in roles) || (hasProfile() && profile().role in roles); }
 
     // Peran manusia (boleh membuka dashboard) + akun mesin "Sync" (Google Sheets → Firestore).
     function humanRoles() { return ['Director', 'Finance', 'Business Unit Head', 'Project Manager', 'Analyst']; }
@@ -31,7 +38,10 @@ service cloud.firestore {
       allow list: if hasRole(['Director']);
       allow create, update: if hasRole(['Director'])
                             && validRole(request.resource.data.role)
-                            && request.resource.data.active is bool;
+                            && request.resource.data.active is bool
+                            // Pemilik tidak bisa menurunkan/menonaktifkan dirinya sendiri secara tidak sengaja.
+                            && !(isOwner() && uid == request.auth.uid
+                                 && (request.resource.data.role != 'Director' || request.resource.data.active != true));
       allow delete: if hasRole(['Director']);
     }
 

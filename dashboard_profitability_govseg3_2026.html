@@ -969,6 +969,8 @@ const DATASET_ID='segment3-ytd2026';
 const FIREBASE_WEB_CONFIG={apiKey:'AIzaSyB5vIHMuj_3evzavtOg2FCb9or3XbbQiMU',authDomain:'profitability-gov3.firebaseapp.com',projectId:'profitability-gov3',storageBucket:'profitability-gov3.firebasestorage.app',messagingSenderId:'480272996319',appId:'1:480272996319:web:4f935e14a6f0496923166a',measurementId:'G-YZBD6VK6ZG'};
 const FALLBACK_CONFIG=FIREBASE_WEB_CONFIG;
 const ROLES=['Director','Finance','Business Unit Head','Project Manager','Analyst'];
+// Pemilik (harus sama dengan isOwner() di firestore.rules).
+const OWNER_UIDS=['MYiFVZbiLuTdR6yxNfLjLUgxjNv1'];
 const ROLE_PAGES={
   'Director':null,
   'Finance':null,
@@ -1103,6 +1105,13 @@ async function onUser(user){
   show('stLoading');$('stLoadingMsg').textContent='Memeriksa hak akses…';
   let prof=null;
   try{const s=await PORTAL.db.collection('users').doc(user.uid).get();prof=s.exists?s.data():null}catch(err){prof=null}
+  if(OWNER_UIDS.includes(user.uid)&&(!prof||prof.active!==true||prof.role!=='Director')){
+    // Pemilik: profil Director dibuat/diperbaiki otomatis (diizinkan oleh firestore.rules via isOwner()).
+    $('stLoadingMsg').textContent='Menyiapkan profil Director…';
+    const np={name:(prof&&prof.name)||'Nandar Supriatna',email:user.email,role:'Director',active:true,customers:[],updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+    try{await PORTAL.db.collection('users').doc(user.uid).set(np,{merge:true});prof={...(prof||{}),...np};audit('user_update','bootstrap pemilik → Director aktif')}
+    catch(err){show('stBlocked');$('blockedMsg').textContent='Profil Director belum bisa dibuat: '+errText(err)+' Pastikan firestore.rules terbaru sudah di-publish.';$('blockedUid').innerHTML=`Email: <b>${esc(user.email)}</b><br>UID: <code>${esc(user.uid)}</code>`;return}
+  }
   if(!prof||prof.active!==true||!ROLES.includes(prof.role)){show('stBlocked');$('blockedUid').innerHTML=`Email: <b>${esc(user.email)}</b><br>UID: <code>${esc(user.uid)}</code>`;return}
   PORTAL.profile=prof;PORTAL.canWrite=['Director','Finance'].includes(prof.role);PORTAL.isAdmin=prof.role==='Director';
   if(sessionStorage.getItem('ps3:justLogged')){sessionStorage.removeItem('ps3:justLogged');audit('login','')}
