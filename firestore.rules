@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Helper ----------
+    function signedIn() { return request.auth != null; }
+    function profilePath() { return /databases/$(database)/documents/users/$(request.auth.uid); }
+    function profile() { return get(profilePath()).data; }
+    function active() { return signedIn() && exists(profilePath()) && profile().active == true; }
+    function hasRole(roles) { return active() && profile().role in roles; }
+
+    // Peran manusia (boleh membuka dashboard) + akun mesin "Sync" (Google Sheets → Firestore).
+    function humanRoles() { return ['Director', 'Finance', 'Business Unit Head', 'Project Manager', 'Analyst']; }
+    function validRole(r) { return r in humanRoles() || r == 'Sync'; }
+
+    // Bentuk dokumen dataset yang sah, dipakai oleh portal (Director/Finance) maupun Apps Script (Sync).
+    function validDataset(d) {
+      return d.keys().hasOnly(['json', 'source', 'clients', 'hash', 'updatedAt', 'updatedBy'])
+          && d.keys().hasAll(['json', 'source', 'clients', 'updatedAt', 'updatedBy'])
+          && d.json is string && d.json.size() > 100 && d.json.size() < 900000
+          && d.source is string && d.source.size() < 200
+          && d.clients is int && d.clients > 0 && d.clients < 2000
+          && (!('hash' in d) || (d.hash is string && d.hash.size() < 100))
+          && d.updatedAt == request.time
+          && d.updatedBy == request.auth.token.email;
+    }
+
+    // ---------- Profil & peran ----------
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || hasRole(['Director']));
+      allow list: if hasRole(['Director']);
+      allow create, update: if hasRole(['Director'])
+                            && validRole(request.resource.data.role)
+                            && request.resource.data.active is bool;
+      allow delete: if hasRole(['Director']);
+    }
+
+    // ---------- Dataset dashboard ----------
+    match /datasets/{id} {
+      // Semua pengguna manusia yang aktif bisa membaca (termasuk listener realtime).
+      allow read: if hasRole(humanRoles());
+
+      // Director/Finance dari portal, atau akun Sync dari Google Sheets (hanya dataset resmi).
+      allow create, update: if validDataset(request.resource.data)
+                            && (hasRole(['Director', 'Finance'])
+                                || (hasRole(['Sync']) && id == 'segment3-ytd2026'));
+
+      allow delete: if hasRole(['Director']);
+    }
+
+    // ---------- Audit trail (append-only) ----------
+    match /audit/{id} {
+      allow create: if signedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.keys().hasOnly(['uid', 'email', 'action', 'detail', 'at', 'ua'])
+                    && request.resource.data.action in ['login', 'logout', 'dataset_update', 'user_create', 'user_update', 'password_reset']
+                    && request.resource.data.at == request.time;
+      allow read: if hasRole(['Director', 'Finance']);
+      allow update, delete: if false;
+    }
+
+    // Selain koleksi di atas: tertutup.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
