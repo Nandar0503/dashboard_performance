@@ -536,7 +536,7 @@ document.addEventListener('change',e=>{if(e.target.dataset.ins){LS.set(e.target.
 const VIEWS={};
 VIEWS.ringkasan={html(F){const A=agg(F),O=agg(filtered(st.src==='sap'?'ops':'sap'));const T=st.target/100;
   const proj=A.rev/NM*12, lossN=F.filter(x=>pstatus(x)[0]==='Loss Making').length,belowN=F.filter(x=>x.gpm!=null&&x.gpm<T).length;
-  const bud=LS.get('budget',null);
+  const bud=BUDGET;
   return `
   <section class="kpis">
     ${kpi('Total Revenue',rc(A.rev),rp(A.rev),delta(A.rev,O.rev,true)+`<span class="chip">Run-rate FY ${rc(proj)}</span>`,'hero')}
@@ -738,15 +738,16 @@ VIEWS.biaya={html(F){const A=agg(F);
     options:baseOpts({plugins:{legend:{position:'bottom',labels:{color:css('--muted'),usePointStyle:true,boxWidth:8}},tooltip:{callbacks:{label:c=>c.dataset.yAxisID==='y1'?' Rasio '+nf2.format(c.parsed.y)+'%':tipRp(c)}}},scales:{x:{stacked:true,ticks:{color:css('--muted')},grid:{display:false}},y:{stacked:true,ticks:{color:css('--muted'),callback:v=>rc(v).replace('Rp ','')},grid:{color:css('--line')}},y1:{position:'right',ticks:{color:css('--muted'),callback:v=>v+'%'},grid:{display:false}}}})});
  }};
 
-VIEWS.anggaran={html(F){const A=agg(F);const S=agg(filtered('sap')),O=agg(filtered('ops'));const b=LS.get('budget',{rev:'',dir:'',gp:''});
+VIEWS.anggaran={html(F){const A=agg(F);const S=agg(filtered('sap')),O=agg(filtered('ops'));const b=BUDGET||{rev:'',dir:'',gp:''};const cw=PORTAL.canWrite;const ro=cw?'':' readonly disabled';
   const pr=NM/12;const hasB=+b.rev>0;
   const row=(l,act,bud,goodUp)=>{if(!(+bud))return `<tr><td>${l}</td><td class="n">${rp(act)}</td><td class="n mut">–</td><td class="n mut">–</td><td class="n mut">–</td><td class="n mut">–</td><td></td></tr>`;
     const bp=bud*pr,v=act-bp,fav=goodUp?v>=0:v<=0;return `<tr><td>${l}</td><td class="n">${rp(act)}</td><td class="n">${rp(bp)}</td><td class="n ${fav?'pos':'neg'}">${rp(v)}</td><td class="n">${pc(bp?v/bp:null,1)}</td><td class="n">${pc(bp?act/bp:null)}</td><td><span class="pill ${fav?'st-hi':'st-ls'}">${fav?'Favorable':'Unfavorable'}</span></td></tr>`};
   const vr=(l,a,o,goodUp)=>{const v=a-o,fav=goodUp?v>=0:v<=0;return `<tr><td>${l}</td><td class="n">${rp(a)}</td><td class="n">${rp(o)}</td><td class="n ${Math.abs(v)<1?'':fav?'pos':'neg'}">${rp(v)}</td><td class="n">${pc(o?v/o:null,1)}</td><td>${Math.abs(v)<1?'<span class="pill st-pr">Sama</span>':`<span class="pill ${fav?'st-hi':'st-ls'}">${fav?'Favorable':'Unfavorable'}</span>`}</td></tr>`};
-  return `<div class="empty"><h3>Data anggaran tidak ada di file sumber</h3><p>Masukkan anggaran setahun (FY ${YEAR}) untuk cakupan filter saat ini. Angka disimpan di browser ini saja dan diprorata ${NM}/12 untuk dibandingkan dengan aktual YTD ${MONTHS[NM-1]} ${YEAR}.</p>
-    <div class="filters"><div class="fld"><label for="bRev">Anggaran revenue FY (Rp)</label><input id="bRev" type="number" value="${b.rev}" placeholder="mis. 28000000000"></div>
-    <div class="fld"><label for="bDir">Anggaran direct cost FY (Rp)</label><input id="bDir" type="number" value="${b.dir}"></div>
-    <div class="fld"><label for="bGp">Target gross profit FY (Rp)</label><input id="bGp" type="number" value="${b.gp}"></div><button class="btn pri" id="bSave" type="button">Simpan anggaran</button><button class="btn" id="bClr" type="button">Hapus</button></div></div>
+  return `<div class="empty"><h3>Anggaran FY ${YEAR}</h3><p>Anggaran setahun disimpan terpusat (Firestore) sehingga sama untuk semua pengguna, lalu diprorata ${NM}/12 untuk dibandingkan dengan aktual YTD ${MONTHS[NM-1]} ${YEAR}. ${cw?'Hanya Director dan Finance yang dapat mengubahnya; setiap perubahan tercatat di jejak audit.':'Anda dapat melihat anggaran; perubahan hanya oleh Director atau Finance.'}</p>
+    ${BUDGET&&BUDGET.updatedBy?`<p class="hint">Terakhir diubah oleh ${esc(BUDGET.updatedBy)}${BUDGET.updatedAt?' · '+fmtTime(tsDate(BUDGET.updatedAt)):''}</p>`:''}
+    <div class="filters"><div class="fld"><label for="bRev">Anggaran revenue FY (Rp)</label><input id="bRev" type="number" min="0" step="1" value="${b.rev}" placeholder="mis. 28000000000"${ro}></div>
+    <div class="fld"><label for="bDir">Anggaran direct cost FY (Rp)</label><input id="bDir" type="number" min="0" step="1" value="${b.dir}"${ro}></div>
+    <div class="fld"><label for="bGp">Target gross profit FY (Rp)</label><input id="bGp" type="number" min="0" step="1" value="${b.gp}"${ro}></div>${cw?'<button class="btn pri" id="bSave" type="button">Simpan anggaran</button><button class="btn" id="bClr" type="button">Kosongkan</button>':''}</div></div>
   <section class="panel"><h3>Budget vs Actual (YTD ${MONTHS[NM-1]}, anggaran prorata)</h3><div class="tw"><table><thead><tr><th>Komponen</th><th class="n">Actual (${st.src.toUpperCase()})</th><th class="n">Budget YTD</th><th class="n">Variance</th><th class="n">Variance %</th><th class="n">Achievement</th><th>Konteks</th></tr></thead>
    <tbody>${row('Revenue',A.rev,b.rev,true)}${row('Direct Cost',A.dir,b.dir,false)}${row('Gross Profit',A.gp,b.gp,true)}</tbody></table></div>
    ${hasB?'':'<p class="hint">Isi anggaran di atas untuk mengaktifkan perbandingan.</p>'}</section>
@@ -758,9 +759,16 @@ VIEWS.anggaran={html(F){const A=agg(F);const S=agg(filtered('sap')),O=agg(filter
    <div class="cv h260"><canvas id="cFc"></canvas></div>
    <div class="kv-list"><span>Revenue FY proyeksi</span><span class="v">${rc(A.rev/NM*12)}</span><span>Direct cost FY proyeksi</span><span class="v">${rc(A.dir/NM*12)}</span><span>Gross profit FY proyeksi</span><span class="v">${rc(A.gp/NM*12)}</span>${hasB?`<span>Proyeksi vs anggaran revenue</span><span class="v">${pc(A.rev/NM*12/b.rev)}</span>`:''}</div>
    <a class="btn sm" href="#simulasi">Simulasikan perubahan revenue, biaya SDM & volume</a></section></div>`},
- after(F){const A=agg(F);const P=palette();const b=LS.get('budget',{});
-  bSave.addEventListener('click',()=>{LS.set('budget',{rev:+bRev.value||0,dir:+bDir.value||0,gp:+bGp.value||0});toast('Anggaran disimpan di browser ini.');render()});
-  bClr.addEventListener('click',()=>{LS.set('budget',null);render()});
+ after(F){const A=agg(F);const P=palette();const b=BUDGET||{};
+  if(PORTAL.canWrite){
+   const num=el=>{const t=String(el.value).trim();if(t==='')return 0;const n=Number(t);return isFinite(n)&&n>=0&&n<1e15?Math.round(n):NaN};
+   bSave.addEventListener('click',async()=>{const v={rev:num(bRev),dir:num(bDir),gp:num(bGp)};
+    if(Object.values(v).some(x=>Number.isNaN(x))){toast('Isi angka rupiah yang valid (≥ 0).');return}
+    if(!confirm('Simpan anggaran untuk semua pengguna?\nRevenue '+rp(v.rev)+'\nDirect cost '+rp(v.dir)+'\nGross profit '+rp(v.gp)))return;
+    bSave.disabled=true;try{await saveBudget(v);toast('Anggaran tersimpan dan tampil untuk semua pengguna.')}catch(err){toast('Gagal menyimpan anggaran: '+errText(err))}finally{bSave.disabled=false}});
+   bClr.addEventListener('click',async()=>{if(!confirm('Kosongkan anggaran untuk semua pengguna?'))return;
+    try{await saveBudget({rev:0,dir:0,gp:0});toast('Anggaran dikosongkan.')}catch(err){toast('Gagal: '+errText(err))}});
+  }
   const ds=[{label:'Actual YTD',data:[A.rev,A.dir,A.gp],backgroundColor:P[0],borderRadius:3},{label:'Proyeksi sisa tahun',data:[A.rev/NM*(12-NM),A.dir/NM*(12-NM),A.gp/NM*(12-NM)],backgroundColor:P[1]+'99',borderRadius:3}];
   if(+b.rev>0)ds.push({type:'line',label:'Anggaran FY',data:[+b.rev,+b.dir||null,+b.gp||null],borderColor:css('--neg'),backgroundColor:css('--neg'),pointRadius:6,pointStyle:'line',showLine:false,borderWidth:3});
   mk('cFc',{type:'bar',data:{labels:['Revenue','Direct Cost','Gross Profit'],datasets:ds},options:baseOpts({plugins:{legend:{position:'bottom',labels:{color:css('--muted'),usePointStyle:true,boxWidth:8}},tooltip:{callbacks:{label:tipRp}}},scales:{x:{stacked:true,ticks:{color:css('--ink')},grid:{display:false}},y:{stacked:true,ticks:{color:css('--muted'),callback:v=>rc(v).replace('Rp ','')},grid:{color:css('--line')}}}})});
@@ -837,7 +845,7 @@ const SCN={cons:{vol:-10,tariff:0,labor:5,net:3,oth:3,aht:5},base:{vol:0,tariff:
 
 VIEWS.data={html(F){const sumS=sum(D.clients,c=>c.rs),sumO=sum(D.clients,c=>c.ro);const t=D.tot;const hist=LS.get('uploads',[]);
   return `<div class="grid g2">
-  <section class="panel"><h3>Upload data (Excel / CSV)</h3><p class="hint">Gunakan template 6 sheet: Revenue, Cost, Budget, Operational Metrics, Allocation Rules, Master Data. Minimal sheet Revenue dan Cost wajib diisi. Data diproses di browser dan tidak dikirim ke server mana pun.</p>
+  <section class="panel"><h3>Simulasi upload pribadi (Excel / CSV)</h3><p class="hint">Hanya mengubah tampilan Anda sendiri dan tidak disimpan; untuk memperbarui data semua pengguna gunakan panel "Dataset resmi di Firebase". Gunakan template 6 sheet: Revenue, Cost, Budget, Operational Metrics, Allocation Rules, Master Data. Minimal sheet Revenue dan Cost wajib diisi. Data diproses di browser dan tidak dikirim ke server mana pun.</p>
    <div class="drop" id="drop"><p style="margin:0 0 8px">Tarik file ke sini atau</p><input type="file" id="up" accept=".xlsx,.xls,.csv"></div>
    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="tpl" type="button">Unduh template Excel</button>${DATA.origin!=='file'?'<button class="btn" id="restore" type="button">Kembali ke data file asli</button>':''}</div>
    <div id="upRes"></div></section>
@@ -911,7 +919,7 @@ VIEWS.kamus={html(){const K=[
  ['Net Profit','EBITDA − D&A − Bunga − Pajak','Simulator','Parsial'],
  ['Net Profit Margin','Net Profit ÷ Revenue × 100%','Simulator','Parsial'],
  ['ROI','(Return − Investment Cost) ÷ Investment Cost × 100%','—','Butuh data investasi'],
- ['Budget Achievement','Actual ÷ Budget × 100% (budget diprorata bulan berjalan/12)','Input pengguna','Input manual'],
+ ['Budget Achievement','Actual ÷ Budget × 100% (budget diprorata bulan berjalan/12)','Firestore budgets (Director/Finance)','Input terpusat'],
  ['Revenue / Cost / Profit Variance','Actual − Budget (atau SAP − OPS)','Dihitung','Tersedia'],
  ['Run-rate FY','YTD ÷ jumlah bulan berjalan × 12','Dihitung','Tersedia'],
  ['Cost to Serve','Direct Cost ÷ Revenue','Dihitung','Tersedia'],
@@ -1021,6 +1029,11 @@ const AUTH_ERR={
   'permission-denied':'Akses ditolak oleh aturan keamanan Firestore.'};
 const errText=e=>AUTH_ERR[e&&e.code]||((e&&e.message)||'Terjadi kesalahan.');
 function lmsg(text,kind){const m=$('loginMsg');m.textContent=text;m.className='msg '+(kind||'err');m.hidden=!text}
+async function saveBudget(v){
+  if(!PORTAL.canWrite)throw new Error('Hanya Director atau Finance yang dapat mengubah anggaran.');
+  await PORTAL.db.collection('budgets').doc(DATASET_ID).set({rev:v.rev,dir:v.dir,gp:v.gp,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:PORTAL.user.email});
+  await audit('budget_update','rev='+v.rev+'; dir='+v.dir+'; gp='+v.gp);
+}
 async function audit(action,detail){try{if(!PORTAL.db||!PORTAL.user)return;await PORTAL.db.collection('audit').add({uid:PORTAL.user.uid,email:PORTAL.user.email||'',action,detail:detail||'',at:firebase.firestore.FieldValue.serverTimestamp(),ua:navigator.userAgent.slice(0,160)})}catch(e){}}
 
 /* ---------- login form ---------- */
@@ -1051,8 +1064,10 @@ function bumpIdle(){clearTimeout(idleT);if(PORTAL.user)idleT=setTimeout(()=>sign
 
 /* ---------- data ---------- */
 function validDataset(d){return d&&Array.isArray(d.clients)&&d.clients.length&&d.tot&&d.mcat&&d.raw&&d.clients.every(c=>typeof c.n==='string'&&typeof c.rs==='number')}
-let unsubDS=null;
-function stopLive(){if(unsubDS){try{unsubDS()}catch(e){}unsubDS=null}const c=$('liveChip');if(c)c.hidden=true}
+let unsubDS=null,unsubBud=null;
+let BUDGET=null; /* anggaran resmi dari Firestore budgets/{DATASET_ID} */
+function budgetValid(b){return !!b&&['rev','dir','gp'].every(k=>typeof b[k]==='number'&&isFinite(b[k])&&b[k]>=0)}
+function stopLive(){if(unsubDS){try{unsubDS()}catch(e){}unsubDS=null}if(unsubBud){try{unsubBud()}catch(e){}unsubBud=null}BUDGET=null;const c=$('liveChip');if(c)c.hidden=true}
 const tsDate=t=>t&&t.toDate?t.toDate():null;
 function fmtTime(d){return d?d.toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'–'}
 function setLive(state,meta){const c=$('liveChip');if(!c)return;c.hidden=false;
@@ -1078,6 +1093,10 @@ $('seedFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!
 function enterApp(){
   stopLive();show('stLoading');$('stLoadingMsg').textContent='Memuat dataset…';
   let booted=false;
+  unsubBud=PORTAL.db.collection('budgets').doc(DATASET_ID).onSnapshot(snap=>{
+    const v=snap.exists?snap.data():null;BUDGET=budgetValid(v)?v:null;
+    if(booted&&(st.page==='anggaran'||st.page==='ringkasan'))render();
+  },err=>{BUDGET=null;if(booted)toast('Anggaran tidak dapat dibaca: '+errText(err))});
   unsubDS=PORTAL.db.collection('datasets').doc(DATASET_ID).onSnapshot({includeMetadataChanges:false},snap=>{
     if(snap.metadata&&snap.metadata.hasPendingWrites)return;
     if(!snap.exists){
@@ -1120,7 +1139,7 @@ async function onUser(user){
 
 /* ---------- extra views ---------- */
 VIEWS.audit={html(){return `<section class="panel"><div class="ph"><div><h3>Audit trail</h3><p class="hint">100 aktivitas terakhir: login, logout, pembaruan dataset, perubahan pengguna. Catatan tidak dapat diubah atau dihapus dari portal.</p></div><button class="btn sm" id="auRefresh" type="button">Muat ulang</button></div><div class="tw" style="max-height:640px"><table><thead><tr><th>Waktu</th><th>Pengguna</th><th>Aktivitas</th><th>Detail</th></tr></thead><tbody id="auBody"><tr><td colspan="4" class="mut">Memuat…</td></tr></tbody></table></div></section>`},
- async after(){const load=async()=>{try{const q=await PORTAL.db.collection('audit').orderBy('at','desc').limit(100).get();const L={login:'Masuk',logout:'Keluar',dataset_update:'Perbarui dataset',user_create:'Tambah pengguna',user_update:'Ubah pengguna',password_reset:'Kirim reset password'};
+ async after(){const load=async()=>{try{const q=await PORTAL.db.collection('audit').orderBy('at','desc').limit(100).get();const L={login:'Masuk',logout:'Keluar',dataset_update:'Perbarui dataset',budget_update:'Ubah anggaran',user_create:'Tambah pengguna',user_update:'Ubah pengguna',password_reset:'Kirim reset password'};
     $('auBody').innerHTML=q.docs.map(d=>{const x=d.data();return `<tr><td>${x.at?x.at.toDate().toLocaleString('id-ID'):'–'}</td><td>${esc(x.email)}</td><td>${esc(L[x.action]||x.action)}</td><td class="wrap">${esc(x.detail)}</td></tr>`}).join('')||'<tr><td colspan="4" class="mut">Belum ada aktivitas.</td></tr>'}catch(err){$('auBody').innerHTML=`<tr><td colspan="4" class="neg">${esc(errText(err))}</td></tr>`}};
   $('auRefresh').addEventListener('click',load);load()}};
 
@@ -1154,16 +1173,301 @@ VIEWS.pengguna={html(){const custs=(D&&D.clients||[]).map(c=>c.n).sort();
    catch(err){m.className='msg err';m.textContent=errText(err)}finally{$('nuBtn').disabled=false}});
  }};
 
+
+/* ---------- Upload Excel resmi (format Rekap: Summary + Breakdown Pareto + Rekap SAP S3) ----------
+   Parser rekapToDataset identik dengan buildDataset_ di Code.gs (sinkron Google Sheets),
+   sehingga upload Excel dan sinkron Sheets menghasilkan dataset yang sama. */
+function rekapToDataset(S) {
+  const num = v => {
+    if (v === null || v === undefined || v === '' || v === '-') return 0;
+    if (typeof v === 'number') return v;
+    if (v instanceof Date) return 0;
+    let s = String(v).trim();
+    if (s === '-' || s === '') return 0;
+    if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
+    else if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
+    const n = Number(s);
+    return isFinite(n) ? n : 0;
+  };
+  const str = v => (v === null || v === undefined) ? '' : String(v).trim();
+  const R = Math.round;
+  const textNum = (v) => typeof v === 'string' && /\d/.test(v) && v.trim() !== '-';
+
+  /* ---- Ledger: Rekap SAP S3 ----
+   * Tabel boleh mulai di mana saja (mis. B4 seperti file Excel rekap). Cari baris header
+   * (berisi tanggal bulan + "Grand Total"), lalu geser kolom agar "Klien" berada di indeks 1. */
+  const L = (() => {
+    const raw = S.ledger;
+    for (let r = 0; r < Math.min(raw.length, 30); r++) {
+      const row = raw[r] || [];
+      const hasDate = row.some(h => h instanceof Date);
+      const hasGt = row.some(h => str(h).toLowerCase() === 'grand total');
+      if (hasDate && hasGt) {
+        const ki = row.findIndex(h => str(h).toLowerCase() === 'klien');
+        const off = ki >= 1 ? ki - 1 : 0;
+        return raw.slice(r).map(x => (x || []).slice(off));
+      }
+    }
+    return raw;
+  })();
+  const head = L[0];
+  const monthCols = [], monthLabels = [];
+  let year = null, gtCol = -1;
+  head.forEach((h, i) => {
+    if (h instanceof Date) { monthCols.push(i); monthLabels.push(MONTHS_ALL[h.getMonth()]); year = year || h.getFullYear(); }
+    else if (str(h).toLowerCase() === 'grand total') gtCol = i;
+  });
+  if (!monthCols.length || gtCol < 0) throw new Error('Header bulan / "Grand Total" tidak ditemukan di baris pertama sheet ' + 'Rekap SAP S3' + '.');
+  const NM = monthCols.length;
+  const zeros = () => new Array(NM).fill(0);
+  const svc = {}, mrev = {}, mdir = {}, mcat = {}, dep = {}, notes = [], negops = [], textRows = {};
+  for (let r = 1; r < L.length; r++) {
+    const row = L[r];
+    const c = str(row[1]); if (!c) continue;
+    const layanan = str(row[4]), src = str(row[5]), pl = str(row[6]), par = str(row[7]);
+    const note = str(row[gtCol + 1]);
+    if (note) notes.push([c, layanan, src, par, note]);
+    const m = monthCols.map(i => num(row[i]));
+    const gt = num(row[gtCol]);
+    if (monthCols.some(i => textNum(row[i]))) textRows[c] = true;
+    if (pl === '4.DEPRESIASI Total') { dep[c] = dep[c] || [0, 0]; dep[c][src === 'SAP' ? 0 : 1] += gt; }
+    if (src === 'OPS' && pl === '1.PENDAPATAN Total' && gt < 0) negops.push([c, layanan, R(gt)]);
+    if (src !== 'SAP') continue;
+    if (pl === '1.PENDAPATAN Total') {
+      svc[c] = svc[c] || {}; svc[c][layanan] = (svc[c][layanan] || 0) - gt;
+      mrev[c] = mrev[c] || zeros(); m.forEach((v, i) => mrev[c][i] -= v);
+    } else if (pl === '2.DIRECT Total') {
+      mdir[c] = mdir[c] || zeros(); m.forEach((v, i) => mdir[c][i] += v);
+    } else if (pl === '2.DIRECT' && par) {
+      mcat[par] = mcat[par] || {}; mcat[par][c] = mcat[par][c] || zeros(); m.forEach((v, i) => mcat[par][c][i] += v);
+    }
+  }
+
+  /* ---- Breakdown Pareto ---- */
+  const P = S.pareto;
+  const CATKEY = t => {
+    t = t.toLowerCase();
+    if (t.indexOf('jarkom') >= 0) return 'jarkom';
+    if (t.indexOf('jasnaker') >= 0) return 'jasnaker';
+    if (t.indexOf('pihak ketiga') >= 0) return 'kpk';
+    if (t.indexOf('lain') >= 0) return 'lain';
+    if (t.indexOf('gedung') >= 0) return 'gedung';
+    return null;
+  };
+  let blocks = [], titleRow = -1;
+  for (let r = 0; r < Math.min(P.length, 10) && !blocks.length; r++) {
+    P[r].forEach((v, i) => { const k = typeof v === 'string' && /^beban /i.test(v.trim()) ? CATKEY(v) : null; if (k) blocks.push([i, k]); });
+    if (blocks.length) titleRow = r;
+  }
+  if (!blocks.length) throw new Error('Judul blok "Beban ..." tidak ditemukan di sheet ' + 'Breakdown Pareto' + '.');
+  const pc = {};
+  const skip = { 'grand total': 1, 'row labels': 1, '(blank)': 1, 'revenue': 1, 'depresiasi': 1 };
+  blocks.forEach(([col, key]) => {
+    for (let r = titleRow + 2; r < P.length; r++) {
+      const n = str(P[r][col]);
+      if (n.toLowerCase() === 'grand total') break;
+      if (!n || skip[n.toLowerCase()] || /^beban/i.test(n)) continue;
+      pc[n] = pc[n] || {};
+      pc[n][key] = [R(num(P[r][col + 2])), R(num(P[r][col + 1]))]; // [SAP, OPS]
+    }
+  });
+  const tot = {};
+  P.forEach(row => {
+    const k = str(row[0]);
+    if (/^BEBAN /.test(k) || k === 'DEPRESIASI' || k === 'REVENUE') tot[k] = [R(num(row[2])), R(num(row[1]))];
+  });
+  ['BEBAN JARKOM', 'BEBAN JASNAKER', 'BEBAN KERJASAMA PIHAK KETIGA', 'BEBAN LAIN - LAIN', 'BEBAN MANDATORY GEDUNG', 'BEBAN MARKETING', 'DEPRESIASI', 'REVENUE']
+    .forEach(k => { if (!tot[k]) tot[k] = [0, 0]; });
+
+  /* ---- Summary ---- */
+  const SM = S.summary;
+  let start = -1;
+  for (let r = 0; r < SM.length; r++) if (str(SM[r][0]).toLowerCase() === 'layanan') { start = r + 2; break; }
+  if (start < 0) throw new Error('Tabel "Layanan" tidak ditemukan di sheet ' + 'Summary' + '.');
+  const rows = [];
+  for (let r = start; r < SM.length; r++) {
+    const n = str(SM[r][0]);
+    if (n.toLowerCase() === 'grand total') break;
+    if (!n) continue;
+    rows.push({ lbl: n, n, rs: num(SM[r][1]), ro: num(SM[r][2]), ds: num(SM[r][4]), do: num(SM[r][5]) });
+  }
+  if (!rows.length) throw new Error('Tidak ada baris pelanggan di sheet ' + 'Summary' + '.');
+
+  /* ---- Deteksi label tertukar: bandingkan angka baris dengan ledger & Pareto ---- */
+  const rawRev = {}; Object.keys(svc).forEach(c => rawRev[c] = Object.keys(svc[c]).reduce((s, k) => s + svc[c][k], 0));
+  const parDir = {}; Object.keys(pc).forEach(c => parDir[c] = Object.keys(pc[c]).reduce((s, k) => s + pc[c][k][0], 0));
+  const close = (a, b, absTol) => a !== undefined && b !== undefined && Math.abs(a - b) <= Math.max(absTol, Math.abs(b) * 0.01);
+  const score = (row, name) => (close(rawRev[name], row.rs, 2) ? 1 : 0) + (close(parDir[name], row.ds, 2) ? 1 : 0);
+  const cand = [];
+  for (let i = 0; i < rows.length; i++) for (let j = i + 1; j < rows.length; j++) {
+    const a = rows[i], b = rows[j];
+    const ab = score(a, b.lbl), ba = score(b, a.lbl);
+    const gain = ab + ba - score(a, a.lbl) - score(b, b.lbl);
+    if (ab >= 1 && ba >= 1 && gain >= 2) cand.push([gain, i, j]);
+  }
+  cand.sort((x, y) => y[0] - x[0]);
+  const used = {}, swap = [];
+  cand.forEach(([g, i, j]) => {
+    if (used[i] || used[j]) return;
+    used[i] = used[j] = 1;
+    const a = rows[i], b = rows[j];
+    a.n = b.lbl; b.n = a.lbl;
+    swap.push([a.lbl, b.lbl]);
+  });
+
+  /* ---- Gabungkan per pelanggan ---- */
+  const cls = s => {
+    const t = s.toLowerCase();
+    if (/^1500/.test(t) || t.indexOf('nomor akses') >= 0) return 'Nomor Akses / SIP Trunk';
+    if (t.indexOf('waba') >= 0 || /^ota/.test(t)) return 'WhatsApp Business (WABA)';
+    if (t.indexOf('omni') >= 0) return 'Omnichannel';
+    if (t.indexOf('helpdesk') >= 0 || t.indexOf('programer') >= 0) return 'Helpdesk & IT Services';
+    if (t.indexOf('crm') >= 0) return 'CRM Platform';
+    return 'Contact Center Managed Service';
+  };
+  const clients = rows.map(r => {
+    const s = svc[r.n] || {};
+    const keys = Object.keys(s).sort();
+    let prim = '', best = -Infinity;
+    keys.forEach(k => { if (s[k] > best) { best = s[k]; prim = k; } });
+    return {
+      n: r.n, lbl: r.lbl, rs: R(r.rs), ro: R(r.ro), ds: R(r.ds), do: R(r.do),
+      sl: prim ? cls(prim) : 'Lainnya', svc: keys, cat: pc[r.n] || {},
+      dep: (dep[r.n] || [0, 0]).map(R),
+      mr: (mrev[r.n] || zeros()).map(R), md: (mdir[r.n] || zeros()).map(R),
+    };
+  });
+  const mc = {};
+  Object.keys(mcat).forEach(k => { mc[k] = {}; Object.keys(mcat[k]).forEach(c => mc[k][c] = mcat[k][c].map(R)); });
+  const sumObj = o => Object.keys(o).reduce((s, c) => s + o[c].reduce((a, b) => a + b, 0), 0);
+
+  return {
+    clients, tot, notes, negops, mcat: mc, swap,
+    raw: { sapRev: R(sumObj(mrev)), sapDir: R(sumObj(mdir)) },
+    months: monthLabels, year: year || new Date().getFullYear(),
+    textRows: Object.keys(textRows),
+    source: 'excel', generatedAt: new Date().toISOString(),
+  };
+}
+const REKAP_SHEETS={summary:'Summary',pareto:'Breakdown Pareto',ledger:'Rekap SAP S3'};
+function sheetValues(ws){ /* nilai 2D mulai dari A1, setara getDataRange().getValues() */
+  if(!ws||!ws['!ref'])return [];const r=XLSX.utils.decode_range(ws['!ref']);r.s.r=0;r.s.c=0;
+  return XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:'',blankrows:true,range:r})}
+function findSheet(wb,name){const k=wb.SheetNames.find(x=>x.trim().toLowerCase()===name.toLowerCase());return k?wb.Sheets[k]:null}
+function parseOfficialWorkbook(buf){
+  const wb=XLSX.read(buf,{type:'array',cellDates:true});const S={},miss=[];
+  for(const k in REKAP_SHEETS){const ws=findSheet(wb,REKAP_SHEETS[k]);if(!ws)miss.push(REKAP_SHEETS[k]);else S[k]=sheetValues(ws)}
+  if(miss.length)throw new Error('Sheet wajib tidak ditemukan: '+miss.join(', ')+'. Sheet di file: '+wb.SheetNames.join(', '));
+  /* geser tanggal header bulan ke tengah hari agar tidak bergeser ke bulan sebelumnya karena zona waktu */
+  for(let r=0;r<Math.min(S.ledger.length,30);r++)S.ledger[r]=(S.ledger[r]||[]).map(h=>h instanceof Date?new Date(h.getTime()+12*3600e3):h);
+  const data=rekapToDataset(S);
+  if(!validDataset(data))throw new Error('Hasil olahan file tidak lengkap. Periksa format sheet.');
+  return {data,budget:parseBudgetSheet(wb)}}
+function parseBudgetSheet(wb){ /* opsional: sheet "Anggaran" atau "Budget" */
+  const ws=findSheet(wb,'Anggaran')||findSheet(wb,'Budget');if(!ws)return null;
+  const rows=XLSX.utils.sheet_to_json(ws,{defval:null});if(!rows.length)return null;
+  const col=(r,names)=>{for(const n of names){const k=Object.keys(r).find(x=>x.trim().toLowerCase()===n);if(k)return r[k]}return null};
+  const n=v=>{if(v==null||v==='')return 0;if(typeof v==='number')return v;const t=String(v).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.');const x=Number(t);return isFinite(x)?x:NaN};
+  let rev=0,dir=0,gp=0,used=0;
+  for(const r of rows){const a=col(r,['revenue budget','anggaran revenue']),b=col(r,['direct cost budget','anggaran direct cost']),c=col(r,['profit target','target gross profit','gross profit target']);
+    if(a==null&&b==null&&c==null)continue;used++;rev+=n(a);dir+=n(b);gp+=n(c)}
+  if(!used)return null;
+  const v={rev:Math.round(rev),dir:Math.round(dir),gp:Math.round(gp)};
+  if(Object.values(v).some(x=>!isFinite(x)||x<0))throw new Error('Sheet anggaran berisi nilai yang bukan angka atau negatif.');
+  if(!v.rev&&!v.dir&&!v.gp)return null; /* sheet anggaran kosong: jangan menimpa anggaran yang ada */
+  return v}
+function officialTemplateWb(){ /* tata letak sama dengan file "Rekap Profitability Segment 3 ytd 2026.xlsx" */
+  const wb=XLSX.utils.book_new(),U=XLSX.utils;
+  const put=(ws,addr,v)=>{ws[addr]=typeof v==='object'&&v!==null&&!(v instanceof Date)?v:(v instanceof Date?{t:'d',v}:{t:typeof v==='number'?'n':'s',v})};
+  const F=f=>({t:'n',f});
+  const ex=['Pelanggan A','Pelanggan B','Pelanggan C'];
+  /* ---- Summary ---- */
+  const sm={},R0=26,RL=R0+ex.length-1,RG=RL+1;
+  [['A4','Row Labels'],['B4','SAP'],['C4','OPS'],['D4','GAP'],
+   ['A5','PENDAPATAN Total'],['B5',F('B'+RG)],['C5',F('C'+RG)],['D5',F('C5-B5')],
+   ['A6','DIRECT Total'],['B6',F('E'+RG)],['C6',F('F'+RG)],['D6',F('C6-B6')],
+   ['A7','Gross Profit'],['B7',F('B5-B6')],['C7',F('C5-C6')],['D7',F('C7-B7')],
+   ['A8','GPM'],['B8',F('B7/B5')],['C8',F('C7/C5')],
+   ['A24','Layanan'],['B24','1.PENDAPATAN Total'],['E24','2.DIRECT Total'],['H24','Gross Profit'],['K24','GPM']].forEach(([a,v])=>put(sm,a,v));
+  'BCDEFGHIJKLM'.split('').forEach((c,i)=>put(sm,c+'25',['SAP','OPS','GAP'][i%3]));
+  ex.forEach((n,k)=>{const r=R0+k;put(sm,'A'+r,n);put(sm,'B'+r,0);put(sm,'C'+r,0);put(sm,'D'+r,F(`B${r}-C${r}`));put(sm,'E'+r,0);put(sm,'F'+r,0);put(sm,'G'+r,F(`E${r}-F${r}`));
+    put(sm,'H'+r,F(`B${r}-E${r}`));put(sm,'I'+r,F(`C${r}-F${r}`));put(sm,'J'+r,F(`H${r}-I${r}`));put(sm,'K'+r,F(`IFERROR(H${r}/B${r},0)`));put(sm,'L'+r,F(`IFERROR(I${r}/C${r},0)`));put(sm,'M'+r,F(`K${r}-L${r}`))});
+  put(sm,'A'+RG,'Grand Total');'BCEF'.split('').forEach(c=>put(sm,c+RG,F(`SUM(${c}${R0}:${c}${RL})`)));
+  [['D',`B${RG}-C${RG}`],['G',`E${RG}-F${RG}`],['H',`B${RG}-E${RG}`],['I',`C${RG}-F${RG}`],['J',`H${RG}-I${RG}`],['K',`IFERROR(H${RG}/B${RG},0)`],['L',`IFERROR(I${RG}/C${RG},0)`],['M',`K${RG}-L${RG}`]].forEach(([c,f])=>put(sm,c+RG,F(f)));
+  sm['!ref']='A4:M'+RG;sm['!merges']=['A24:A25','B24:D24','E24:G24','H24:J24','K24:M24'].map(U.decode_range);sm['!cols']=[{wch:30},...Array(12).fill({wch:16})];
+  U.book_append_sheet(wb,sm,'Summary');
+  /* ---- Breakdown Pareto ---- */
+  const bp={};put(bp,'A1','GAP OPS VS SAP');
+  const cats=['Beban Jarkom','Beban Jasnaker','Beban Kerjasama Pihak Ketiga','Beban Lain Lain','Beban Mandatory Gedung'];
+  cats.forEach((t,k)=>{const c=6*k,col=i=>U.encode_col(c+i);put(bp,col(0)+'3',t);['Row Labels','OPS','SAP','Grand Total','Selisih'].forEach((h,i)=>put(bp,col(i)+'4',h));
+    ex.forEach((n,e)=>{const r=5+e;put(bp,col(0)+r,n);put(bp,col(1)+r,0);put(bp,col(2)+r,0);put(bp,col(3)+r,F(`${col(1)}${r}+${col(2)}${r}`));put(bp,col(4)+r,F(`${col(2)}${r}-${col(1)}${r}`))});
+    const g=5+ex.length;put(bp,col(0)+g,'Grand Total');[1,2,3].forEach(i=>put(bp,col(i)+g,F(`SUM(${col(i)}5:${col(i)}${g-1})`)));put(bp,col(4)+g,F(`${col(2)}${g}-${col(1)}${g}`))});
+  ['Row Labels','OPS','SAP','Grand Total','selisih'].forEach((h,i)=>put(bp,U.encode_col(i)+'37',h));
+  ['BEBAN JARKOM','BEBAN JASNAKER','BEBAN KERJASAMA PIHAK KETIGA','BEBAN LAIN - LAIN','BEBAN MANDATORY GEDUNG','BEBAN MARKETING','DEPRESIASI','REVENUE'].forEach((k,i)=>{const r=38+i;put(bp,'A'+r,k);put(bp,'B'+r,0);put(bp,'C'+r,0);put(bp,'D'+r,F(`B${r}+C${r}`));put(bp,'E'+r,F(`C${r}-B${r}`))});
+  bp['!ref']='A1:'+U.encode_col(6*cats.length-2)+'45';bp['!cols']=Array(6*cats.length).fill({wch:16}).map((w,i)=>i%6===0?{wch:30}:w);
+  U.book_append_sheet(wb,bp,'Breakdown Pareto');
+  /* ---- Rekap SAP S3 (header di B4) ---- */
+  const months=[];for(let m=0;m<NM;m++)months.push(new Date(YEAR,m,1,12));
+  const head=['No','Klien','Nomor IO','Nama IO','Layanan','Source','PL','PARETO',...months,'Grand Total','Catatan'];
+  const lines=[];let no=1;
+  ex.slice(0,1).forEach(n=>{
+    [['SAP','1.PENDAPATAN','REVENUE',-1],['SAP','1.PENDAPATAN Total','',-1],['SAP','2.DIRECT','BEBAN JARKOM',1],['SAP','2.DIRECT','BEBAN JASNAKER',1],['SAP','2.DIRECT Total','',1],['SAP','4.DEPRESIASI','DEPRESIASI',1],['SAP','4.DEPRESIASI Total','',1],
+     ['OPS','1.PENDAPATAN','REVENUE',1],['OPS','1.PENDAPATAN Total','',1],['OPS','2.DIRECT','BEBAN JASNAKER',1],['OPS','2.DIRECT Total','',1]]
+    .forEach(([src,pl,par])=>lines.push([no++,n,'IO-0001','IO '+n+' '+YEAR,'CC '+n,src,pl,par,...months.map(()=>0),null,'']))});
+  const ls=U.aoa_to_sheet([head,...lines],{origin:'B4',cellDates:true});
+  const gc=U.encode_col(1+8+NM),c0=U.encode_col(1+8),c1=U.encode_col(1+8+NM-1);
+  lines.forEach((_,i)=>{const r=5+i;ls[gc+r]=F(`SUM(${c0}${r}:${c1}${r})`)});
+  months.forEach((_,i)=>{const a=U.encode_col(1+8+i)+'4';ls[a]={t:'d',v:months[i],z:'mmm-yy'}});
+  ls['!cols']=[{wch:2},{wch:5},{wch:24},{wch:16},{wch:24},{wch:20},{wch:8},{wch:20},{wch:28},...months.map(()=>({wch:14})),{wch:16},{wch:30}];
+  U.book_append_sheet(wb,ls,'Rekap SAP S3');
+  /* ---- Anggaran (opsional) & Petunjuk ---- */
+  U.book_append_sheet(wb,U.aoa_to_sheet([['Period','Business Unit','Project','Revenue Budget','Direct Cost Budget','Profit Target'],['FY '+YEAR,'Segment 3','Total',0,0,0]]),'Anggaran');
+  U.book_append_sheet(wb,U.aoa_to_sheet([
+    ['Petunjuk pengisian template dataset resmi'],[''],
+    ['1. Tata letak sama dengan file "Rekap Profitability Segment 3 ytd 2026.xlsx". Nama sheet jangan diubah.'],
+    ['2. Summary: tabel per pelanggan mulai baris 26 (kolom A Layanan/pelanggan, B-C pendapatan SAP/OPS, E-F direct cost SAP/OPS). Tambah baris di atas "Grand Total" bila pelanggan lebih banyak.'],
+    ['3. Breakdown Pareto: 5 blok kategori beban di baris 3 (Row Labels | OPS | SAP), total per kategori di baris 38-45.'],
+    ['4. Rekap SAP S3: header di baris 4 mulai kolom B. Satu kolom per bulan (format tanggal), lalu "Grand Total". Tambah kolom bulan baru sebelum "Grand Total".'],
+    ['5. Pendapatan SAP ditulis negatif (konvensi buku besar), OPS positif.'],
+    ['6. Anggaran (opsional): isi Revenue Budget, Direct Cost Budget, Profit Target setahun. Dibiarkan 0 berarti anggaran yang ada tidak diubah.'],
+    ['7. Upload di dashboard modul 11 > "Dataset resmi di Firebase", periksa pratinjau, lalu klik "Terbitkan ke semua pengguna".']]),'Petunjuk');
+  return wb}
+
 /* dataset replacement panel inside module 11 */
 const _dataAfter=VIEWS.data.after;
 VIEWS.data.after=function(F){_dataAfter.call(this,F);if(!PORTAL.canWrite)return;
   const meta=PORTAL.datasetMeta||{};meta.updatedAt=meta.updatedAt||null;const sec=document.createElement('section');sec.className='panel';
   sec.innerHTML=`<div class="ph"><div><h3>Dataset resmi di Firebase</h3><p class="hint">Dataset yang dilihat semua pengguna. Terakhir diperbarui ${fmtTime(tsDate(meta.updatedAt))} oleh ${esc(meta.updatedBy||'–')} (${esc(meta.source||'–')}).</p></div></div>
-   <div class="filters"><div class="fld"><label for="dsFile">Ganti dengan file dataset JSON</label><input type="file" id="dsFile" accept=".json,application/json"></div></div><div id="dsMsg" class="msg" hidden></div>
-   <p class="hint">Upload Excel di atas hanya mengubah tampilan Anda sendiri. Penggantian dataset resmi memakai file JSON dengan struktur yang sama seperti dataset awal, dan tercatat di audit trail.</p>`;
+   <div class="filters"><div class="fld"><label for="dsFile">Upload Excel resmi (.xlsx) atau dataset JSON</label><input type="file" id="dsFile" accept=".xlsx,.xls,.json,application/json"></div><button class="btn" id="dsTpl" type="button">Unduh template resmi</button></div><div id="dsMsg" class="msg" hidden></div><div id="dsPrev"></div>
+   <p class="hint">Format Excel sama dengan Google Sheet sumber: sheet <b>Summary</b>, <b>Breakdown Pareto</b>, <b>Rekap SAP S3</b>, dan opsional <b>Anggaran</b>. File diolah di browser, ditampilkan pratinjaunya, lalu baru diterbitkan ke semua pengguna setelah Anda konfirmasi. Setiap penerbitan tercatat di audit trail. Catatan: bila sinkron otomatis Google Sheets aktif, edit berikutnya di sheet akan menimpa hasil upload.</p>`;
   document.querySelector('.page').prepend(sec);
-  $('dsFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const m=$('dsMsg');m.hidden=false;m.className='msg info';m.textContent='Menyimpan…';
-    try{const obj=await readJsonFile(f);await saveDataset(obj,f.name);m.className='msg ok';m.textContent='Dataset resmi diperbarui. Semua dashboard yang terbuka ikut ter-update.'}catch(err){m.className='msg err';m.textContent=errText(err)}});
+  $('dsTpl').addEventListener('click',()=>{try{XLSX.writeFile(officialTemplateWb(),'Template_Dataset_Resmi_Segment3.xlsx')}catch(e){toast('Unduhan diblokir browser. Gunakan file Google Sheet sumber sebagai template (File → Download → .xlsx).')}});
+  $('dsFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const m=$('dsMsg'),pv=$('dsPrev');m.hidden=false;m.className='msg info';m.textContent='Membaca '+f.name+'…';pv.innerHTML='';
+    if(f.size>15*1024*1024){m.className='msg err';m.textContent='File terlalu besar (maks 15 MB).';return}
+    let res;try{
+      if(/\.json$/i.test(f.name))res={data:await readJsonFile(f),budget:null};
+      else{const buf=await f.arrayBuffer();res=parseOfficialWorkbook(buf)}
+      if(!validDataset(res.data))throw new Error('Struktur file tidak sesuai (butuh clients, tot, mcat, raw).');
+    }catch(err){m.className='msg err';m.textContent='File ditolak: '+errText(err);e.target.value='';return}
+    const d=res.data,sm=k=>d.clients.reduce((s,c)=>s+(+c[k]||0),0),cur=D&&D.clients?k=>D.clients.reduce((s,c)=>s+(+c[k]||0),0):()=>null;
+    const line=(l,k)=>{const n=sm(k),o=cur(k);return `<tr><td>${l}</td><td class="n">${rp(o)}</td><td class="n">${rp(n)}</td><td class="n">${o==null?'–':rp(n-o)}</td></tr>`};
+    m.className='msg info';m.textContent='Pratinjau siap. Periksa angka sebelum menerbitkan.';
+    pv.innerHTML=`<div class="tw"><table><thead><tr><th>Komponen</th><th class="n">Data aktif</th><th class="n">File baru</th><th class="n">Selisih</th></tr></thead><tbody>
+      ${line('Revenue SAP','rs')}${line('Revenue OPS','ro')}${line('Direct cost SAP','ds')}${line('Direct cost OPS','do')}
+      <tr><td>Jumlah pelanggan</td><td class="n">${D&&D.clients?D.clients.length:'–'}</td><td class="n">${d.clients.length}</td><td></td></tr>
+      <tr><td>Periode</td><td class="n">${D&&D.months?esc(D.months[0]+'–'+D.months[D.months.length-1]+' '+(D.year||'')):'–'}</td><td class="n">${d.months?esc(d.months[0]+'–'+d.months[d.months.length-1]+' '+(d.year||'')):'–'}</td><td></td></tr>
+      ${res.budget?`<tr><td>Anggaran FY (sheet Anggaran)</td><td class="n" colspan="3">Revenue ${rp(res.budget.rev)} · Direct cost ${rp(res.budget.dir)} · Gross profit ${rp(res.budget.gp)}</td></tr>`:''}
+      </tbody></table></div>
+      ${d.swap&&d.swap.length?`<p class="hint">Label tertukar terdeteksi dan dikoreksi: ${d.swap.map(x=>esc(x[0])+' ↔ '+esc(x[1])).join(' · ')}</p>`:''}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="btn pri" id="dsPub" type="button">Terbitkan ke semua pengguna</button><button class="btn" id="dsCancel" type="button">Batal</button></div>`;
+    $('dsCancel').addEventListener('click',()=>{pv.innerHTML='';m.hidden=true;e.target.value=''});
+    $('dsPub').addEventListener('click',async()=>{
+      if(!confirm('Terbitkan '+f.name+' sebagai dataset resmi?\nSemua pengguna akan langsung melihat data baru.'+(res.budget?'\nAnggaran FY juga akan diperbarui.':'')))return;
+      const btn=$('dsPub');btn.disabled=true;m.className='msg info';m.textContent='Menerbitkan…';const prevOrigin=DATA.origin;DATA.origin='file';
+      try{await saveDataset(res.data,'Upload Excel · '+f.name.slice(0,150));if(res.budget)await saveBudget(res.budget);
+        m.className='msg ok';m.textContent='Dataset resmi diperbarui. Semua dashboard yang terbuka ikut ter-update.';pv.innerHTML='';e.target.value=''}
+      catch(err){DATA.origin=prevOrigin;btn.disabled=false;m.className='msg err';m.textContent='Gagal menerbitkan: '+errText(err)}});
+  });
 };
 
 /* ---------- start ---------- */
