@@ -203,7 +203,11 @@ function getIdToken_() {
     const m = safeErr_(res);
     const map = { INVALID_LOGIN_CREDENTIALS: 'email atau password akun Sync salah', INVALID_PASSWORD: 'password akun Sync salah', EMAIL_NOT_FOUND: 'akun Sync tidak ditemukan', USER_DISABLED: 'akun Sync dinonaktifkan', 'API key not valid': 'Web API Key tidak valid' };
     const k = Object.keys(map).find(x => m.indexOf(x) >= 0);
-    throw new Error('Login Firebase gagal: ' + (k ? map[k] : m));
+    throw new Error(
+    'Login Firebase gagal. HTTP ' +
+    res.getResponseCode() + ': ' +
+    res.getContentText()
+  );
   }
   const j = JSON.parse(res.getContentText());
   const tok = { idToken: j.idToken, uid: j.localId, email: j.email };
