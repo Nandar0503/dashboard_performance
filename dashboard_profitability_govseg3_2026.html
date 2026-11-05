@@ -841,13 +841,13 @@ VIEWS.data={html(F){const sumS=sum(D.clients,c=>c.rs),sumO=sum(D.clients,c=>c.ro
    <div class="drop" id="drop"><p style="margin:0 0 8px">Tarik file ke sini atau</p><input type="file" id="up" accept=".xlsx,.xls,.csv"></div>
    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="tpl" type="button">Unduh template Excel</button>${DATA.origin!=='file'?'<button class="btn" id="restore" type="button">Kembali ke data file asli</button>':''}</div>
    <div id="upRes"></div></section>
-  <section class="panel"><h3>Riwayat upload</h3><div class="log">${hist.length?hist.map(h=>`${esc(h.t)} · ${esc(h.f)} · ${esc(h.r)}`).join('<br>'):'Belum ada upload di browser ini.<br>Dataset aktif: Rekap Profitability Segment 3 Ytd 2026 1.xlsx (Summary + Breakdown Pareto + Rekap SAP S3).'}</div></section></div>
+  <section class="panel"><h3>Riwayat upload</h3><div class="log">${hist.length?hist.map(h=>`${esc(h.t)} · ${esc(h.f)} · ${esc(h.r)}`).join('<br>'):'Belum ada upload di browser ini.<br>Dataset aktif: '+esc(D.file||'Rekap Profitability Segment 3 Ytd 2026 3.xlsx')+' (Summary + Breakdown Pareto + Rekap SAP S3).'}</div></section></div>
   <section class="panel"><h3>Rekonsiliasi sumber data</h3><p class="hint">Dashboard memakai sheet <b>Summary</b> sebagai angka resmi per pelanggan, <b>Breakdown Pareto</b> untuk rincian kategori biaya, dan baris SAP di <b>Rekap SAP S3</b> untuk tren bulanan & depresiasi.</p>
    <div class="tw"><table><thead><tr><th>Pemeriksaan</th><th class="n">SAP</th><th class="n">OPS</th><th>Hasil</th></tr></thead><tbody>
    <tr><td>Revenue: jumlah baris pelanggan vs Grand Total Summary</td><td class="n">${rp(sumS)}</td><td class="n">${rp(sumO)}</td><td><span class="pill st-hi">Cocok</span></td></tr>
    <tr><td>Revenue di Breakdown Pareto</td><td class="n">${rp(t.REVENUE[0])}</td><td class="n">${rp(t.REVENUE[1])}</td><td><span class="pill st-bt">Selisih ${rc(t.REVENUE[0]-sumS)} / ${rc(t.REVENUE[1]-sumO)}</span></td></tr>
    <tr><td>Direct cost: Pareto (6 kategori) vs Summary</td><td class="n">${rp(['BEBAN JARKOM','BEBAN JASNAKER','BEBAN KERJASAMA PIHAK KETIGA','BEBAN LAIN - LAIN','BEBAN MANDATORY GEDUNG','BEBAN MARKETING'].reduce((s,k)=>s+t[k][0],0))}</td><td class="n">${rp(['BEBAN JARKOM','BEBAN JASNAKER','BEBAN KERJASAMA PIHAK KETIGA','BEBAN LAIN - LAIN','BEBAN MANDATORY GEDUNG','BEBAN MARKETING'].reduce((s,k)=>s+t[k][1],0))}</td><td><span class="pill st-bt">Summary: ${rc(sum(D.clients,c=>c.ds))} / ${rc(sum(D.clients,c=>c.do))}. Selisih tampil sebagai "Marketing & selisih rekonsiliasi"</span></td></tr>
-   <tr><td>Ledger SAP bulanan (${MONTHS[0]}–${MONTHS[NM-1]}) vs Summary</td><td class="n">${rp(D.raw.sapRev)}</td><td class="n mut">–</td><td><span class="pill st-ls">Tidak cocok: ledger memuat IO tambahan (mis. Programer Kemenlu) dan koreksi</span></td></tr>
+   <tr><td>Ledger SAP bulanan (${MONTHS[0]}–${MONTHS[NM-1]}) vs Summary</td><td class="n">${rp(D.raw.sapRev)}</td><td class="n mut">–</td><td><span class="pill st-ls">Tidak cocok: ledger memuat ${D.raw.ledgerOnly&&D.raw.ledgerOnly.length?'pelanggan di luar Summary ('+D.raw.ledgerOnly.map(esc).join(', ')+'), ':''}IO tambahan (mis. Programer Kemenlu) dan koreksi${D.raw.summaryWindow&&D.raw.summaryWindow<NM?'; Summary setara ledger '+MONTHS[0]+'–'+MONTHS[D.raw.summaryWindow-1]+' saja':''}</span></td></tr>
    <tr><td>Depresiasi: ledger per IO vs Pareto</td><td class="n">${rp(sum(D.clients,c=>c.dep[0]))}</td><td class="n">${rp(sum(D.clients,c=>c.dep[1]))}</td><td><span class="pill st-bt">Pareto: ${rc(t.DEPRESIASI[0])} / ${rc(t.DEPRESIASI[1])}</span></td></tr>
    </tbody></table></div></section>
   <section class="panel"><h3>Temuan kualitas data</h3>
@@ -855,6 +855,7 @@ VIEWS.data={html(F){const sumS=sum(D.clients,c=>c.rs),sumO=sum(D.clients,c=>c.ro
    <div class="tw"><table><thead><tr><th>Jenis</th><th>Detail</th></tr></thead><tbody>
    ${D.negops.length?`<tr><td>Tanda negatif pada revenue OPS</td><td class="wrap">${D.negops.length} baris OPS "1.PENDAPATAN Total" bernilai negatif di Rekap SAP S3 (mis. ${D.negops.slice(0,4).map(n=>esc(n[0])+' '+rc(n[2])).join(', ')}). Summary memakai nilai positif.</td></tr>`:''}
    ${(()=>{const tr=D.textRows||['BKPM','Kemendikti'];return tr.length?`<tr><td>Angka berformat teks</td><td class="wrap">Baris di Rekap SAP S3 untuk ${tr.map(esc).join(', ')} berisi angka yang disimpan sebagai teks (mis. koma desimal). Angka tetap dibaca, tetapi sebaiknya diubah ke format angka.</td></tr>`:''})()}
+   ${D.raw&&D.raw.summaryWindow&&D.raw.summaryWindow<NM?`<tr><td>Periode Summary lebih pendek dari ledger</td><td class="wrap">Angka per pelanggan di sheet Summary cocok dengan ledger SAP ${MONTHS[0]}–${MONTHS[D.raw.summaryWindow-1]}, sedangkan Rekap SAP S3 sudah berisi ${MONTHS[0]}–${MONTHS[NM-1]}. KPI utama memakai Summary; tren bulanan dan D&A memakai ledger penuh. Perbarui sheet Summary dan Breakdown Pareto agar periodenya sama.</td></tr>`:''}
    ${D.clients.filter(c=>c.rs<=0&&c.ds>0).map(c=>`<tr><td>Revenue nol dengan biaya</td><td class="wrap">${esc(c.n)}: revenue SAP ${rc(c.rs)}, direct cost ${rc(c.ds)}.</td></tr>`).join('')}
    ${D.notes.map(n=>`<tr><td>Catatan file · ${esc(n[0])}</td><td class="wrap">${esc(n[1])} · ${esc(n[2])} · ${esc(n[3])}: ${esc(n[4])}</td></tr>`).join('')}
    </tbody></table></div></section>`},
@@ -931,7 +932,7 @@ VIEWS.kamus={html(){const K=[
   <li><b>Unggah data baru</b> lewat template di modul 11 untuk periode berikutnya.</li></ol>
   <p class="hint">Export menyalin tabel ke clipboard (CSV) dan mengunduh .xlsx bila browser mengizinkan. Akses diatur lewat Firebase Authentication dan peran di Firestore; aktivitas login dan perubahan data tercatat di Audit Trail (Director & Finance).</p></section>
  <section class="panel"><h3>Rekomendasi tindakan periode berikutnya</h3><ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
-  <li>Konfirmasi dan perbaiki 4 pasang label tertukar di sheet Summary sebelum laporan diedarkan.</li>
+  <li>${(D.swap||[]).length?'Konfirmasi dan perbaiki '+D.swap.length+' pasang label tertukar di sheet Summary sebelum laporan diedarkan.':'Pertahankan label pelanggan di sheet Summary tetap konsisten dengan Rekap SAP S3.'}</li>
   <li>Rekonsiliasi SAP–OPS bulanan per IO; tutup IO 2025 yang masih menerima biaya.</li>
   <li>Validasi beban Mandatory Gedung Rp 1,92 M di IO Resolution Center LKPP; dampaknya langsung ke GPM pelanggan terbesar.</li>
   <li>Tindak lanjuti kontrak dengan GPM di bawah target (review tarif, scope, dan biaya jaringan).</li>
