@@ -116,7 +116,7 @@ function syncNow() {
   const ui = SpreadsheetApp.getUi();
   try {
     const r = runSync_('manual', true);
-    ui.alert(`Terkirim: ${r.clients} pelanggan, ${r.months} bulan berdata.\nRevenue SAP ${fmt_(r.revSap)} · OPS ${fmt_(r.revOps)}.`);
+    ui.alert(`Terkirim: ${r.clients} pelanggan, ${r.months} bulan.\nRevenue SAP ${fmt_(r.revSap)} · OPS ${fmt_(r.revOps)}.`);
   } catch (e) { logOnce_('GAGAL', e.message); ui.alert('Sinkron gagal: ' + e.message); }
 }
 
@@ -124,7 +124,7 @@ function previewDataset() {
   const d = buildFromSpreadsheet_();
   const rs = d.clients.reduce((s, c) => s + c.rs, 0), ro = d.clients.reduce((s, c) => s + c.ro, 0);
   SpreadsheetApp.getUi().alert(
-    `Pelanggan: ${d.clients.length}\nBulan berdata: ${d.dataMonths.map(i => MONTHS_ID[i]).join(', ')} ${d.year}\n` +
+    `Pelanggan: ${d.clients.length}\nBulan: ${d.months.join(', ')} ${d.year}\n` +
     `Revenue SAP ${fmt_(rs)} · OPS ${fmt_(ro)}\n` +
     `Label tertukar yang dikoreksi: ${d.swap.length ? d.swap.map(p => p.join(' ↔ ')).join('; ') : 'tidak ada'}\n` +
     `Catatan anomali: ${d.notes.length}\nUkuran: ${Math.round(JSON.stringify(d).length / 1024)} KB`);
@@ -164,7 +164,7 @@ function runSync_(mode, force) {
             uid: { stringValue: tok.uid },
             email: { stringValue: tok.email },
             action: { stringValue: 'dataset_update' },
-            detail: { stringValue: `Google Sheets (${mode}) · ${data.clients.length} pelanggan · data s.d. ${MONTHS_ID[data.lastMonth]} ${data.year}` },
+            detail: { stringValue: `Google Sheets (${mode}) · ${data.clients.length} pelanggan · ${data.months.length} bulan` },
             ua: { stringValue: 'Apps Script' },
           },
         },
@@ -185,8 +185,8 @@ function runSync_(mode, force) {
   PROP.setProperty('LAST_HASH', hash);
   const stamp = Utilities.formatDate(new Date(), 'Asia/Jakarta', 'dd/MM/yyyy HH:mm:ss');
   PROP.setProperty('LAST_SYNC', stamp);
-  appendLog_([new Date(), 'OK', mode, data.clients.length, MONTHS_ID[data.dataMonths[0]] + '–' + MONTHS_ID[data.lastMonth], rs, ro, data.swap.length ? 'Label dikoreksi: ' + data.swap.map(p => p.join('↔')).join('; ') : '']);
-  return { skipped: false, clients: data.clients.length, months: data.dataMonths.length, revSap: rs, revOps: ro };
+  appendLog_([new Date(), 'OK', mode, data.clients.length, data.months.join('–'), rs, ro, data.swap.length ? 'Label dikoreksi: ' + data.swap.map(p => p.join('↔')).join('; ') : '']);
+  return { skipped: false, clients: data.clients.length, months: data.months.length, revSap: rs, revOps: ro };
 }
 
 function getIdToken_() {
@@ -250,182 +250,135 @@ function buildFromSpreadsheet_() {
 }
 
 /**
- * Dataset v2: semua angka dihitung dari "Rekap SAP S3" (ledger bulanan SAP & OPS, Jan–Des).
- * Summary & Breakdown Pareto dipakai sebagai pembanding. Fungsi ini identik dengan
- * buildProfitDataset() di dashboard, sehingga upload Excel dan sinkron Sheets menghasilkan data yang sama.
+ * Fungsi murni: menerima nilai 2D dari tiga sheet, mengembalikan objek dataset dashboard.
+ * (Diuji terpisah terhadap file Excel asli.)
  */
-function buildDataset_(S) { const d = buildProfitDataset(S); d.source = 'gsheet'; return d; }
-
-/* ==== BUILDER DATASET v2 (dipakai bersama oleh dashboard & Apps Script) ====
- * Sumber angka utama: sheet "Rekap SAP S3" (ledger bulanan per IO, SAP & OPS).
- * Summary & Breakdown Pareto hanya dipakai sebagai pembanding (rekonsiliasi).
- * Output per pelanggan: array 12 bulan (Jan–Des) untuk revenue, direct cost per kategori,
- * dan depresiasi, masing-masing untuk SAP dan OPS. Dashboard menjumlahkan bulan sesuai filter periode.
- */
-function buildProfitDataset(S) {
-  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-  var CAT_KEYS = ['jasnaker', 'jarkom', 'gedung', 'kpk', 'lain', 'other'];
-  var RAWCAT = { jasnaker: 'BEBAN JASNAKER', jarkom: 'BEBAN JARKOM', gedung: 'BEBAN MANDATORY GEDUNG', kpk: 'BEBAN KERJASAMA PIHAK KETIGA', lain: 'BEBAN LAIN - LAIN', other: 'BEBAN MARKETING' };
-  var R = Math.round;
-  var str = function (v) { return (v === null || v === undefined) ? '' : String(v).trim(); };
-  var num = function (v) {
+function buildDataset_(S) {
+  const num = v => {
     if (v === null || v === undefined || v === '' || v === '-') return 0;
-    if (typeof v === 'number') return isFinite(v) ? v : 0;
+    if (typeof v === 'number') return v;
     if (v instanceof Date) return 0;
-    var s = String(v).trim();
+    let s = String(v).trim();
     if (s === '-' || s === '') return 0;
-    s = s.replace(/^Rp\s*/i, '').replace(/\s/g, '');
-    if (/^\(.*\)$/.test(s)) s = '-' + s.slice(1, -1);
     if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
-    else if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
     else if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
-    var n = Number(s);
+    const n = Number(s);
     return isFinite(n) ? n : 0;
   };
-  var isTextNum = function (v) { return typeof v === 'string' && /\d/.test(v) && v.trim() !== '-'; };
-  var z12 = function () { return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; };
-  var catKey = function (p) {
-    var t = str(p).toUpperCase();
-    if (t.indexOf('JASNAKER') >= 0) return 'jasnaker';
-    if (t.indexOf('JARKOM') >= 0) return 'jarkom';
-    if (t.indexOf('GEDUNG') >= 0) return 'gedung';
-    if (t.indexOf('PIHAK KETIGA') >= 0) return 'kpk';
-    if (t.indexOf('LAIN') >= 0) return 'lain';
-    if (t.indexOf('MARKETING') >= 0) return 'other';
+  const str = v => (v === null || v === undefined) ? '' : String(v).trim();
+  const R = Math.round;
+  const textNum = (v) => typeof v === 'string' && /\d/.test(v) && v.trim() !== '-';
+
+  /* ---- Ledger: Rekap SAP S3 ---- */
+  const L = S.ledger;
+  const head = L[0];
+  const monthCols = [], monthLabels = [];
+  let year = null, gtCol = -1;
+  head.forEach((h, i) => {
+    if (h instanceof Date) { monthCols.push(i); monthLabels.push(MONTHS_ID[h.getMonth()]); year = year || h.getFullYear(); }
+    else if (str(h).toLowerCase() === 'grand total') gtCol = i;
+  });
+  if (!monthCols.length || gtCol < 0) throw new Error('Header bulan / "Grand Total" tidak ditemukan di baris pertama sheet ' + CFG.SHEET_LEDGER + '.');
+  const NM = monthCols.length;
+  const zeros = () => new Array(NM).fill(0);
+  const svc = {}, mrev = {}, mdir = {}, mcat = {}, dep = {}, notes = [], negops = [], textRows = {};
+  for (let r = 1; r < L.length; r++) {
+    const row = L[r];
+    const c = str(row[1]); if (!c) continue;
+    const layanan = str(row[4]), src = str(row[5]), pl = str(row[6]), par = str(row[7]);
+    const note = str(row[gtCol + 1]);
+    if (note) notes.push([c, layanan, src, par, note]);
+    const m = monthCols.map(i => num(row[i]));
+    const gt = num(row[gtCol]);
+    if (monthCols.some(i => textNum(row[i]))) textRows[c] = true;
+    if (pl === '4.DEPRESIASI Total') { dep[c] = dep[c] || [0, 0]; dep[c][src === 'SAP' ? 0 : 1] += gt; }
+    if (src === 'OPS' && pl === '1.PENDAPATAN Total' && gt < 0) negops.push([c, layanan, R(gt)]);
+    if (src !== 'SAP') continue;
+    if (pl === '1.PENDAPATAN Total') {
+      svc[c] = svc[c] || {}; svc[c][layanan] = (svc[c][layanan] || 0) - gt;
+      mrev[c] = mrev[c] || zeros(); m.forEach((v, i) => mrev[c][i] -= v);
+    } else if (pl === '2.DIRECT Total') {
+      mdir[c] = mdir[c] || zeros(); m.forEach((v, i) => mdir[c][i] += v);
+    } else if (pl === '2.DIRECT' && par) {
+      mcat[par] = mcat[par] || {}; mcat[par][c] = mcat[par][c] || zeros(); m.forEach((v, i) => mcat[par][c][i] += v);
+    }
+  }
+
+  /* ---- Breakdown Pareto ---- */
+  const P = S.pareto;
+  const CATKEY = t => {
+    t = t.toLowerCase();
+    if (t.indexOf('jarkom') >= 0) return 'jarkom';
+    if (t.indexOf('jasnaker') >= 0) return 'jasnaker';
+    if (t.indexOf('pihak ketiga') >= 0) return 'kpk';
+    if (t.indexOf('lain') >= 0) return 'lain';
+    if (t.indexOf('gedung') >= 0) return 'gedung';
     return null;
   };
-
-  /* ---------- 1. Ledger: cari baris header (tanggal bulan + "Grand Total") ---------- */
-  var raw = S.ledger || [];
-  var hr = -1;
-  for (var r0 = 0; r0 < Math.min(raw.length, 40); r0++) {
-    var row0 = raw[r0] || [];
-    var hasDate = row0.some(function (h) { return h instanceof Date; });
-    var hasGt = row0.some(function (h) { return str(h).toLowerCase() === 'grand total'; });
-    if (hasDate && hasGt) { hr = r0; break; }
+  let blocks = [], titleRow = -1;
+  for (let r = 0; r < Math.min(P.length, 10) && !blocks.length; r++) {
+    P[r].forEach((v, i) => { const k = typeof v === 'string' && /^beban /i.test(v.trim()) ? CATKEY(v) : null; if (k) blocks.push([i, k]); });
+    if (blocks.length) titleRow = r;
   }
-  if (hr < 0) throw new Error('Sheet "Rekap SAP S3": baris header dengan kolom bulan (format tanggal) dan "Grand Total" tidak ditemukan.');
-  var head = raw[hr];
-  var col = function (name) { for (var i = 0; i < head.length; i++) if (str(head[i]).toLowerCase() === name) return i; return -1; };
-  var cK = col('klien'), cL = col('layanan'), cS = col('source'), cP = col('pl'), cPar = col('pareto'), cGT = col('grand total');
-  if (cK < 0 || cS < 0 || cP < 0) throw new Error('Sheet "Rekap SAP S3": kolom Klien / Source / PL tidak ditemukan di header.');
-  var monthCols = [], year = null, skippedCols = 0;
-  head.forEach(function (h, i) {
-    if (!(h instanceof Date)) return;
-    var d = new Date(h.getTime() + 12 * 3600e3); // hindari geser bulan karena zona waktu
-    if (year === null) year = d.getFullYear();
-    if (d.getFullYear() !== year) { skippedCols++; return; }
-    monthCols.push([i, d.getMonth()]);
-  });
-  var dataMonths = monthCols.map(function (x) { return x[1]; }).sort(function (a, b) { return a - b; });
-  var lastMonth = dataMonths[dataMonths.length - 1];
-  var noteCol = cGT >= 0 ? cGT + 1 : -1;
-
-  var C = {};                         // per pelanggan
-  var blocks = {};                    // per (pelanggan|layanan|source): detail vs total
-  var notes = [], negops = [], textRows = {}, totalMismatch = [];
-  var get = function (n) {
-    if (!C[n]) C[n] = { n: n, svcRev: {}, svcAny: {},
-      rs: z12(), ro: z12(), dep: z12(), depo: z12(),
-      c: { jasnaker: z12(), jarkom: z12(), gedung: z12(), kpk: z12(), lain: z12(), other: z12() },
-      co: { jasnaker: z12(), jarkom: z12(), gedung: z12(), kpk: z12(), lain: z12(), other: z12() } };
-    return C[n];
-  };
-  var blk = function (k) { return blocks[k] || (blocks[k] = { revT: null, revD: null, depT: null, depD: null, dirT: null, catSeen: false }); };
-  var addArr = function (a, m, sign) { for (var i = 0; i < 12; i++) a[i] += sign * m[i]; };
-
-  for (var r = hr + 1; r < raw.length; r++) {
-    var row = raw[r] || [];
-    var cl = str(row[cK]); if (!cl || cl.toLowerCase() === 'grand total' || cl.toLowerCase() === 'klien') continue;
-    var lay = cL >= 0 ? str(row[cL]) : '', src = str(row[cS]).toUpperCase(), pl = str(row[cP]).toUpperCase(), par = cPar >= 0 ? str(row[cPar]) : '';
-    if (src !== 'SAP' && src !== 'OPS') continue;
-    var m = z12(), any = false;
-    monthCols.forEach(function (x) { var v = num(row[x[0]]); m[x[1]] += v; if (v) any = true; if (isTextNum(row[x[0]])) textRows[cl] = true; });
-    if (noteCol >= 0) { var nt = str(row[noteCol]); if (nt && !/^-?[\d.,]+$/.test(nt)) notes.push([cl, lay, src, par, nt]); }
-    var c = get(cl); if (lay) c.svcAny[lay] = 1;
-    var b = blk(cl + '|' + lay + '|' + src);
-    var isTot = pl.indexOf('TOTAL') >= 0;
-    if (pl.indexOf('PENDAPATAN') >= 0) {
-      if (isTot) { b.revT = b.revT || z12(); addArr(b.revT, m, 1); } else { b.revD = b.revD || z12(); addArr(b.revD, m, 1); }
-    } else if (pl.indexOf('DEPRESIASI') >= 0 || /DEPRESIASI/i.test(par)) {
-      if (isTot) { b.depT = b.depT || z12(); addArr(b.depT, m, 1); } else { b.depD = b.depD || z12(); addArr(b.depD, m, 1); }
-    } else if (isTot && pl.indexOf('DIRECT') >= 0) {
-      b.dirT = b.dirT || z12(); addArr(b.dirT, m, 1);
-    } else {
-      var k = catKey(par);
-      if (k && (pl === '' || pl.indexOf('DIRECT') >= 0)) { addArr(src === 'SAP' ? c.c[k] : c.co[k], m, 1); b.catSeen = true; b.catSum = b.catSum || z12(); addArr(b.catSum, m, 1); }
-    }
-  }
-  /* revenue & depresiasi per blok: pakai baris Total, kalau tidak ada pakai baris detail */
-  Object.keys(blocks).forEach(function (key) {
-    var p = key.split('|'), cl = p[0], lay = p[1], src = p[2], b = blocks[key], c = C[cl];
-    var rv = b.revT || b.revD;
-    if (rv) {
-      var tot = rv.reduce(function (s, v) { return s + v; }, 0);
-      var sign;
-      if (src === 'SAP') sign = -1;                       // SAP: pendapatan dicatat negatif (konvensi buku besar)
-      else { sign = tot < 0 ? -1 : 1; if (tot < 0) negops.push([cl, lay, R(tot)]); } // OPS: seharusnya positif
-      addArr(src === 'SAP' ? c.rs : c.ro, rv, sign);
-      if (src === 'SAP') c.svcRev[lay] = (c.svcRev[lay] || 0) - tot;
-    }
-    var dp = b.depT || b.depD;
-    if (dp) addArr(src === 'SAP' ? c.dep : c.depo, dp, 1);
-    if (b.dirT && !b.catSeen) addArr(src === 'SAP' ? c.c.other : c.co.other, b.dirT, 1); // total tanpa rincian kategori
-    if (b.dirT && b.catSeen) {
-      var dT = b.dirT.reduce(function (s, v) { return s + v; }, 0), dC = b.catSum.reduce(function (s, v) { return s + v; }, 0);
-      if (Math.abs(dT - dC) > 1000) totalMismatch.push([cl, lay, src, R(dT), R(dC)]);
+  if (!blocks.length) throw new Error('Judul blok "Beban ..." tidak ditemukan di sheet ' + CFG.SHEET_PARETO + '.');
+  const pc = {};
+  const skip = { 'grand total': 1, 'row labels': 1, '(blank)': 1, 'revenue': 1, 'depresiasi': 1 };
+  blocks.forEach(([col, key]) => {
+    for (let r = titleRow + 2; r < P.length; r++) {
+      const n = str(P[r][col]);
+      if (n.toLowerCase() === 'grand total') break;
+      if (!n || skip[n.toLowerCase()] || /^beban/i.test(n)) continue;
+      pc[n] = pc[n] || {};
+      pc[n][key] = [R(num(P[r][col + 2])), R(num(P[r][col + 1]))]; // [SAP, OPS]
     }
   });
-
-  /* ---------- 2. Breakdown Pareto (pembanding) ---------- */
-  var P = S.pareto || [], pc = {}, tot = {};
-  var blocksP = [], titleRow = -1;
-  for (var rp = 0; rp < Math.min(P.length, 10) && !blocksP.length; rp++) {
-    (P[rp] || []).forEach(function (v, i) { if (typeof v === 'string' && /^beban /i.test(v.trim())) { var kk = catKey(v.replace(/lain lain/i, 'LAIN')); if (kk) blocksP.push([i, kk]); } });
-    if (blocksP.length) titleRow = rp;
-  }
-  blocksP.forEach(function (bk) {
-    for (var rr = titleRow + 2; rr < P.length; rr++) {
-      var nn = str((P[rr] || [])[bk[0]]);
-      if (nn.toLowerCase() === 'grand total') break;
-      if (!nn || /^(row labels|\(blank\)|revenue|depresiasi)$/i.test(nn) || /^beban/i.test(nn)) continue;
-      pc[nn] = pc[nn] || {}; pc[nn][bk[1]] = [R(num(P[rr][bk[0] + 2])), R(num(P[rr][bk[0] + 1]))];
-    }
+  const tot = {};
+  P.forEach(row => {
+    const k = str(row[0]);
+    if (/^BEBAN /.test(k) || k === 'DEPRESIASI' || k === 'REVENUE') tot[k] = [R(num(row[2])), R(num(row[1]))];
   });
-  P.forEach(function (row) { var k = str((row || [])[0]); if (/^BEBAN /.test(k) || k === 'DEPRESIASI' || k === 'REVENUE') tot[k] = [R(num(row[2])), R(num(row[1]))]; });
-  ['BEBAN JARKOM', 'BEBAN JASNAKER', 'BEBAN KERJASAMA PIHAK KETIGA', 'BEBAN LAIN - LAIN', 'BEBAN MANDATORY GEDUNG', 'BEBAN MARKETING', 'DEPRESIASI', 'REVENUE'].forEach(function (k) { if (!tot[k]) tot[k] = [0, 0]; });
+  ['BEBAN JARKOM', 'BEBAN JASNAKER', 'BEBAN KERJASAMA PIHAK KETIGA', 'BEBAN LAIN - LAIN', 'BEBAN MANDATORY GEDUNG', 'BEBAN MARKETING', 'DEPRESIASI', 'REVENUE']
+    .forEach(k => { if (!tot[k]) tot[k] = [0, 0]; });
 
-  /* ---------- 3. Summary (pembanding) + deteksi label tertukar ---------- */
-  var SM = S.summary || [], sumRows = [], start = -1;
-  for (var rs = 0; rs < SM.length; rs++) if (str((SM[rs] || [])[0]).toLowerCase() === 'layanan') { start = rs + 2; break; }
-  if (start > 0) for (var rs2 = start; rs2 < SM.length; rs2++) {
-    var nm = str((SM[rs2] || [])[0]);
-    if (nm.toLowerCase() === 'grand total') break;
-    if (nm) sumRows.push({ lbl: nm, n: nm, rs: num(SM[rs2][1]), ro: num(SM[rs2][2]), ds: num(SM[rs2][4]), do: num(SM[rs2][5]) });
+  /* ---- Summary ---- */
+  const SM = S.summary;
+  let start = -1;
+  for (let r = 0; r < SM.length; r++) if (str(SM[r][0]).toLowerCase() === 'layanan') { start = r + 2; break; }
+  if (start < 0) throw new Error('Tabel "Layanan" tidak ditemukan di sheet ' + CFG.SHEET_SUMMARY + '.');
+  const rows = [];
+  for (let r = start; r < SM.length; r++) {
+    const n = str(SM[r][0]);
+    if (n.toLowerCase() === 'grand total') break;
+    if (!n) continue;
+    rows.push({ lbl: n, n, rs: num(SM[r][1]), ro: num(SM[r][2]), ds: num(SM[r][4]), do: num(SM[r][5]) });
   }
-  var sumArr = function (a) { return a.reduce(function (s, v) { return s + v; }, 0); };
-  var ledRev = {}; Object.keys(C).forEach(function (n) { ledRev[n] = sumArr(C[n].rs); });
-  var ledRevTo = function (n, last) { var c = C[n]; if (!c) return undefined; var s = 0; for (var i = 0; i <= last; i++) s += c.rs[i]; return s; };
-  var parDir = {}; Object.keys(pc).forEach(function (n) { parDir[n] = Object.keys(pc[n]).reduce(function (s, k) { return s + pc[n][k][0]; }, 0); });
-  var close = function (a, b2) { return a !== undefined && b2 !== undefined && Math.abs(a - b2) <= Math.max(2, Math.abs(b2) * 0.01); };
-  var revMatch = function (row, name) { for (var mm = 0; mm < 12; mm++) if (close(ledRevTo(name, mm), row.rs)) return true; return false; };
-  var score = function (row, name) { return (revMatch(row, name) ? 1 : 0) + (close(parDir[name], row.ds) ? 1 : 0); };
-  var cand = [];
-  for (var i1 = 0; i1 < sumRows.length; i1++) for (var j1 = i1 + 1; j1 < sumRows.length; j1++) {
-    var A = sumRows[i1], B = sumRows[j1], ab = score(A, B.lbl), ba = score(B, A.lbl);
-    var gain = ab + ba - score(A, A.lbl) - score(B, B.lbl);
-    if (ab >= 1 && ba >= 1 && gain >= 2) cand.push([gain, i1, j1]);
-  }
-  cand.sort(function (x, y) { return y[0] - x[0]; });
-  var used = {}, swap = [];
-  cand.forEach(function (cc) { if (used[cc[1]] || used[cc[2]]) return; used[cc[1]] = used[cc[2]] = 1; var A = sumRows[cc[1]], B = sumRows[cc[2]]; A.n = B.lbl; B.n = A.lbl; swap.push([A.lbl, B.lbl]); });
-  var sumBy = {}; sumRows.forEach(function (s) { sumBy[s.n] = s; });
-  /* periode yang dicakup Summary (mis. Jan–Jul) per pelanggan */
-  var sumPeriod = function (n) { var s = sumBy[n]; if (!s || !C[n]) return null; for (var mm = 0; mm < 12; mm++) if (close(ledRevTo(n, mm), s.rs) && Math.abs(s.rs) > 0) return mm; return -1; };
+  if (!rows.length) throw new Error('Tidak ada baris pelanggan di sheet ' + CFG.SHEET_SUMMARY + '.');
 
-  /* ---------- 4. Susun pelanggan ---------- */
-  var cls = function (s) {
-    var t = s.toLowerCase();
+  /* ---- Deteksi label tertukar: bandingkan angka baris dengan ledger & Pareto ---- */
+  const rawRev = {}; Object.keys(svc).forEach(c => rawRev[c] = Object.keys(svc[c]).reduce((s, k) => s + svc[c][k], 0));
+  const parDir = {}; Object.keys(pc).forEach(c => parDir[c] = Object.keys(pc[c]).reduce((s, k) => s + pc[c][k][0], 0));
+  const close = (a, b, absTol) => a !== undefined && b !== undefined && Math.abs(a - b) <= Math.max(absTol, Math.abs(b) * 0.01);
+  const score = (row, name) => (close(rawRev[name], row.rs, 2) ? 1 : 0) + (close(parDir[name], row.ds, 2) ? 1 : 0);
+  const cand = [];
+  for (let i = 0; i < rows.length; i++) for (let j = i + 1; j < rows.length; j++) {
+    const a = rows[i], b = rows[j];
+    const ab = score(a, b.lbl), ba = score(b, a.lbl);
+    const gain = ab + ba - score(a, a.lbl) - score(b, b.lbl);
+    if (ab >= 1 && ba >= 1 && gain >= 2) cand.push([gain, i, j]);
+  }
+  cand.sort((x, y) => y[0] - x[0]);
+  const used = {}, swap = [];
+  cand.forEach(([g, i, j]) => {
+    if (used[i] || used[j]) return;
+    used[i] = used[j] = 1;
+    const a = rows[i], b = rows[j];
+    a.n = b.lbl; b.n = a.lbl;
+    swap.push([a.lbl, b.lbl]);
+  });
+
+  /* ---- Gabungkan per pelanggan ---- */
+  const cls = s => {
+    const t = s.toLowerCase();
     if (/^1500/.test(t) || t.indexOf('nomor akses') >= 0) return 'Nomor Akses / SIP Trunk';
     if (t.indexOf('waba') >= 0 || /^ota/.test(t)) return 'WhatsApp Business (WABA)';
     if (t.indexOf('omni') >= 0) return 'Omnichannel';
@@ -433,43 +386,31 @@ function buildProfitDataset(S) {
     if (t.indexOf('crm') >= 0) return 'CRM Platform';
     return 'Contact Center Managed Service';
   };
-  var order = sumRows.map(function (s) { return s.n; }).filter(function (n) { return C[n]; });
-  Object.keys(C).sort().forEach(function (n) { if (order.indexOf(n) < 0) order.push(n); });
-  var r12 = function (a) { return a.map(R); };
-  var clients = order.map(function (n) {
-    var c = C[n];
-    var keys = Object.keys(c.svcAny).sort();
-    var prim = '', best = -Infinity;
-    Object.keys(c.svcRev).forEach(function (k) { if (c.svcRev[k] > best) { best = c.svcRev[k]; prim = k; } });
-    if (!prim && keys.length) prim = keys[0];
-    var m = { rs: r12(c.rs), ro: r12(c.ro), dep: r12(c.dep), depo: r12(c.depo), c: {}, co: {} };
-    CAT_KEYS.forEach(function (k) { m.c[k] = r12(c.c[k]); m.co[k] = r12(c.co[k]); });
-    var ds = z12(), dso = z12();
-    CAT_KEYS.forEach(function (k) { for (var i = 0; i < 12; i++) { ds[i] += m.c[k][i]; dso[i] += m.co[k][i]; } });
-    var cat = {}; ['jarkom', 'jasnaker', 'kpk', 'lain', 'gedung'].forEach(function (k) { cat[k] = [sumArr(m.c[k]), sumArr(m.co[k])]; });
-    var s = sumBy[n];
+  const clients = rows.map(r => {
+    const s = svc[r.n] || {};
+    const keys = Object.keys(s).sort();
+    let prim = '', best = -Infinity;
+    keys.forEach(k => { if (s[k] > best) { best = s[k]; prim = k; } });
     return {
-      n: n, sl: prim ? cls(prim) : 'Lainnya', svc: keys, m: m,
-      /* total seluruh bulan berdata (kompatibilitas modul lama) */
-      rs: sumArr(m.rs), ro: sumArr(m.ro), ds: sumArr(ds), do: sumArr(dso), cat: cat, dep: [sumArr(m.dep), sumArr(m.depo)],
-      mr: m.rs.slice(), md: ds.map(R),
-      sum: s ? { lbl: s.lbl, rs: R(s.rs), ro: R(s.ro), ds: R(s.ds), do: R(s.do), upto: sumPeriod(n) } : null,
+      n: r.n, lbl: r.lbl, rs: R(r.rs), ro: R(r.ro), ds: R(r.ds), do: R(r.do),
+      sl: prim ? cls(prim) : 'Lainnya', svc: keys, cat: pc[r.n] || {},
+      dep: (dep[r.n] || [0, 0]).map(R),
+      mr: (mrev[r.n] || zeros()).map(R), md: (mdir[r.n] || zeros()).map(R),
     };
   });
-  /* pelanggan yang hanya ada di Summary */
-  var onlySummary = sumRows.filter(function (s) { return !C[s.n]; }).map(function (s) { return s.n; });
-  var mcat = {}; CAT_KEYS.forEach(function (k) { var o = {}; clients.forEach(function (c) { o[c.n] = c.m.c[k].slice(); }); mcat[RAWCAT[k]] = o; });
-  var sapRev = 0, sapDir = 0; clients.forEach(function (c) { sapRev += c.rs; sapDir += c.ds; });
+  const mc = {};
+  Object.keys(mcat).forEach(k => { mc[k] = {}; Object.keys(mcat[k]).forEach(c => mc[k][c] = mcat[k][c].map(R)); });
+  const sumObj = o => Object.keys(o).reduce((s, c) => s + o[c].reduce((a, b) => a + b, 0), 0);
 
   return {
-    v: 2, basis: 'ledger', year: year || new Date().getFullYear(),
-    months: MON.slice(), dataMonths: dataMonths, lastMonth: lastMonth,
-    clients: clients, tot: tot, notes: notes, negops: negops, mcat: mcat, swap: swap,
-    raw: { sapRev: R(sapRev), sapDir: R(sapDir) },
-    textRows: Object.keys(textRows), onlySummary: onlySummary, totalMismatch: totalMismatch, skippedCols: skippedCols,
-    generatedAt: new Date().toISOString(),
+    clients, tot, notes, negops, mcat: mc, swap,
+    raw: { sapRev: R(sumObj(mrev)), sapDir: R(sumObj(mdir)) },
+    months: monthLabels, year: year || new Date().getFullYear(),
+    textRows: Object.keys(textRows),
+    source: 'gsheet', generatedAt: new Date().toISOString(),
   };
 }
 
 /* Untuk pengujian di luar Apps Script (Node.js). */
 if (typeof module !== 'undefined') module.exports = { buildDataset_ };
+
